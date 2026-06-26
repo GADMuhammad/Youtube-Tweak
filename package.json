@@ -1,6 +1,6 @@
 {
-  "name": "subscription-page-organizer",
-  "displayName": "Subscription page organizer",
+  "name": "subscriptions-page-organizer",
+  "displayName": "Subscriptions page organizer",
   "version": "0.0.1",
   "description": "A smart extension to sort and organize your YouTube Subscriptions page by date seamlessly and disable infinite scrolling.",
   "author": "Muhammad Gad",

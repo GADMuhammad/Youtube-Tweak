@@ -1,8 +1,6 @@
 import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
-import { useEffect, useRef, useState, type MutableRefObject } from "react"
-
-import { loadingButton } from "../translationObject"
+import { useEffect, useRef, useState } from "react"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions*"]
@@ -14,25 +12,17 @@ export const getStyle = (): HTMLStyleElement => {
   return styleElement
 }
 
-// 🎯 Target YouTube's feed grid container to mount the button inline
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
-  // the container which contains the whole videos:
   return document.querySelector("ytd-rich-grid-renderer")
 }
 
-// 🎯 Append the button at the end of the targeted container
 export const getMountPoint = (anchor: HTMLElement) => {
   return anchor
 }
 
 const PlasmoInlineButton = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const observerRef: MutableRefObject<MutationObserver> =
-    useRef<MutationObserver | null>(null)
-  const currentLang = document.documentElement.lang?.startsWith("ar")
-    ? "ar"
-    : "en"
-  const { loading, loadMore } = loadingButton[currentLang]
+  const observerRef = useRef<MutationObserver | null>(null)
 
   const disableInfiniteScroll = () => {
     const continuationItem = document.querySelector(
@@ -46,20 +36,21 @@ const PlasmoInlineButton = () => {
     }
   }
 
-  // Turn on (MutationObserver)
   const startObserver = () => {
-    if (observerRef.current) return
-    disableInfiniteScroll()
+    if (observerRef.current) return // If the observer's already on, so you don't have to do anything.
+
+    disableInfiniteScroll() // Initial hide
+
     observerRef.current = new MutationObserver(() => {
       disableInfiniteScroll()
     })
+
     observerRef.current.observe(document.body, {
       childList: true,
       subtree: true
     })
   }
 
-  // 1. Pause the observer to stop overriding styles
   const stopObserver = () => {
     if (observerRef.current) {
       observerRef.current.disconnect()
@@ -68,36 +59,33 @@ const PlasmoInlineButton = () => {
   }
 
   useEffect(() => {
-    // Initialize the observer when the page loads
     startObserver()
     return () => stopObserver()
   }, [])
 
-  // Simulates an infinite scroll trigger when the user clicks the button
   const handleLoadMore = () => {
     if (isLoading) return
     setIsLoading(true)
 
-    // 1. Pause the observer to stop overriding styles
     stopObserver()
 
-    // 2. Reveal the loader so YouTube's IntersectionObserver can detect it
     const continuationItem = document.querySelector(
       "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
     ) as HTMLElement
 
     if (continuationItem) {
-      continuationItem.style.display = "block" // bring the loader back again with (display: block)
+      continuationItem.style.display = "block"
+      console.log("DONE")
     }
 
-    // the count of the current videos .. to compare it with the count of the total new number with the add videos (if it's existed)
     const currentVideoCount = document.querySelectorAll(
       "ytd-rich-item-renderer"
     ).length
 
+    // checkLoaderObserver:
     const { observe } = new MutationObserver((mutations, observerInstance) => {
-      // the total new number with the add videos
-      const newVideoCount: number = document.querySelectorAll(
+      // the count of the new videos
+      const newVideoCount = document.querySelectorAll(
         "ytd-rich-item-renderer"
       ).length
 
@@ -108,7 +96,6 @@ const PlasmoInlineButton = () => {
       }
     })
 
-    // turn on the temporary observer to observe the added videos
     observe(document.body, { childList: true, subtree: true })
   }
 
@@ -118,7 +105,7 @@ const PlasmoInlineButton = () => {
         className={`custom-trigger-btn ${isLoading ? "loading" : ""}`}
         onClick={handleLoadMore}
         disabled={isLoading}>
-        {isLoading ? loading : loadMore}
+        {isLoading ? "Loading..." : "Load More Videos 🚀"}
       </button>
     </div>
   )
