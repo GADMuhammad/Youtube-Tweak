@@ -9,3 +9,38 @@ ytd-rich-grid-renderer
   ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer {
   display: none !important;
 }
+
+.custom-trigger-btn {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  z-index: 9999;
+  background-color: #ff0000;
+  color: #ffffff;
+  padding: 14px 28px;
+  border-radius: 50px; // شكل كبسولة شيك جداً
+  font-weight: bold;
+  font-size: 16px;
+  font-family: sans-serif;
+  border: none;
+  box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+
+  &:hover {
+    transform: translateY(-3px) scale(1.03);
+    background-color: #cc0000;
+    box-shadow: 0 15px 35px rgba(255, 0, 0, 0.4);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &.loading {
+    background-color: #555555;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+}

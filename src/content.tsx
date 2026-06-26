@@ -1,37 +1,99 @@
-import "~style.scss"
-
-import type { PlasmoCSConfig, PlasmoGetStyle } from "plasmo"
-import { useEffect } from "react"
+import cssText from "data-text:~/style.scss"
+import type { PlasmoCSConfig } from "plasmo"
+import { useEffect, useRef, useState } from "react"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions*"]
 }
 
+export const getStyle = (): HTMLStyleElement => {
+  const styleElement = document.createElement("style")
+  styleElement.textContent = cssText
+  return styleElement
+}
+
 const PlasmoOverlay = () => {
-  useEffect(() => {
-    const disableInfiniteScroll = () => {
-      const continuationItem = document.querySelector(
-        "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
-      )
-      if (continuationItem) {
-        ;(continuationItem as HTMLElement).style.display = "none"
-      }
+  const [isLoading, setIsLoading] = useState(false)
+  const observerRef = useRef<MutationObserver | null>(null)
+
+  // دالة البحث عن عنصر التحميل الخاص بيوتيوب وإخفائه
+  const disableInfiniteScroll = () => {
+    const continuationItem = document.querySelector(
+      "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
+    )
+    if (
+      continuationItem &&
+      (continuationItem as HTMLElement).style.display !== "none"
+    ) {
+      ;(continuationItem as HTMLElement).style.display = "none"
     }
-    disableInfiniteScroll()
-    const observer = new MutationObserver(() => {
+  }
+
+  // تشغيل المراقب (MutationObserver)
+  const startObserver = () => {
+    if (observerRef.current) return
+
+    disableInfiniteScroll() // إخفاء مبدئي
+
+    observerRef.current = new MutationObserver(() => {
       disableInfiniteScroll()
     })
-    observer.observe(document.body, { childList: true, subtree: true })
-    return () => observer.disconnect()
+
+    observerRef.current.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
+  }
+
+  // إيقاف المراقب مؤقتاً
+  const stopObserver = () => {
+    if (observerRef.current) {
+      observerRef.current.disconnect()
+      observerRef.current = null
+    }
+  }
+
+  useEffect(() => {
+    // تشغيل الراقص أول ما الصفحة تفتح
+    startObserver()
+    return () => stopObserver()
   }, [])
 
-  // return (
-  //   <div className="z-50 flex fixed bottom-10 right-10 bg-red-500 text-white p-5 rounded-xl shadow-2xl">
-  //     <p className="text-9xl font-bold bg-red-600">
-  //       Subscription Organizer Active! 🚀
-  //     </p>
-  //   </div>
-  // )
+  // دالة المحاكاة عند الضغط على الزر
+  const handleLoadMore = () => {
+    if (isLoading) return
+    setIsLoading(true)
+
+    // 1. وقف المراقبة فوراً وسيب يوتيوب يتنفس
+    stopObserver()
+
+    // 2. ابحث عن الـ Loader ورجعه للظهور علشان يوتيوب يحس بيه
+    const continuationItem = document.querySelector(
+      "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
+    ) as HTMLElement
+
+    if (continuationItem) {
+      continuationItem.style.display = "block"
+
+      // 3. سكرول بسيط جداً لتحريك العنصر جوه الشاشة ليراه يوتيوب
+      window.scrollBy({ top: 10, behavior: "smooth" })
+    }
+
+    // 4. مهلة بسيطة (ثانية واحدة) يوتيوب يلحق يبعت الـ Request، وبعدها نرجع نقفل الحنفية تاني
+    setTimeout(() => {
+      startObserver()
+      setIsLoading(false)
+    }, 1200)
+  }
+
+  return (
+    <button
+      className={`custom-trigger-btn ${isLoading ? "loading" : ""}`}
+      onClick={handleLoadMore}
+      disabled={isLoading}>
+      {isLoading ? "Loading..." : "Load More Videos 🚀"}
+    </button>
+  )
 }
 
 export default PlasmoOverlay
