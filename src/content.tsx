@@ -27,8 +27,8 @@ export const getMountPoint = (anchor: HTMLElement) => {
 
 const PlasmoInlineButton = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const observerRef: MutableRefObject<MutationObserver> =
-    useRef<MutationObserver | null>(null)
+  const observerRef = useRef<MutationObserver | null>(null)
+  const loadingObserverRef = useRef<MutationObserver | null>(null)
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
@@ -70,7 +70,13 @@ const PlasmoInlineButton = () => {
   useEffect(() => {
     // Initialize the observer when the page loads
     startObserver()
-    return () => stopObserver()
+    return () => {
+      stopObserver()
+      if (loadingObserverRef.current) {
+        loadingObserverRef.current.disconnect()
+        loadingObserverRef.current = null
+      }
+    }
   }, [])
 
   // Simulates an infinite scroll trigger when the user clicks the button
@@ -95,21 +101,25 @@ const PlasmoInlineButton = () => {
       "ytd-rich-item-renderer"
     ).length
 
-    const { observe } = new MutationObserver((mutations, observerInstance) => {
-      // the total new number with the add videos
-      const newVideoCount: number = document.querySelectorAll(
-        "ytd-rich-item-renderer"
-      ).length
+    loadingObserverRef.current = new MutationObserver(
+      (mutations, observerInstance) => {
+        const newVideoCount: number = document.querySelectorAll(
+          "ytd-rich-item-renderer"
+        ).length
 
-      if (newVideoCount > currentVideoCount) {
-        observerInstance.disconnect()
-        startObserver()
-        setIsLoading(false)
+        if (newVideoCount > currentVideoCount) {
+          observerInstance.disconnect()
+          loadingObserverRef.current = null
+          startObserver()
+          setIsLoading(false)
+        }
       }
-    })
+    )
 
-    // turn on the temporary observer to observe the added videos
-    observe(document.body, { childList: true, subtree: true })
+    loadingObserverRef.current.observe(document.body, {
+      childList: true,
+      subtree: true
+    })
   }
 
   return (
