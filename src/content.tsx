@@ -16,7 +16,6 @@ const PlasmoOverlay = () => {
   const [isLoading, setIsLoading] = useState(false)
   const observerRef = useRef<MutationObserver | null>(null)
 
-  // دالة البحث عن عنصر التحميل الخاص بيوتيوب وإخفائه
   const disableInfiniteScroll = () => {
     const continuationItem = document.querySelector(
       "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
@@ -29,11 +28,11 @@ const PlasmoOverlay = () => {
     }
   }
 
-  // تشغيل المراقب (MutationObserver)
+  // Turn on (MutationObserver)
   const startObserver = () => {
-    if (observerRef.current) return
+    if (observerRef.current) return // If the observer's already on, so you don't have to do anything.
 
-    disableInfiniteScroll() // إخفاء مبدئي
+    disableInfiniteScroll() // Initial hide
 
     observerRef.current = new MutationObserver(() => {
       disableInfiniteScroll()
@@ -45,7 +44,7 @@ const PlasmoOverlay = () => {
     })
   }
 
-  // إيقاف المراقب مؤقتاً
+  // 1. Pause the observer to stop overriding styles
   const stopObserver = () => {
     if (observerRef.current) {
       observerRef.current.disconnect()
@@ -54,36 +53,50 @@ const PlasmoOverlay = () => {
   }
 
   useEffect(() => {
-    // تشغيل الراقص أول ما الصفحة تفتح
+    // Initialize the observer when the page loads
     startObserver()
     return () => stopObserver()
   }, [])
 
-  // دالة المحاكاة عند الضغط على الزر
+  // Simulates an infinite scroll trigger when the user clicks the button
   const handleLoadMore = () => {
     if (isLoading) return
     setIsLoading(true)
 
-    // 1. وقف المراقبة فوراً وسيب يوتيوب يتنفس
+    // 1. Pause the observer to stop overriding styles
     stopObserver()
 
-    // 2. ابحث عن الـ Loader ورجعه للظهور علشان يوتيوب يحس بيه
+    // 2. Reveal the loader so YouTube's IntersectionObserver can detect it
     const continuationItem = document.querySelector(
       "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
     ) as HTMLElement
 
     if (continuationItem) {
-      continuationItem.style.display = "block"
-
-      // 3. سكرول بسيط جداً لتحريك العنصر جوه الشاشة ليراه يوتيوب
-      window.scrollBy({ top: 10, behavior: "smooth" })
+      continuationItem.style.display = "block" // bring the loader back again with (display: block)
+      console.log("DONE")
     }
 
-    // 4. مهلة بسيطة (ثانية واحدة) يوتيوب يلحق يبعت الـ Request، وبعدها نرجع نقفل الحنفية تاني
-    setTimeout(() => {
-      startObserver()
-      setIsLoading(false)
-    }, 1200)
+    // the count of the current videos .. to compare it with the count of the total new number with the add videos (if it's existed)
+    const currentVideoCount = document.querySelectorAll(
+      "ytd-rich-item-renderer"
+    ).length
+
+    // checkLoaderObserver:
+    const { observe } = new MutationObserver((mutations, observerInstance) => {
+      // the count of the new videos
+      const newVideoCount = document.querySelectorAll(
+        "ytd-rich-item-renderer"
+      ).length
+
+      if (newVideoCount > currentVideoCount) {
+        observerInstance.disconnect()
+        startObserver()
+        setIsLoading(false)
+      }
+    })
+
+    // turn on the temporary observer to observe the added videos
+    observe(document.body, { childList: true, subtree: true })
   }
 
   return (
