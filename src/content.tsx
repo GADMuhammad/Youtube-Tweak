@@ -1,48 +1,37 @@
-import cssText from "data-text:~style.css"
-import type { PlasmoCSConfig } from "plasmo"
+import "~style.scss"
 
-import { CountButton } from "~features/count-button"
+import type { PlasmoCSConfig, PlasmoGetStyle } from "plasmo"
+import { useEffect } from "react"
 
 export const config: PlasmoCSConfig = {
-  matches: ["<all_urls>"]
-}
-
-/**
- * Generates a style element with adjusted CSS to work correctly within a Shadow DOM.
- *
- * Tailwind CSS relies on `rem` units, which are based on the root font size (typically defined on the <html>
- * or <body> element). However, in a Shadow DOM (as used by Plasmo), there is no native root element, so the
- * rem values would reference the actual page's root font size—often leading to sizing inconsistencies.
- *
- * To address this, we:
- * 1. Replace the `:root` selector with `:host(plasmo-csui)` to properly scope the styles within the Shadow DOM.
- * 2. Convert all `rem` units to pixel values using a fixed base font size, ensuring consistent styling
- *    regardless of the host page's font size.
- */
-export const getStyle = (): HTMLStyleElement => {
-  const baseFontSize = 16
-
-  let updatedCssText = cssText.replaceAll(":root", ":host(plasmo-csui)")
-  const remRegex = /([\d.]+)rem/g
-  updatedCssText = updatedCssText.replace(remRegex, (match, remValue) => {
-    const pixelsValue = parseFloat(remValue) * baseFontSize
-
-    return `${pixelsValue}px`
-  })
-
-  const styleElement = document.createElement("style")
-
-  styleElement.textContent = updatedCssText
-
-  return styleElement
+  matches: ["https://www.youtube.com/feed/subscriptions*"]
 }
 
 const PlasmoOverlay = () => {
-  return (
-    <div className="plasmo-z-50 plasmo-flex plasmo-fixed plasmo-top-32 plasmo-right-8">
-      <CountButton />
-    </div>
-  )
+  useEffect(() => {
+    const disableInfiniteScroll = () => {
+      const continuationItem = document.querySelector(
+        "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
+      )
+      if (continuationItem) {
+        ;(continuationItem as HTMLElement).style.display = "none"
+      }
+    }
+    disableInfiniteScroll()
+    const observer = new MutationObserver(() => {
+      disableInfiniteScroll()
+    })
+    observer.observe(document.body, { childList: true, subtree: true })
+    return () => observer.disconnect()
+  }, [])
+
+  // return (
+  //   <div className="z-50 flex fixed bottom-10 right-10 bg-red-500 text-white p-5 rounded-xl shadow-2xl">
+  //     <p className="text-9xl font-bold bg-red-600">
+  //       Subscription Organizer Active! 🚀
+  //     </p>
+  //   </div>
+  // )
 }
 
 export default PlasmoOverlay
