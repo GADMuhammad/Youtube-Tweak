@@ -31,8 +31,6 @@ export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
   }, [])
 
   useEffect(() => {
-    if (activeTab !== "videos") return
-
     const hideShorts = () => {
       const shortsSection = document.querySelector(
         "ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer, ytd-rich-section-renderer:has(#rich-shelf-header-container)"
@@ -43,16 +41,7 @@ export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
       }
     }
 
-    activeTab === "videos" ? hideShorts() : ""
-
-    const observer = new MutationObserver(() => {
-      activeTab === "videos" ? hideShorts() : ""
-    })
-    observer.observe(document.body, { childList: true, subtree: true })
-
-    return () => {
-      observer.disconnect()
-    }
+    hideShorts()
   }, [activeTab])
 
   return { isDarkMode }
