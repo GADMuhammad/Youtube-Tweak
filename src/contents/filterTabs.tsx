@@ -15,7 +15,7 @@ export const getStyle = (): HTMLStyleElement => {
 // 1. 🎯 استهداف حاوية العنوان فوق على الشمال بالملي
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
   return document.querySelector(
-    "div#title-container.style-scope.ytd-shelf-renderer"
+    "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
   )
 }
 
@@ -26,16 +26,29 @@ export const getMountPoint = (anchor: HTMLElement) => {
 
 const FilterTabs = () => {
   useEffect(() => {
-    // 3. 🎯 إخفاء كلمة Latest فقط بدون حذف الـ h2 نفسه عشان نحافظ على الهيكل
     const latestTextH2 = document.querySelector(
       "h2.style-scope.ytd-shelf-renderer"
     ) as HTMLElement
     if (latestTextH2) latestTextH2.style.display = "none"
+
+    // 1. استهداف العنصر الخارجي (الـ Host)
+    const plasmoCsui = document.querySelector("plasmo-csui")
+
+    if (plasmoCsui && plasmoCsui.shadowRoot) {
+      // 2. 🔥 التريكة السحرية: دخول جوه الـ Shadow Root وقنص الـ div المجرم بالملي
+      const shadowContainer = plasmoCsui.shadowRoot.querySelector(
+        "div#plasmo-shadow-container"
+      ) as HTMLElement
+
+      if (shadowContainer) {
+        // 3. تصفير الـ z-index وتعديل الـ position غصب عن Plasmo
+        shadowContainer.style.setProperty("z-index", "10", "important")
+      }
+    }
   }, [])
 
   return (
     <div className="custom-filter-chips">
-      {/* هنعمل زرار تجريبي واحد بس كبداية نشوف مكانه هيكون عامل ازاي */}
       <button className="yt-chip-btn yt-chip-active">Videos</button>
       <button className="yt-chip-btn">Shorts</button>
     </div>
