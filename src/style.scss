@@ -40,3 +40,108 @@
     opacity: 0.8;
   }
 }
+
+// ---------
+
+div#title-container.style-scope.ytd-shelf-renderer {
+  display: inline-flex !important;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  // flex-direction: row !important;
+  // align-items: center !important;
+  // justify-content: flex-start !important;
+}
+
+.filter-and-load-wrapper {
+  width: 100%;
+}
+
+// تنسيق حاوية الأزرار فوق على الشمال
+.custom-filter-chips {
+  display: inline-flex !important;
+  gap: 12px;
+  margin-bottom: 2px;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+
+  .yt-chip-btn {
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0 12px;
+    height: 32px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    // الألوان الافتراضية المأخوذة من متغيرات يوتيوب الرسمية لتناسب الوضع المظلم والمضيء
+    background-color: var(
+      --yt-spec-badge-chip-background,
+      rgba(255, 255, 255, 0.1)
+    );
+    color: var(--yt-spec-text-primary, #ffffff);
+
+    &:hover {
+      background-color: var(
+        --yt-spec-button-chip-background-hover,
+        rgba(255, 255, 255, 0.2)
+      );
+    }
+  }
+
+  // الـ Active Chip (الزر النشط باللون الأسود/الأبيض العاكس)
+  .yt-chip-active {
+    background-color: var(--yt-spec-text-primary, #ffffff);
+    color: var(--yt-spec-text-primary-inverse, #000000);
+
+    &:hover {
+      background-color: var(--yt-spec-text-primary, #ffffff);
+      opacity: 0.9;
+    }
+  }
+}
+
+// ستايل زرار الـ Load More القديم المظبوط
+.custom-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  clear: both;
+}
+
+.custom-trigger-btn {
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #ff0000;
+  color: #ffffff;
+  border-radius: 50px;
+  padding: 16px 40px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  letter-spacing: 0.5px;
+  word-spacing: 2px;
+
+  &:hover {
+    transform: scale(1.04);
+    background-color: #cc0000;
+    box-shadow: 0 12px 30px rgba(255, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.loading {
+    background-color: #555555;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+}

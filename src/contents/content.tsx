@@ -20,9 +20,7 @@ export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
 }
 
 // 🎯 Append the button at the end of the targeted container
-export const getMountPoint = (anchor: HTMLElement) => {
-  return anchor
-}
+export const getMountPoint = (anchor: HTMLElement) => anchor
 
 const PlasmoInlineButton = () => {
   const { isLoading, loading, loadMore, handleLoadMore } =
