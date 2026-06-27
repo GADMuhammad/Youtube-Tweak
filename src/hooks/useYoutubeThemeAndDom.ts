@@ -7,10 +7,10 @@ export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
 
   useEffect(() => {
     // Hide 'latest' H2 to replace it with filter buttons:
-    const titleContainer = document.querySelector(
-      "div#title-container.style-scope.ytd-shelf-renderer"
+    const latestTextH2 = document.querySelector(
+      "h2.style-scope.ytd-shelf-renderer"
     ) as HTMLElement
-    if (titleContainer) titleContainer.remove()
+    if (latestTextH2) latestTextH2.style.display = "none"
 
     // targeting the outside host element
     const plasmoCsui = document.querySelector("plasmo-csui")

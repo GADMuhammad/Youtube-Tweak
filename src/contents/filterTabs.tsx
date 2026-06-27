@@ -20,7 +20,7 @@ export const getStyle = (): HTMLStyleElement => {
 // The container above videos:
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
   return document.querySelector(
-    "div#dismissible.style-scope.ytd-shelf-renderer"
+    "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
   )
 }
 
