@@ -84,7 +84,6 @@
 
 // ---------
 
-// 1. الكلاس الرئيسي (الهيكل والأبعاد والـ Layout فقط)
 .custom-filter-chips {
   display: inline-flex !important;
   gap: 12px;
@@ -93,6 +92,10 @@
   width: fit-content;
 
   .yt-chip-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
     font-family: inherit;
     font-size: 14px;
     font-weight: 500;

@@ -4,7 +4,10 @@ import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.youtube.com/feed/subscriptions*"]
+  matches: [
+    "https://www.youtube.com/feed/subscriptions*",
+    "https://www.youtube.com/feed/subscriptions/shorts*"
+  ]
 }
 
 export const getStyle = (): HTMLStyleElement => {

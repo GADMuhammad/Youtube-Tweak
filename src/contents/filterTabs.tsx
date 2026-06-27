@@ -2,8 +2,13 @@ import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 import { useEffect, useState } from "react"
 
+import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
+
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.youtube.com/feed/subscriptions*"]
+  matches: [
+    "https://www.youtube.com/feed/subscriptions*",
+    "https://www.youtube.com/feed/subscriptions/shorts*"
+  ]
 }
 
 export const getStyle = (): HTMLStyleElement => {
@@ -15,7 +20,7 @@ export const getStyle = (): HTMLStyleElement => {
 // The container above videos:
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
   return document.querySelector(
-    "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
+    "div#dismissible.style-scope.ytd-shelf-renderer"
   )
 }
 
@@ -24,40 +29,43 @@ export const getMountPoint = (anchor: HTMLElement) => {
 }
 
 const FilterTabs = () => {
-  const [isDarkMode, setIsDarkMode] = useState(
-    () => window.matchMedia("(prefers-color-scheme: dark)").matches
-  )
+  const getCurrentTab = () =>
+    window.location.href.includes("/shorts") ? "shorts" : "videos"
+  const [activeTab, setActiveTab] = useState<"videos" | "shorts">(getCurrentTab)
+  const filterButtons = [
+    { name: "videos", url: "https://www.youtube.com/feed/subscriptions" },
+    { name: "shorts", url: "https://www.youtube.com/feed/subscriptions/shorts" }
+  ]
+  const { isDarkMode } = useYoutubeThemeAndDom(activeTab) // custom hook for filer button UI
 
   useEffect(() => {
-    // Hide 'latest' H2 to replace it with filter buttons:
-    const latestTextH2 = document.querySelector(
-      "h2.style-scope.ytd-shelf-renderer"
-    ) as HTMLElement
-    if (latestTextH2) latestTextH2.style.display = "none"
-
-    // 1. targeting the outside host element
-    const plasmoCsui = document.querySelector("plasmo-csui")
-
-    if (plasmoCsui && plasmoCsui.shadowRoot) {
-      const shadowContainer = plasmoCsui.shadowRoot.querySelector(
-        "div#plasmo-shadow-container"
-      ) as HTMLElement
-
-      if (shadowContainer) {
-        shadowContainer.style.setProperty("z-index", "10", "important")
-      }
+    const handleUrlChange = () => setActiveTab(getCurrentTab())
+    window.addEventListener("yt-navigate-finish", handleUrlChange)
+    return () => {
+      window.removeEventListener("yt-navigate-finish", handleUrlChange)
     }
-
-    //   handle if youtube theme is different than system theme
-    const hasDarkAttribute = document.documentElement.hasAttribute("dark")
-    if (hasDarkAttribute !== isDarkMode) setIsDarkMode(hasDarkAttribute)
   }, [])
+
+  const handleNavigation = (
+    e: React.MouseEvent<HTMLAnchorElement>,
+    url: string
+  ) => {
+    e.preventDefault()
+    window.location.href = url
+  }
 
   return (
     <div
       className={`custom-filter-chips ${isDarkMode ? "theme-dark" : "theme-light"}`}>
-      <button className="yt-chip-btn yt-chip-active">Videos</button>
-      <button className="yt-chip-btn">Shorts</button>
+      {filterButtons.map(({ name, url }) => (
+        <a
+          key={name}
+          href={url}
+          onClick={(e) => handleNavigation(e, url)}
+          className={`yt-chip-btn ${activeTab === name ? "yt-chip-active" : ""}`}>
+          {name.charAt(0).toUpperCase() + name.slice(1)}
+        </a>
+      ))}
     </div>
   )
 }
