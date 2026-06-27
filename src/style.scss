@@ -84,15 +84,13 @@
 
 // ---------
 
-// تنسيق حاوية الأزرار فوق على الشمال
+// 1. الكلاس الرئيسي (الهيكل والأبعاد والـ Layout فقط)
 .custom-filter-chips {
   display: inline-flex !important;
   gap: 12px;
-  // margin-bottom: 2px;
   width: -webkit-fit-content;
   width: -moz-fit-content;
   width: fit-content;
-  // z-index: 10 !important; // قيمة موجبة خفيفة تخليه يغطس تحت الـ Header الأصلي بس يفضل فوق الفيديوهات
 
   .yt-chip-btn {
     font-family: inherit;
@@ -104,30 +102,51 @@
     border-radius: 8px;
     border: none;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition:
+      background-color 0.2s ease,
+      color 0.2s ease;
+  }
+}
 
-    // الألوان الافتراضية المأخوذة من متغيرات يوتيوب الرسمية لتناسب الوضع المظلم والمضيء
-    background-color: var(
-      --yt-spec-badge-chip-background,
-      rgba(255, 255, 255, 0.1)
-    );
-    color: var(--yt-spec-text-primary, #ffffff);
+// 2. 🌙 ستايل الألوان للـ Dark Mode
+.theme-dark {
+  .yt-chip-btn {
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.1);
 
     &:hover {
-      background-color: var(
-        --yt-spec-button-chip-background-hover,
-        rgba(255, 255, 255, 0.2)
-      );
+      background-color: rgba(255, 255, 255, 0.2);
     }
   }
 
-  // الـ Active Chip (الزر النشط باللون الأسود/الأبيض العاكس)
   .yt-chip-active {
-    background-color: var(--yt-spec-text-primary, #ffffff);
-    color: var(--yt-spec-text-primary-inverse, #000000);
+    color: #0f0f0f !important;
+    background-color: #ffffff !important;
 
     &:hover {
-      background-color: var(--yt-spec-text-primary, #ffffff);
+      background-color: #ffffff !important;
+      opacity: 0.9;
+    }
+  }
+}
+
+// 3. ☀️ ستايل الألوان للـ Light Mode
+.theme-light {
+  .yt-chip-btn {
+    color: #0f0f0f;
+    background-color: rgba(0, 0, 0, 0.05);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+  }
+
+  .yt-chip-active {
+    color: #ffffff !important;
+    background-color: #0f0f0f !important;
+
+    &:hover {
+      background-color: #0f0f0f !important;
       opacity: 0.9;
     }
   }
