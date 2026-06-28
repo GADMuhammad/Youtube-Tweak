@@ -38,7 +38,6 @@ async function processVideoCards() {
   const cardsArray = Array.from(cards)
   const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
-    htmlCard.setAttribute("data-date-processed", "true")
 
     const anchor = htmlCard.querySelector(
       "a.ytLockupMetadataViewModelTitle"
@@ -80,6 +79,7 @@ async function processVideoCards() {
           dateSpan.innerText = formattedDate
         }
       }
+      htmlCard.setAttribute("data-date-processed", "true")
     }
   })
   await Promise.all(promises)
