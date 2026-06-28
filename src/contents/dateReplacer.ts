@@ -35,7 +35,8 @@ async function processVideoCards() {
   if (!cards.length) return
   console.log(`[YouTube Extension]${cards.length} ...`)
 
-  for (const [index, card] of cards.entries()) {
+  const cardsArray = Array.from(cards)
+  const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
 
     const anchor = htmlCard.querySelector(
@@ -52,7 +53,7 @@ async function processVideoCards() {
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
 
-      if (videoId && index < 40) {
+      if (videoId) {
         const cachedISO = await storage.get<RegExpMatchArray>(videoId)
         let exactDateISO = cachedISO
 
@@ -79,7 +80,9 @@ async function processVideoCards() {
         }
       }
     }
-  }
+  })
+  await Promise.all(promises)
+  console.log("🎯 All 40 videos processed in parallel!")
 }
 
 // External variable to ensure processing runs only once for the initial batch
