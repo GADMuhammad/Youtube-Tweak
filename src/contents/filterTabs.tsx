@@ -6,10 +6,7 @@ import { filterTabsText } from "~helpers/translationObject"
 import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
 
 export const config: PlasmoCSConfig = {
-  matches: [
-    "https://www.youtube.com/feed/subscriptions*",
-    "https://www.youtube.com/feed/subscriptions/shorts*"
-  ]
+  matches: ["https://www.youtube.com/feed/subscriptions*"]
 }
 
 export const getStyle = (): HTMLStyleElement => {
