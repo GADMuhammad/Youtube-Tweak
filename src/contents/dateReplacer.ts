@@ -38,6 +38,7 @@ async function processVideoCards() {
   const cardsArray = Array.from(cards)
   const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
+    htmlCard.setAttribute("data-date-processed", "true")
 
     const anchor = htmlCard.querySelector(
       "a.ytLockupMetadataViewModelTitle"
@@ -85,16 +86,10 @@ async function processVideoCards() {
   console.log("🎯 All 40 videos processed in parallel!")
 }
 
-// External variable to ensure processing runs only once for the initial batch
-let isProcessed = false
 const observer = new MutationObserver(() => {
-  const cards = document.querySelectorAll(
-    "ytd-grid-video-renderer, ytd-rich-item-renderer"
-  )
-  if (cards.length && !isProcessed) {
-    isProcessed = true
+  const cards = document.querySelectorAll("ytd-rich-item-renderer")
+  if (cards.length) {
     processVideoCards()
-    observer.disconnect()
   }
 })
 
