@@ -43,10 +43,10 @@ async function processVideoCards() {
       "a.ytLockupMetadataViewModelTitle"
     ) as HTMLAnchorElement | null
 
-    const spans = htmlCard.querySelectorAll(
-      "div.ytContentMetadataViewModelMetadataRow span[role='text'].ytAttributedStringHost.ytContentMetadataViewModelMetadataText.ytAttributedStringWhiteSpacePreWrap.ytAttributedStringLinkInheritColor"
+    const spans = htmlCard.querySelector(
+      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label].ytAttributedStringHost.ytContentMetadataViewModelMetadataText.ytAttributedStringWhiteSpacePreWrap.ytAttributedStringLinkInheritColor"
     )
-    const dateSpan = spans[1] as HTMLSpanElement | null
+    const dateSpan = spans as HTMLSpanElement | null
 
     if (anchor && dateSpan) {
       const href = anchor.getAttribute("href") || ""
