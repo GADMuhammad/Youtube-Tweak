@@ -1,4 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo"
+import { useEffect } from "react"
 
 import { Storage } from "@plasmohq/storage"
 
@@ -31,6 +32,7 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
 
 async function processVideoCards() {
   const cards = document.querySelectorAll("ytd-rich-item-renderer")
+  if (!cards.length) return
   console.log(`[YouTube Extension]${cards.length} ...`)
 
   for (const [index, card] of cards.entries()) {
@@ -50,7 +52,7 @@ async function processVideoCards() {
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
 
-      if (videoId && index < 13) {
+      if (videoId && index < 40) {
         const cachedISO = await storage.get<RegExpMatchArray>(videoId)
         let exactDateISO = cachedISO
 
@@ -80,4 +82,17 @@ async function processVideoCards() {
   }
 }
 
-setTimeout(processVideoCards, 3000)
+// External variable to ensure processing runs only once for the initial batch
+let isProcessed = false
+const observer = new MutationObserver(() => {
+  const cards = document.querySelectorAll(
+    "ytd-grid-video-renderer, ytd-rich-item-renderer"
+  )
+  if (cards.length && !isProcessed) {
+    isProcessed = true
+    processVideoCards()
+    observer.disconnect()
+  }
+})
+
+observer.observe(document.body, { childList: true, subtree: true })
