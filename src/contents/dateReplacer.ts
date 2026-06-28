@@ -19,6 +19,11 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
     const match: RegExpMatchArray = text.match(
       /<meta itemprop="datePublished" content="([^"]+)">/
     )
+
+    // console.log(match)
+    // console.log(match?.[1])
+    // return match?.[1] ?? null
+
     if (match) return match // Returns clean ISO string (e.g., 2026-06-24T13:00:04.000Z)
     return null
   } catch (e) {
@@ -31,7 +36,7 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
 }
 
 async function processVideoCards() {
-  const cards = document.querySelectorAll(
+  const cards = document.querySelectorAll<HTMLElement>(
     "ytd-rich-item-renderer:not([data-date-processed])"
   )
   if (!cards.length) return
@@ -44,9 +49,7 @@ async function processVideoCards() {
   })
 
   const cardsArray = Array.from(cards)
-  const promises = cardsArray.map(async (card) => {
-    const htmlCard = card as HTMLElement
-
+  const promises = cardsArray.map(async (htmlCard) => {
     const anchor = htmlCard.querySelector(
       "a.ytLockupMetadataViewModelTitle"
     ) as HTMLAnchorElement | null
@@ -56,14 +59,13 @@ async function processVideoCards() {
     )
     const dateSpan = spans as HTMLSpanElement | null
 
-    console.log("1")
     if (anchor && dateSpan) {
-      console.log("2")
       const href = anchor.getAttribute("href") || ""
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
 
       if (videoId) {
+        htmlCard.dataset.dateProcessed = "true"
         const cachedISO = await storage.get<RegExpMatchArray>(videoId)
         let exactDateISO = cachedISO
 
@@ -76,11 +78,10 @@ async function processVideoCards() {
           const videoDate = new Date(
             exactDateISO[0].match(/content="([^"]+)"/)[1]
           )
-
+          // const videoDate = new Date(exactDateISO)
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
-      htmlCard.setAttribute("data-date-processed", "true")
     }
   })
   await Promise.all(promises)
