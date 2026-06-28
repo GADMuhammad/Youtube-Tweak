@@ -9,7 +9,7 @@ export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions"]
 }
 
-// 3️⃣ Step 3: Fetch the video page source code and extract the clean ISO date using RegExp
+// Fetch the video page source code and extract the clean ISO date using RegExp
 async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
   try {
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`)
@@ -31,8 +31,17 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
 }
 
 async function processVideoCards() {
-  const cards = document.querySelectorAll("ytd-rich-item-renderer")
+  const cards = document.querySelectorAll(
+    "ytd-rich-item-renderer:not([data-date-processed])"
+  )
   if (!cards.length) return
+
+  const isArabic = document.documentElement.lang?.startsWith("ar")
+  const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-GB", {
+    weekday: "short",
+    day: "numeric",
+    month: "short"
+  })
 
   const cardsArray = Array.from(cards)
   const promises = cardsArray.map(async (card) => {
@@ -43,11 +52,13 @@ async function processVideoCards() {
     ) as HTMLAnchorElement | null
 
     const spans = htmlCard.querySelector(
-      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label].ytAttributedStringHost.ytContentMetadataViewModelMetadataText.ytAttributedStringWhiteSpacePreWrap.ytAttributedStringLinkInheritColor"
+      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
     )
     const dateSpan = spans as HTMLSpanElement | null
 
+    console.log("1")
     if (anchor && dateSpan) {
+      console.log("2")
       const href = anchor.getAttribute("href") || ""
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
@@ -58,25 +69,15 @@ async function processVideoCards() {
 
         if (!cachedISO) {
           exactDateISO = await fetchVideoExactISO(videoId)
-          if (exactDateISO) await storage.set(videoId, exactDateISO)
+          if (exactDateISO) storage.set(videoId, exactDateISO)
         }
 
         if (exactDateISO) {
           const videoDate = new Date(
             exactDateISO[0].match(/content="([^"]+)"/)[1]
           )
-          const isArabic = document.documentElement.lang?.startsWith("ar")
 
-          const formattedDate = videoDate.toLocaleDateString(
-            isArabic ? "ar-EG" : "en-UK",
-            {
-              weekday: "short",
-              day: "numeric",
-              month: "short"
-            }
-          )
-
-          dateSpan.innerText = formattedDate
+          dateSpan.innerText = formatter.format(videoDate)
         }
       }
       htmlCard.setAttribute("data-date-processed", "true")
