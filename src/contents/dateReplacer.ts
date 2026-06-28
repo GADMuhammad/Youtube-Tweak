@@ -59,15 +59,15 @@ async function processVideoCards() {
         let exactDateISO = cachedISO
 
         if (cachedISO) {
-          console.log("⚡ Found in cache:", videoId)
+          // console.log("⚡ Found in cache:", videoId)
         } else {
-          console.log("🌐 Fetching from network:", videoId)
+          // console.log("🌐 Fetching from network:", videoId)
           exactDateISO = await fetchVideoExactISO(videoId)
           if (exactDateISO) await storage.set(videoId, exactDateISO)
         }
 
         if (exactDateISO) {
-          console.log(exactDateISO[0].match(/content="([^"]+)"/)[1])
+          // console.log(exactDateISO[0].match(/content="([^"]+)"/)[1])
           const videoDate = new Date(
             exactDateISO[0].match(/content="([^"]+)"/)[1]
           )
@@ -83,14 +83,31 @@ async function processVideoCards() {
     }
   })
   await Promise.all(promises)
-  console.log("🎯 All 40 videos processed in parallel!")
+  // console.log("🎯 All 40 videos processed in parallel!")
 }
 
-const observer = new MutationObserver(() => {
-  const cards = document.querySelectorAll("ytd-rich-item-renderer")
-  if (cards.length) {
-    processVideoCards()
-  }
-})
+// 🌐 Function to start observation temporarily and disconnect automatically to save CPU performance
+export function triggerDateProcessor() {
+  console.log("triggerDateProcessor IN")
+  const observer = new MutationObserver((mutations, observerInstance) => {
+    // Select only new cards that have not been processed yet
+    const cards = document.querySelectorAll(
+      "ytd-rich-item-renderer:not([data-date-processed])"
+    )
 
-observer.observe(document.body, { childList: true, subtree: true })
+    if (cards.length) {
+      // Execute the video processing function in parallel
+      processVideoCards()
+      // 🎯 Disconnect immediately after finding new cards so it doesn't run forever
+      observerInstance.disconnect() // We must disconnect observer to protect CPU memory.
+      console.log(
+        "[YouTube Extension] Observer disconnected to protect CPU memory."
+      )
+    }
+  })
+
+  observer.observe(document.body, { childList: true, subtree: true })
+}
+
+// 🚀 Execute the observer automatically for the initial batch of videos when the page loads
+triggerDateProcessor()

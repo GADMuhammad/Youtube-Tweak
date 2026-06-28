@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { triggerDateProcessor } from "~contents/dateReplacer"
 import { loadingButton } from "~helpers/translationObject"
 
 export const useInfiniteScrollBlocker = () => {
@@ -63,6 +64,7 @@ export const useInfiniteScrollBlocker = () => {
   const handleLoadMore = () => {
     if (isLoading) return
     setIsLoading(true)
+    triggerDateProcessor()
 
     // 1. Pause the observer to stop overriding styles
     stopObserver()
