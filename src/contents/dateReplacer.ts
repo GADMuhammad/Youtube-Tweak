@@ -6,7 +6,7 @@ export const config: PlasmoCSConfig = {
 
 function processVideoCards() {
   const cards = document.querySelectorAll("ytd-rich-item-renderer")
-  console.log(`[YouTube Extension] جاري فحص تفاصيل الـ ${cards.length} كارت...`)
+  console.log(`[YouTube Extension]${cards.length} ...`)
 
   cards.forEach((card, index) => {
     const htmlCard = card as HTMLElement
@@ -22,19 +22,17 @@ function processVideoCards() {
 
     if (anchor && dateSpan) {
       const href = anchor.getAttribute("href") || ""
-      const query = href.split("?")[1]
-      const urlParams = new URLSearchParams(query)
+      const urlParams = new URLSearchParams(href.split("?")[1])
 
       const videoId = urlParams.get("v")
 
       if (videoId) {
-        console.log(`🎥 فيديو رقم ${index + 1}:`)
-        console.log(`- الـ ID المستخرج: ${videoId}`)
-        console.log(`- النص الحالي للتاريخ: "${dateSpan.innerText}"`)
+        console.log(index)
+        console.log(videoId)
+        dateSpan.innerText
       }
     }
   })
 }
 
-// الانتظار 3 ثوانٍ حتى نضمن تحميل يوتيوب للبيانات
 setTimeout(processVideoCards, 5000)
