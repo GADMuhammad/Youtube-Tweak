@@ -2,6 +2,7 @@ import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 import { useEffect, useState } from "react"
 
+import { filterTabsText } from "~helpers/translationObject"
 import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
 
 export const config: PlasmoCSConfig = {
@@ -32,9 +33,23 @@ const FilterTabs = () => {
   const getCurrentTab = () =>
     window.location.href.includes("/shorts") ? "shorts" : "videos"
   const [activeTab, setActiveTab] = useState<"videos" | "shorts">(getCurrentTab)
+
+  const currentLang = document.documentElement.lang?.startsWith("ar")
+    ? "ar"
+    : "en"
+  const { videos, shorts } = filterTabsText[currentLang]
+
   const filterButtons = [
-    { name: "videos", url: "https://www.youtube.com/feed/subscriptions" },
-    { name: "shorts", url: "https://www.youtube.com/feed/subscriptions/shorts" }
+    {
+      id: "videos",
+      name: videos,
+      url: "https://www.youtube.com/feed/subscriptions"
+    },
+    {
+      id: "shorts",
+      name: shorts,
+      url: "https://www.youtube.com/feed/subscriptions/shorts"
+    }
   ]
   const { isDarkMode } = useYoutubeThemeAndDom(activeTab) // custom hook for filer button UI
 
@@ -57,12 +72,12 @@ const FilterTabs = () => {
   return (
     <div
       className={`custom-filter-chips ${isDarkMode ? "theme-dark" : "theme-light"}`}>
-      {filterButtons.map(({ name, url }) => (
+      {filterButtons.map(({ name, url, id }, index) => (
         <a
           key={name}
           href={url}
           onClick={(e) => handleNavigation(e, url)}
-          className={`yt-chip-btn ${activeTab === name ? "yt-chip-active" : ""}`}>
+          className={`yt-chip-btn ${activeTab === id ? "yt-chip-active" : ""}`}>
           {name.charAt(0).toUpperCase() + name.slice(1)}
         </a>
       ))}

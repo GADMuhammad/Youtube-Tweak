@@ -26,10 +26,13 @@ export const useInfiniteScrollBlocker = () => {
   // Turn on (MutationObserver)
   const startObserver = () => {
     if (observerRef.current) return
+
     disableInfiniteScroll()
-    observerRef.current = new MutationObserver(() => {
+
+    observerRef.current = new MutationObserver(function () {
       disableInfiniteScroll()
     })
+
     observerRef.current.observe(document.body, {
       childList: true,
       subtree: true
