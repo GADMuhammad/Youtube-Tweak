@@ -1,5 +1,9 @@
 import type { PlasmoCSConfig } from "plasmo"
 
+import { Storage } from "@plasmohq/storage"
+
+const storage = new Storage({ area: "local" })
+
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions"]
 }
@@ -46,20 +50,34 @@ async function processVideoCards() {
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
 
-      if (videoId && index < 10) {
-        const exactDateISO = await fetchVideoExactISO(videoId)
-        const videoDate = new Date(
-          exactDateISO[0].match(/content="([^"]+)"/)[1]
-        )
-        const formattedDate = videoDate.toLocaleDateString("en-US", {
-          weekday: "short",
-          day: "numeric",
-          month: "short"
-        })
-        dateSpan.innerText = formattedDate
+      if (videoId && index < 13) {
+        const cachedISO = await storage.get<RegExpMatchArray>(videoId)
+        let exactDateISO = cachedISO
+
+        if (cachedISO) {
+          console.log("⚡ Found in cache:", videoId)
+        } else {
+          console.log("🌐 Fetching from network:", videoId)
+          exactDateISO = await fetchVideoExactISO(videoId)
+          if (exactDateISO) await storage.set(videoId, exactDateISO)
+        }
+
+        if (exactDateISO) {
+          console.log(exactDateISO[0].match(/content="([^"]+)"/)[1])
+          const videoDate = new Date(
+            exactDateISO[0].match(/content="([^"]+)"/)[1]
+          )
+          const formattedDate = videoDate.toLocaleDateString("en-UK", {
+            weekday: "short",
+            day: "numeric",
+            month: "short"
+          })
+
+          dateSpan.innerText = formattedDate
+        }
       }
     }
   }
 }
 
-setTimeout(processVideoCards, 4000)
+setTimeout(processVideoCards, 3000)
