@@ -4,11 +4,32 @@ export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions"]
 }
 
-function processVideoCards() {
+// 3️⃣ Step 3: Fetch the video page source code and extract the clean ISO date using RegExp
+async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
+  try {
+    const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`)
+    const text = await response.text()
+
+    // RegExp pattern to extract the exact publication date meta tag
+    const match: RegExpMatchArray = text.match(
+      /<meta itemprop="datePublished" content="([^"]+)">/
+    )
+    if (match) return match // Returns clean ISO string (e.g., 2026-06-24T13:00:04.000Z)
+    return null
+  } catch (e) {
+    console.error(
+      `[YouTube Extension] Error fetching video ISO for ID ${videoId}:`,
+      e
+    )
+    return null
+  }
+}
+
+async function processVideoCards() {
   const cards = document.querySelectorAll("ytd-rich-item-renderer")
   console.log(`[YouTube Extension]${cards.length} ...`)
 
-  cards.forEach((card, index) => {
+  for (const [index, card] of cards.entries()) {
     const htmlCard = card as HTMLElement
 
     const anchor = htmlCard.querySelector(
@@ -18,21 +39,27 @@ function processVideoCards() {
     const spans = htmlCard.querySelectorAll(
       "div.ytContentMetadataViewModelMetadataRow span[role='text'].ytAttributedStringHost.ytContentMetadataViewModelMetadataText.ytAttributedStringWhiteSpacePreWrap.ytAttributedStringLinkInheritColor"
     )
-    const dateSpan = spans[1] as HTMLElement | null
+    const dateSpan = spans[1] as HTMLSpanElement | null
 
     if (anchor && dateSpan) {
       const href = anchor.getAttribute("href") || ""
       const urlParams = new URLSearchParams(href.split("?")[1])
-
       const videoId = urlParams.get("v")
 
-      if (videoId) {
-        console.log(index)
-        console.log(videoId)
-        dateSpan.innerText
+      if (videoId && index < 10) {
+        const exactDateISO = await fetchVideoExactISO(videoId)
+        const videoDate = new Date(
+          exactDateISO[0].match(/content="([^"]+)"/)[1]
+        )
+        const formattedDate = videoDate.toLocaleDateString("en-US", {
+          weekday: "short",
+          day: "numeric",
+          month: "short"
+        })
+        dateSpan.innerText = formattedDate
       }
     }
-  })
+  }
 }
 
-setTimeout(processVideoCards, 5000)
+setTimeout(processVideoCards, 4000)
