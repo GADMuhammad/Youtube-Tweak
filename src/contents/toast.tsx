@@ -4,8 +4,6 @@ import type { PlasmoCSConfig } from "plasmo"
 import { useEffect } from "react"
 import { toast as toaster, Toaster } from "sonner"
 
-import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
-
 import { processVideoCards } from "./dateReplacer"
 
 export const config: PlasmoCSConfig = {
@@ -36,20 +34,27 @@ export default function toast() {
   //     return () => clearTimeout(timer)
   //   }, [])
 
-  const { isLoading, loadingText, loadMoreText, handleLoadMore } =
-    useInfiniteScrollBlocker()
-
   useEffect(() => {
-    const timer = setTimeout(() => {
+    // دالة بتشتغل أول ما الإشارة توصل من المتصفح
+    const handleSortingSignal = () => {
       toaster.promise(processVideoCards, {
         loading: "جاري إعادة ترتيب الفيديوهات حسب التاريخ...",
         success: "تم ترتيب صفحة الاشتراكات بنجاح!",
         error: "عذراً، حدث خطأ أثناء الترتيب."
       })
-    }, 400)
+    }
 
-    return () => clearTimeout(timer)
-  }, [isLoading])
+    // بنقول للمتصفح: اسمع الإشارة دي أول ما تتبعت
+    window.addEventListener("youtube-date-sorting-started", handleSortingSignal)
+
+    // تنظيف المستمع لما المكون يقفل لسلامة الأداء
+    return () => {
+      window.removeEventListener(
+        "youtube-date-sorting-started",
+        handleSortingSignal
+      )
+    }
+  }, [])
 
   return (
     <Toaster

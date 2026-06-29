@@ -1,5 +1,4 @@
 import type { PlasmoCSConfig } from "plasmo"
-import { useEffect } from "react"
 
 import { Storage } from "@plasmohq/storage"
 
@@ -34,6 +33,7 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
 }
 
 export async function processVideoCards() {
+  console.log("processVideoCards")
   const cards = document.querySelectorAll<HTMLElement>(
     "ytd-rich-item-renderer:not([data-date-processed])"
   )
@@ -47,7 +47,10 @@ export async function processVideoCards() {
   })
 
   const cardsArray = Array.from(cards)
-  const promises = cardsArray.map(async (htmlCard) => {
+  const promises = cardsArray.map(async (card) => {
+    const htmlCard = card as HTMLElement
+    console.log("promises")
+
     const anchor = htmlCard.querySelector(
       "a.ytLockupMetadataViewModelTitle"
     ) as HTMLAnchorElement | null
@@ -58,20 +61,26 @@ export async function processVideoCards() {
     const dateSpan = spans as HTMLSpanElement | null
 
     if (anchor && dateSpan) {
+      console.log("anchor && dateSpan")
+
       const href = anchor.getAttribute("href") || ""
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
 
       if (videoId) {
+        console.log("videoId")
+
         const cachedISO = await storage.get<RegExpMatchArray>(videoId)
         let exactDateISO = cachedISO
 
         if (!cachedISO) {
+          console.log("one of them")
           exactDateISO = await fetchVideoExactISO(videoId)
           if (exactDateISO) storage.set(videoId, exactDateISO)
         }
 
         if (exactDateISO) {
+          console.log("one of them")
           const videoDate = new Date(
             exactDateISO[0].match(/content="([^"]+)"/)[1]
           )
@@ -79,7 +88,7 @@ export async function processVideoCards() {
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
-      htmlCard.dataset.dateProcessed = "true"
+      htmlCard.setAttribute("data-date-processed", "true")
     }
   })
   await Promise.all(promises)
@@ -94,6 +103,7 @@ export function triggerDateProcessor() {
     )
 
     if (cards.length) {
+      window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
       // Execute the video processing function in parallel
       processVideoCards()
       // 🎯 Disconnect immediately after finding new cards so it doesn't run forever
@@ -105,6 +115,8 @@ export function triggerDateProcessor() {
 }
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
+
+window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
 processVideoCards().then(() => {
   triggerDateProcessor()
 })
