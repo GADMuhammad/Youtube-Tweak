@@ -60,13 +60,16 @@ export const useInfiniteScrollBlocker = () => {
 
   // Simulates an infinite scroll trigger when the user clicks the button
   const handleLoadMore = () => {
+    console.log("handleLoadMore BEFORE isLoading")
     if (isLoading) return
-    // console.log("handleLoadMore")
+    console.log("handleLoadMore AFTER isLoading")
     setIsLoading(true)
+    console.log("handleLoadMore BEFORE triggerDateProcessor 🤷🏻‍♂️")
     triggerDateProcessor()
-
+    console.log("handleLoadMore AFTER triggerDateProcessor 🤷🏻‍♂️")
     // until we load the new videos and we'll turn it on again
     stopObserver()
+    console.log("handleLoadMore AFTER stopObserver")
 
     // Reveal the loader so YouTube's IntersectionObserver can detect it
     const continuationItem = document.querySelector(
@@ -79,12 +82,17 @@ export const useInfiniteScrollBlocker = () => {
 
     loadingObserverRef.current = new MutationObserver(
       (mutations, observerInstance) => {
-        const newVideosCount: number = document.querySelectorAll(
-          "ytd-rich-item-renderer:not([data-date-processed])"
-        ).length
+        // here:
+        const newVideos = Array.from(
+          document.querySelectorAll(
+            "ytd-rich-item-renderer:not([data-date-processed])"
+          )
+        ).filter((card) =>
+          card.querySelector("a.ytLockupMetadataViewModelTitle")
+        )
 
         // as soon as, the now videos has been loaded
-        if (newVideosCount) {
+        if (newVideos.length) {
           observerInstance.disconnect() // so, we don't need this observer
           loadingObserverRef.current = null
           disableInfiniteScrollObserver()

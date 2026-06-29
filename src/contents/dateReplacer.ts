@@ -103,9 +103,15 @@ export async function processVideosDates() {
 export function triggerDateProcessor() {
   const observer = new MutationObserver((mutations, observerInstance) => {
     // Select only new cards that have not been processed yet
-    const cards = document.querySelectorAll(
-      "ytd-rich-item-renderer:not([data-date-processed])"
-    )
+    console.log("INSIDE triggerDateProcessor -- BEFORE doc.qu")
+    const cards = Array.from(
+      document.querySelectorAll(
+        "ytd-rich-item-renderer:not([data-date-processed])"
+      )
+    ).filter((card) => card.querySelector("a.ytLockupMetadataViewModelTitle"))
+
+    console.log("INSIDE triggerDateProcessor -- AFTER doc.qu")
+    console.log("card Length", cards.length)
 
     if (cards.length) {
       window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
