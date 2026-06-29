@@ -47,7 +47,7 @@ export async function processVideoCards() {
     ) as HTMLAnchorElement | null
 
     const spans = htmlCard.querySelector(
-      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label].ytAttributedStringHost.ytContentMetadataViewModelMetadataText.ytAttributedStringWhiteSpacePreWrap.ytAttributedStringLinkInheritColor"
+      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
     )
     const dateSpan = spans as HTMLSpanElement | null
 
@@ -101,7 +101,7 @@ export function triggerDateProcessor() {
     if (cards.length) {
       window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
       // Execute the video processing function in parallel
-      processVideoCards()
+      await processVideoCards()
       // 🎯 Disconnect immediately after finding new cards so it doesn't run forever
       observerInstance.disconnect() // We must disconnect observer to protect CPU memory.
     }
