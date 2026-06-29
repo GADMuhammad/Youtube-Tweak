@@ -10,7 +10,7 @@ export const useInfiniteScrollBlocker = () => {
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
-  const { loading, loadMore } = loadingButton[currentLang]
+  const { loadingText, loadMoreText } = loadingButton[currentLang]
 
   const disableInfiniteScroll = () => {
     const continuationItem = document.querySelector(
@@ -103,5 +103,5 @@ export const useInfiniteScrollBlocker = () => {
       subtree: true
     })
   }
-  return { isLoading, loading, loadMore, handleLoadMore }
+  return { isLoading, loadingText, loadMoreText, handleLoadMore }
 }

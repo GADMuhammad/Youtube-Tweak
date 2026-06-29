@@ -20,8 +20,6 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
       /<meta itemprop="datePublished" content="([^"]+)">/
     )
 
-    // console.log(match)
-    // console.log(match?.[1])
     // return match?.[1] ?? null
 
     if (match) return match // Returns clean ISO string (e.g., 2026-06-24T13:00:04.000Z)
@@ -35,7 +33,7 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
   }
 }
 
-async function processVideoCards() {
+export async function processVideoCards() {
   const cards = document.querySelectorAll<HTMLElement>(
     "ytd-rich-item-renderer:not([data-date-processed])"
   )

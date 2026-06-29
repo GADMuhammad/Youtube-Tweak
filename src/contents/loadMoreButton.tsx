@@ -26,7 +26,7 @@ export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
 export const getMountPoint = (anchor: HTMLElement) => anchor
 
 const PlasmoInlineButton = () => {
-  const { isLoading, loading, loadMore, handleLoadMore } =
+  const { isLoading, loadingText, loadMoreText, handleLoadMore } =
     useInfiniteScrollBlocker()
 
   return (
@@ -35,7 +35,7 @@ const PlasmoInlineButton = () => {
         className={`custom-trigger-btn ${isLoading ? "loading" : ""}`}
         onClick={handleLoadMore}
         disabled={isLoading}>
-        {isLoading ? loading : loadMore}
+        {isLoading ? loadingText : loadMoreText}
       </button>
     </div>
   )

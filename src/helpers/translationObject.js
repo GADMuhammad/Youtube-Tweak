@@ -1,11 +1,11 @@
 export const loadingButton = {
   en: {
-    loading: "Loading New Videos...",
-    loadMore: "Load More Videos"
+    loadingText: "Loading New Videos...",
+    loadMoreText: "Load More Videos"
   },
   ar: {
-    loading: "جاري تحميل فيديوهات جديدة...",
-    loadMore: "تحميل المزيد من الفيديوهات"
+    loadingText: "جاري تحميل فيديوهات جديدة...",
+    loadMoreText: "تحميل المزيد من الفيديوهات"
   }
 }
 
