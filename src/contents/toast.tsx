@@ -35,7 +35,6 @@ export default function toast() {
   //   }, [])
 
   useEffect(() => {
-    // دالة بتشتغل أول ما الإشارة توصل من المتصفح
     const handleSortingSignal = () => {
       toaster.promise(processVideoCards, {
         loading: "جاري إعادة ترتيب الفيديوهات حسب التاريخ...",
@@ -44,10 +43,8 @@ export default function toast() {
       })
     }
 
-    // بنقول للمتصفح: اسمع الإشارة دي أول ما تتبعت
     window.addEventListener("youtube-date-sorting-started", handleSortingSignal)
 
-    // تنظيف المستمع لما المكون يقفل لسلامة الأداء
     return () => {
       window.removeEventListener(
         "youtube-date-sorting-started",
