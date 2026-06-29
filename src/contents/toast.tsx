@@ -4,7 +4,7 @@ import type { PlasmoCSConfig } from "plasmo"
 import { useEffect } from "react"
 import { toast as toaster, Toaster } from "sonner"
 
-import { processVideoCards } from "./dateReplacer"
+import { processVideosDates } from "./dateReplacer"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions*"]
@@ -36,7 +36,7 @@ export default function toast() {
 
   useEffect(() => {
     const handleSortingSignal = () => {
-      toaster.promise(processVideoCards, {
+      toaster.promise(processVideosDates, {
         loading: "جاري إعادة ترتيب الفيديوهات حسب التاريخ...",
         success: "تم ترتيب صفحة الاشتراكات بنجاح!",
         error: "عذراً، حدث خطأ أثناء الترتيب."

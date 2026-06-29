@@ -9,7 +9,7 @@ export const config: PlasmoCSConfig = {
 }
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
-async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
+async function fetchVideoExactISO(videoId: string): Promise<string> {
   try {
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`)
     const text = await response.text()
@@ -19,9 +19,9 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
       /<meta itemprop="datePublished" content="([^"]+)">/
     )
 
-    // return match?.[1] ?? null
+    return match?.[1] ?? null
 
-    if (match) return match // Returns clean ISO string (e.g., 2026-06-24T13:00:04.000Z)
+    // if (match) return match // Returns clean ISO string (e.g., 2026-06-24T13:00:04.000Z)
     return null
   } catch (e) {
     console.error(
@@ -32,13 +32,13 @@ async function fetchVideoExactISO(videoId: string): Promise<RegExpMatchArray> {
   }
 }
 
-export async function processVideoCards() {
+export async function processVideosDates() {
   const cards = document.querySelectorAll(
     "ytd-rich-item-renderer:not([data-date-processed])"
   )
   if (!cards.length) return
 
-  const cardsArray = Array.from(cards)
+  const cardsArray = Array.from(cards).slice(0, 6)
   const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
 
@@ -51,15 +51,17 @@ export async function processVideoCards() {
     )
     const dateSpan = spans as HTMLSpanElement | null
 
-    console.log("1")
+    console.log("INSIDE promises")
+    console.log(anchor, dateSpan)
     if (anchor && dateSpan) {
-      console.log("2")
       const href = anchor.getAttribute("href") || ""
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
+      console.log("INSIDE &if")
+      console.log(videoId)
 
       if (videoId) {
-        const cachedISO = await storage.get<RegExpMatchArray>(videoId)
+        const cachedISO = await storage.get<string>(videoId)
         let exactDateISO = cachedISO
 
         if (!cachedISO) {
@@ -68,9 +70,7 @@ export async function processVideoCards() {
         }
 
         if (exactDateISO) {
-          const videoDate = new Date(
-            exactDateISO[0].match(/content="([^"]+)"/)[1]
-          )
+          const videoDate = new Date(exactDateISO)
           const isArabic = document.documentElement.lang?.startsWith("ar")
           const formattedDate = videoDate.toLocaleDateString(
             isArabic ? "ar-EG" : "en-UK",
@@ -101,9 +101,9 @@ export function triggerDateProcessor() {
     if (cards.length) {
       window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
       // Execute the video processing function in parallel
-      await processVideoCards()
+      processVideosDates()
       // 🎯 Disconnect immediately after finding new cards so it doesn't run forever
-      observerInstance.disconnect() // We must disconnect observer to protect CPU memory.
+      observerInstance.disconnect()
     }
   })
 
@@ -113,6 +113,6 @@ export function triggerDateProcessor() {
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 
 window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
-processVideoCards().then(() => {
+processVideosDates().then(() => {
   triggerDateProcessor()
 })
