@@ -78,18 +78,18 @@ export const useInfiniteScrollBlocker = () => {
     }
 
     // the count of the current videos .. to compare it with the count of the total new number with the add videos (if it's existed)
-    const currentVideoCount = document.querySelectorAll(
-      "ytd-rich-item-renderer"
-    ).length
+    // const currentVideoCount = document.querySelectorAll(
+    //   "ytd-rich-item-renderer"
+    // ).length
 
     loadingObserverRef.current = new MutationObserver(
       (mutations, observerInstance) => {
-        const newVideoCount: number = document.querySelectorAll(
-          "ytd-rich-item-renderer"
+        const newVideosCount: number = document.querySelectorAll(
+          "ytd-rich-item-renderer:not([data-date-processed])"
         ).length
 
         // as soon as, the now videos has been loaded
-        if (newVideoCount > currentVideoCount) {
+        if (newVideosCount) {
           observerInstance.disconnect() // so, we don't need this observer
           loadingObserverRef.current = null
           disableInfiniteScrollObserver()

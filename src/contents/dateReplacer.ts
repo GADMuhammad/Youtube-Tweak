@@ -38,7 +38,7 @@ export async function processVideosDates() {
   )
   if (!cards.length) return
 
-  const cardsArray = Array.from(cards).slice(0, 6)
+  const cardsArray = Array.from(cards)
   const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
 
