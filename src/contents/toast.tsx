@@ -14,6 +14,10 @@ export const getStyle = (): HTMLStyleElement => {
   return styleElement
 }
 
+// const cards = document.querySelectorAll(
+//   "ytd-rich-item-renderer:not([data-date-processed])"
+// )
+
 export default function toast() {
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -23,5 +27,22 @@ export default function toast() {
     return () => clearTimeout(timer)
   }, [])
 
-  return <Toaster position="bottom-right" theme="dark" />
+  return (
+    <Toaster
+      position="top-center"
+      theme="system"
+      richColors
+      toastOptions={{
+        style: {
+          padding: "14px 16px",
+          borderRadius: "10px",
+          fontSize: "14px",
+          fontFamily: "system-ui, sans-serif",
+          minWidth: "300px",
+          zIndex: "9999"
+        },
+        className: "my-custom-toast-layout"
+      }}
+    />
+  )
 }
