@@ -38,7 +38,10 @@ export async function processVideosDates() {
   )
   if (!cards.length) return
 
-  const cardsArray = Array.from(cards)
+  const cardsArray = Array.from(cards).filter((card) =>
+    card.querySelector("a.ytLockupMetadataViewModelTitle")
+  )
+
   const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
 
@@ -46,19 +49,25 @@ export async function processVideosDates() {
       "a.ytLockupMetadataViewModelTitle"
     ) as HTMLAnchorElement | null
 
-    const spans = htmlCard.querySelector(
+    const span = htmlCard.querySelector(
       "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
     )
-    const dateSpan = spans as HTMLSpanElement | null
+    const dateSpan = span as HTMLSpanElement | null
 
-    console.log("INSIDE promises")
-    console.log(anchor, dateSpan)
+    const videoName = htmlCard.querySelector(
+      "span[role='text'].ytAttributedStringHost.ytAttributedStringWhiteSpacePreWrap"
+    ) as HTMLSpanElement
+    console.log(videoName)
+    console.log(anchor.getAttribute("href"))
+
+    // console.log("INSIDE promises")
+    // console.log(anchor, dateSpan)
     if (anchor && dateSpan) {
       const href = anchor.getAttribute("href") || ""
       const urlParams = new URLSearchParams(href.split("?")[1])
       const videoId = urlParams.get("v")
-      console.log("INSIDE &if")
-      console.log(videoId)
+      // console.log("INSIDE &if")
+      // console.log(videoId)
 
       if (videoId) {
         const cachedISO = await storage.get<string>(videoId)

@@ -6,7 +6,7 @@ import { loadingButton } from "~helpers/translationObject"
 export const useInfiniteScrollBlocker = () => {
   const [isLoading, setIsLoading] = useState(false) // are we loading new videos now??
   const infiniteScrollObserverRef = useRef<MutationObserver | null>(null) // the observer which hide infinite scroll element
-  const loadingObserverRef = useRef<MutationObserver | null>(null) // a temp observer, we turn it only when we need to load more videos. when click (load more) button
+  const loadingObserverRef = useRef<MutationObserver | null>(null) // a temp observer, we use it only when we need to load more videos. when click (load more) button
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
@@ -61,7 +61,7 @@ export const useInfiniteScrollBlocker = () => {
   // Simulates an infinite scroll trigger when the user clicks the button
   const handleLoadMore = () => {
     if (isLoading) return
-    console.log("handleLoadMore")
+    // console.log("handleLoadMore")
     setIsLoading(true)
     triggerDateProcessor()
 
