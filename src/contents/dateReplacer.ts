@@ -65,7 +65,6 @@ async function processVideoCards() {
       const videoId = urlParams.get("v")
 
       if (videoId) {
-        htmlCard.dataset.dateProcessed = "true"
         const cachedISO = await storage.get<RegExpMatchArray>(videoId)
         let exactDateISO = cachedISO
 
@@ -82,6 +81,7 @@ async function processVideoCards() {
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
+      htmlCard.dataset.dateProcessed = "true"
     }
   })
   await Promise.all(promises)
@@ -107,4 +107,6 @@ export function triggerDateProcessor() {
 }
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
-triggerDateProcessor()
+processVideoCards().then(() => {
+  triggerDateProcessor()
+})
