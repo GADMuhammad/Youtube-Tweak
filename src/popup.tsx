@@ -1,13 +1,11 @@
-import { CountButton } from "~features/count-button"
+// import "~style.scss"
 
-import "~style.scss"
+// function IndexPopup() {
+//   return (
+//     <div className="plasmo-flex plasmo-items-center plasmo-justify-center plasmo-h-16 plasmo-w-40">
+//       <CountButton />
+//     </div>
+//   )
+// }
 
-function IndexPopup() {
-  return (
-    <div className="plasmo-flex plasmo-items-center plasmo-justify-center plasmo-h-16 plasmo-w-40">
-      <CountButton />
-    </div>
-  )
-}
-
-export default IndexPopup
+// export default IndexPopup
