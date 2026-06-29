@@ -62,39 +62,39 @@ export async function processVideosDates() {
 
     // console.log("INSIDE promises")
     // console.log(anchor, dateSpan)
-    if (anchor && dateSpan) {
-      const href = anchor.getAttribute("href") || ""
-      const urlParams = new URLSearchParams(href.split("?")[1])
-      const videoId = urlParams.get("v")
-      // console.log("INSIDE &if")
-      // console.log(videoId)
+    // if (dateSpan) {
+    const href = anchor.getAttribute("href") || ""
+    const urlParams = new URLSearchParams(href.split("?")[1])
+    const videoId = urlParams.get("v")
+    // console.log("INSIDE &if")
+    // console.log(videoId)
 
-      if (videoId) {
-        const cachedISO = await storage.get<string>(videoId)
-        let exactDateISO = cachedISO
+    if (videoId) {
+      const cachedISO = await storage.get<string>(videoId)
+      let exactDateISO = cachedISO
 
-        if (!cachedISO) {
-          exactDateISO = await fetchVideoExactISO(videoId)
-          if (exactDateISO) storage.set(videoId, exactDateISO)
-        }
-
-        if (exactDateISO) {
-          const videoDate = new Date(exactDateISO)
-          const isArabic = document.documentElement.lang?.startsWith("ar")
-          const formattedDate = videoDate.toLocaleDateString(
-            isArabic ? "ar-EG" : "en-UK",
-            {
-              weekday: "short",
-              day: "numeric",
-              month: "short"
-            }
-          )
-
-          dateSpan.innerText = formattedDate
-        }
+      if (!cachedISO) {
+        exactDateISO = await fetchVideoExactISO(videoId)
+        if (exactDateISO) storage.set(videoId, exactDateISO)
       }
-      htmlCard.setAttribute("data-date-processed", "true")
+
+      if (exactDateISO) {
+        const videoDate = new Date(exactDateISO)
+        const isArabic = document.documentElement.lang?.startsWith("ar")
+        const formattedDate = videoDate.toLocaleDateString(
+          isArabic ? "ar-EG" : "en-UK",
+          {
+            weekday: "short",
+            day: "numeric",
+            month: "short"
+          }
+        )
+
+        dateSpan.innerText = formattedDate
+      }
     }
+    htmlCard.setAttribute("data-date-processed", "true")
+    // }
   })
   await Promise.all(promises)
 }
