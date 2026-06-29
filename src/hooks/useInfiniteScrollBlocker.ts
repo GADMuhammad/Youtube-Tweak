@@ -77,11 +77,6 @@ export const useInfiniteScrollBlocker = () => {
       continuationItem.style.display = "block" // bring the loader back again with (display: block)
     }
 
-    // the count of the current videos .. to compare it with the count of the total new number with the add videos (if it's existed)
-    // const currentVideoCount = document.querySelectorAll(
-    //   "ytd-rich-item-renderer"
-    // ).length
-
     loadingObserverRef.current = new MutationObserver(
       (mutations, observerInstance) => {
         const newVideosCount: number = document.querySelectorAll(
