@@ -1,6 +1,10 @@
 import type { PlasmoCSConfig } from "plasmo"
 
+import "./../style.scss"
+
 import { Storage } from "@plasmohq/storage"
+
+import { organizeGridSections } from "./gridOrganizer"
 
 const storage = new Storage({ area: "local" })
 
@@ -12,7 +16,8 @@ const isArabic = document.documentElement.lang?.startsWith("ar")
 const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
   weekday: "short",
   day: "numeric",
-  month: "short"
+  month: "short",
+  timeZone: "UTC"
 })
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
@@ -83,9 +88,8 @@ export async function processVideosDates() {
         "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
       ) as HTMLSpanElement
 
-      const href = anchor.getAttribute("href") || ""
-      const urlParams = new URLSearchParams(href.split("?")[1])
-      const videoId = urlParams.get("v")
+      const url = new URL(anchor.href)
+      const videoId = url.searchParams.get("v")
 
       if (videoId) {
         const cachedISO = await storage.get<string>(videoId)
@@ -104,6 +108,7 @@ export async function processVideosDates() {
       card.dataset.dateProcessed = "true"
     })
     await Promise.all(promises)
+    await organizeGridSections(batch)
   }
 }
 

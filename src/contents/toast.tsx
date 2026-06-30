@@ -50,7 +50,7 @@ export default function toast() {
           fontSize: "16px",
           fontFamily:
             'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          minWidth: "330px",
+          width: "fit-content",
           gap: "10px",
           whiteSpace: "nowrap"
         }
