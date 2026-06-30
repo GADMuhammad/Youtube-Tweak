@@ -7,15 +7,13 @@ const storage = new Storage({ area: "local" })
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions"]
 }
+
 const isArabic = document.documentElement.lang?.startsWith("ar")
-const formatter = new Intl.DateTimeFormat(
-  isArabic ? "ar-SA-u-ca-islamic" : "en-UK-u-ca-islamic",
-  {
-    weekday: "short",
-    day: "numeric",
-    month: "short"
-  }
-)
+const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
+  weekday: "short",
+  day: "numeric",
+  month: "short"
+})
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
 async function fetchVideoExactISO(videoId: string | null): Promise<string> {
@@ -28,9 +26,7 @@ async function fetchVideoExactISO(videoId: string | null): Promise<string> {
       /<meta itemprop="datePublished" content="([^"]+)">/
     )
 
-    return match?.[1] ?? null
-
-    // if (match) return match // Returns clean ISO string (e.g., 2026-06-24T13:00:04.000Z)
+    if (match) return match?.[1] ?? null
     return null
   } catch (e) {
     console.error(
