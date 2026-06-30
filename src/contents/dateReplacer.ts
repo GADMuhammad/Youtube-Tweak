@@ -82,7 +82,7 @@ export async function processVideosDates() {
         const videoDate = new Date(exactDateISO)
         const isArabic = document.documentElement.lang?.startsWith("ar")
         const formattedDate = videoDate.toLocaleDateString(
-          isArabic ? "ar-EG" : "en-UK",
+          isArabic ? "ar-SA-u-ca-islamic" : "en-US-u-ca-islamic",
           {
             weekday: "short",
             day: "numeric",
