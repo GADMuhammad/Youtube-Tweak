@@ -31,16 +31,24 @@ async function fetchVideoExactISO(videoId: string): Promise<string> {
     return null
   }
 }
-
+const isArabic = document.documentElement.lang?.startsWith("ar")
+const formatter = new Intl.DateTimeFormat(
+  isArabic ? "ar-SA-u-ca-islamic" : "en-UK-u-ca-islamic",
+  {
+    weekday: "short",
+    day: "numeric",
+    month: "short"
+  }
+)
 export async function processVideosDates() {
   const cards = document.querySelectorAll(
     "ytd-rich-item-renderer:not([data-date-processed])"
   )
-  if (!cards.length) return
 
   const cardsArray = Array.from(cards).filter((card) =>
     card.querySelector("a.ytLockupMetadataViewModelTitle")
   )
+  if (!cardsArray.length) return
 
   const promises = cardsArray.map(async (card) => {
     const htmlCard = card as HTMLElement
@@ -49,25 +57,13 @@ export async function processVideosDates() {
       "a.ytLockupMetadataViewModelTitle"
     ) as HTMLAnchorElement | null
 
-    const span = htmlCard.querySelector(
+    const dateSpan = htmlCard.querySelector(
       "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
-    )
-    const dateSpan = span as HTMLSpanElement | null
-
-    const videoName = htmlCard.querySelector(
-      "span[role='text'].ytAttributedStringHost.ytAttributedStringWhiteSpacePreWrap"
     ) as HTMLSpanElement
-    console.log(videoName)
-    console.log(anchor.getAttribute("href"))
 
-    // console.log("INSIDE promises")
-    // console.log(anchor, dateSpan)
-    // if (dateSpan) {
     const href = anchor.getAttribute("href") || ""
     const urlParams = new URLSearchParams(href.split("?")[1])
     const videoId = urlParams.get("v")
-    // console.log("INSIDE &if")
-    // console.log(videoId)
 
     if (videoId) {
       const cachedISO = await storage.get<string>(videoId)
@@ -80,21 +76,10 @@ export async function processVideosDates() {
 
       if (exactDateISO) {
         const videoDate = new Date(exactDateISO)
-        const isArabic = document.documentElement.lang?.startsWith("ar")
-        const formattedDate = videoDate.toLocaleDateString(
-          isArabic ? "ar-SA-u-ca-islamic" : "en-US-u-ca-islamic",
-          {
-            weekday: "short",
-            day: "numeric",
-            month: "short"
-          }
-        )
-
-        dateSpan.innerText = formattedDate
+        dateSpan.innerText = formatter.format(videoDate)
       }
     }
-    htmlCard.setAttribute("data-date-processed", "true")
-    // }
+    htmlCard.dataset.dateProcessed = "true"
   })
   await Promise.all(promises)
 }
@@ -103,15 +88,11 @@ export async function processVideosDates() {
 export function triggerDateProcessor() {
   const observer = new MutationObserver((mutations, observerInstance) => {
     // Select only new cards that have not been processed yet
-    console.log("INSIDE triggerDateProcessor -- BEFORE doc.qu")
     const cards = Array.from(
       document.querySelectorAll(
         "ytd-rich-item-renderer:not([data-date-processed])"
       )
     ).filter((card) => card.querySelector("a.ytLockupMetadataViewModelTitle"))
-
-    console.log("INSIDE triggerDateProcessor -- AFTER doc.qu")
-    console.log("card Length", cards.length)
 
     if (cards.length) {
       window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))

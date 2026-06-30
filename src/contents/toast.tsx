@@ -6,6 +6,8 @@ import { toast as toaster, Toaster } from "sonner"
 
 import { processVideosDates } from "./dateReplacer"
 
+// import "sonner/dist/styles.css"
+
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions*"]
 }
@@ -17,23 +19,6 @@ export const getStyle = (): HTMLStyleElement => {
 }
 
 export default function toast() {
-  //   useEffect(() => {
-  //     const myPromise = () =>
-  //       new Promise((resolve) =>
-  //         setTimeout(() => resolve({ success: true }), 2000)
-  //       )
-
-  //     const timer = setTimeout(() => {
-  //       toaster.promise(myPromise, {
-  //         loading: "جاري جلب الفيديوهات وترتيبها...",
-  //         success: "تم ترتيب الاشتراكات بنجاح!",
-  //         error: "عذراً، تعذر الترتيب الآن."
-  //       })
-  //     }, 400)
-
-  //     return () => clearTimeout(timer)
-  //   }, [])
-
   useEffect(() => {
     const handleSortingSignal = () => {
       toaster.promise(processVideosDates, {
