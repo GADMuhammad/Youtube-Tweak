@@ -13,17 +13,20 @@ export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
     if (latestTextH2) latestTextH2.style.display = "none"
 
     // targeting the outside host element
-    const plasmoCsui = document.querySelector("plasmo-csui")
+    const allPlasmoCsuis = document.querySelectorAll("plasmo-csui")
 
-    if (plasmoCsui && plasmoCsui.shadowRoot) {
-      const shadowContainer = plasmoCsui.shadowRoot.querySelector(
-        "div#plasmo-shadow-container"
-      ) as HTMLElement
+    allPlasmoCsuis.forEach((plasmoCsui) => {
+      if (plasmoCsui && plasmoCsui.shadowRoot) {
+        const shadowContainer = plasmoCsui.shadowRoot.querySelector(
+          "div#plasmo-shadow-container"
+        ) as HTMLElement
 
-      if (shadowContainer) {
-        shadowContainer.style.setProperty("z-index", "10", "important")
+        if (shadowContainer) {
+          // بنصفر الـ z-index لكل المكونات علشان نحمي الـ Layout بتاع يوتيوب
+          shadowContainer.style.setProperty("z-index", "10", "important")
+        }
       }
-    }
+    })
 
     // handle if youtube theme is different than system theme
     const hasDarkAttribute = document.documentElement.hasAttribute("dark")
