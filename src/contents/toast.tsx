@@ -4,9 +4,9 @@ import type { PlasmoCSConfig } from "plasmo"
 import { useEffect } from "react"
 import { toast as toaster, Toaster } from "sonner"
 
-import { processVideosDates } from "./dateReplacer"
+import { toastText } from "~helpers/translationObject"
 
-// import "sonner/dist/styles.css"
+import { processVideosDates } from "./dateReplacer"
 
 export const config: PlasmoCSConfig = {
   matches: ["https://www.youtube.com/feed/subscriptions*"]
@@ -17,15 +17,14 @@ export const getStyle = (): HTMLStyleElement => {
   styleElement.textContent = `${cssText}\n${sonnerStyles}`
   return styleElement
 }
+const isArabic = document.documentElement.lang?.startsWith("ar")
+const currentLanguage = isArabic ? "ar" : "en"
+const { loading, success, error } = toastText[currentLanguage]
 
 export default function toast() {
   useEffect(() => {
     const handleSortingSignal = () => {
-      toaster.promise(processVideosDates, {
-        loading: "جاري إعادة ترتيب الفيديوهات حسب التاريخ...",
-        success: "تم ترتيب صفحة الاشتراكات بنجاح!",
-        error: "عذراً، حدث خطأ أثناء الترتيب."
-      })
+      toaster.promise(processVideosDates, { loading, success, error })
     }
 
     window.addEventListener("youtube-date-sorting-started", handleSortingSignal)
@@ -40,10 +39,10 @@ export default function toast() {
 
   return (
     <Toaster
-      position="bottom-right"
+      position={isArabic ? "bottom-right" : "bottom-left"}
       theme="system"
       richColors
-      dir="rtl"
+      dir={isArabic ? "rtl" : "ltr"}
       toastOptions={{
         style: {
           padding: "14px 16px",
@@ -51,8 +50,9 @@ export default function toast() {
           fontSize: "16px",
           fontFamily:
             'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-          minWidth: "320px",
-          gap: "10px"
+          minWidth: "330px",
+          gap: "10px",
+          whiteSpace: "nowrap"
         }
       }}
     />

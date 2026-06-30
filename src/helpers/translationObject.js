@@ -19,3 +19,16 @@ export const filterTabsText = {
     shorts: "الفيديوهات القصيرة"
   }
 }
+
+export const toastText = {
+  en: {
+    loading: "Sorting videos by date...",
+    success: "Subscriptions page sorted successfully!",
+    error: "Sorry, an error occurred while sorting."
+  },
+  ar: {
+    loading: "...جاري إعادة ترتيب الفيديوهات حسب التاريخ",
+    success: "!تم ترتيب صفحة الاشتراكات بنجاح",
+    error: ".عذراً، حدث خطأ أثناء الترتيب"
+  }
+}
