@@ -33,19 +33,5 @@ export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
     if (hasDarkAttribute !== isDarkMode) setIsDarkMode(hasDarkAttribute)
   }, [])
 
-  useEffect(() => {
-    const hideShorts = () => {
-      const shortsSection = document.querySelector(
-        "ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer, ytd-rich-section-renderer:has(#rich-shelf-header-container)"
-      ) as HTMLElement
-
-      if (shortsSection) {
-        shortsSection.style.setProperty("display", "none", "important")
-      }
-    }
-
-    hideShorts()
-  }, [activeTab])
-
   return { isDarkMode }
 }

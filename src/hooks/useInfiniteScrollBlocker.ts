@@ -4,24 +4,50 @@ import { triggerDateProcessor } from "~contents/dateReplacer"
 import { loadingButton } from "~helpers/translationObject"
 
 export const useInfiniteScrollBlocker = () => {
-  const [isLoading, setIsLoading] = useState(false) // are we loading new videos now??
-  const infiniteScrollObserverRef = useRef<MutationObserver | null>(null) // the observer which hide infinite scroll element
-  const loadingObserverRef = useRef<MutationObserver | null>(null) // a temp observer, we use it only when we need to load more videos. when click (load more) button
+  const [isLoading, setIsLoading] = useState(false)
+  const infiniteScrollObserverRef = useRef<MutationObserver | null>(null)
+  const loadingObserverRef = useRef<MutationObserver | null>(null)
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
   const { loadingText, loadMoreText } = loadingButton[currentLang]
 
+  // 🎯 دالة مساعدة لمعرفة هل المستخدم في صفحة البحث حالياً
+  const isSearchPage = () => window.location.pathname === "/results"
+
+  // 🎯 تحديد العنصر المسبب للـ infinite scroll بناءً على الصفحة
+  const getContinuationItem = (): HTMLElement | null => {
+    if (isSearchPage()) {
+      return document.querySelector("ytd-search ytd-continuation-item-renderer")
+    } else {
+      return document.querySelector(
+        "ytd-rich-grid-renderer ytd-continuation-item-renderer"
+      )
+    }
+  }
+
+  // 🎯 تحديد الـ Selector الخاص بالفيديوهات الجديدة بناءً على الصفحة
+  const getNewVideosSelector = () => {
+    if (isSearchPage()) {
+      return {
+        item: "ytd-video-renderer:not([data-date-processed])",
+        title: "a#video-title"
+      }
+    } else {
+      return {
+        item: "ytd-rich-item-renderer:not([data-date-processed])",
+        title: "a.ytLockupMetadataViewModelTitle"
+      }
+    }
+  }
+
   const disableInfiniteScroll = () => {
-    const continuationItem = document.querySelector(
-      "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
-    ) as HTMLElement
+    const continuationItem = getContinuationItem()
     if (continuationItem && continuationItem.style.display !== "none") {
       continuationItem.style.display = "none"
     }
   }
 
-  // Turn on (MutationObserver) to disable infinite scroll
   const disableInfiniteScrollObserver = () => {
     if (infiniteScrollObserverRef.current) return
 
@@ -37,7 +63,6 @@ export const useInfiniteScrollBlocker = () => {
     })
   }
 
-  // to stop the observer temporarily until we load new videos
   const stopObserver = () => {
     if (infiniteScrollObserverRef.current) {
       infiniteScrollObserverRef.current.disconnect()
@@ -46,7 +71,6 @@ export const useInfiniteScrollBlocker = () => {
   }
 
   useEffect(() => {
-    // Initialize the observer when the page loads
     disableInfiniteScrollObserver()
 
     return () => {
@@ -58,42 +82,28 @@ export const useInfiniteScrollBlocker = () => {
     }
   }, [])
 
-  // Simulates an infinite scroll trigger when the user clicks the button
   const handleLoadMore = () => {
-    console.log("handleLoadMore BEFORE isLoading")
     if (isLoading) return
-    console.log("handleLoadMore AFTER isLoading")
     setIsLoading(true)
-    console.log("handleLoadMore BEFORE triggerDateProcessor 🤷🏻‍♂️")
+
     triggerDateProcessor()
-    console.log("handleLoadMore AFTER triggerDateProcessor 🤷🏻‍♂️")
-    // until we load the new videos and we'll turn it on again
     stopObserver()
-    console.log("handleLoadMore AFTER stopObserver")
 
-    // Reveal the loader so YouTube's IntersectionObserver can detect it
-    const continuationItem = document.querySelector(
-      "ytd-rich-grid-renderer ytd-continuation-item-renderer.style-scope.ytd-rich-grid-renderer"
-    ) as HTMLElement
-
+    const continuationItem = getContinuationItem()
     if (continuationItem) {
-      continuationItem.style.display = "block" // bring the loader back again with (display: block)
+      continuationItem.style.display = "block"
     }
+
+    const selectors = getNewVideosSelector()
 
     loadingObserverRef.current = new MutationObserver(
       (mutations, observerInstance) => {
-        // here:
         const newVideos = Array.from(
-          document.querySelectorAll(
-            "ytd-rich-item-renderer:not([data-date-processed])"
-          )
-        ).filter((card) =>
-          card.querySelector("a.ytLockupMetadataViewModelTitle")
-        )
+          document.querySelectorAll(selectors.item)
+        ).filter((card) => card.querySelector(selectors.title))
 
-        // as soon as, the now videos has been loaded
         if (newVideos.length) {
-          observerInstance.disconnect() // so, we don't need this observer
+          observerInstance.disconnect()
           loadingObserverRef.current = null
           disableInfiniteScrollObserver()
           setIsLoading(false)
@@ -106,5 +116,6 @@ export const useInfiniteScrollBlocker = () => {
       subtree: true
     })
   }
+
   return { isLoading, loadingText, loadMoreText, handleLoadMore }
 }

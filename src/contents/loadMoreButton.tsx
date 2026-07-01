@@ -4,10 +4,7 @@ import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
 export const config: PlasmoCSConfig = {
-  matches: [
-    "https://www.youtube.com/feed/subscriptions*",
-    "https://www.youtube.com/feed/subscriptions/shorts*"
-  ]
+  matches: ["https://*.youtube.com/*"]
 }
 
 export const getStyle = (): HTMLStyleElement => {
@@ -16,10 +13,18 @@ export const getStyle = (): HTMLStyleElement => {
   return styleElement
 }
 
-// 🎯 Target YouTube's feed grid container to mount the button inline
 export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
-  // the container which contains the whole videos:
-  return document.querySelector("ytd-rich-grid-renderer")
+  // 1. صفحة البحث (Search Results)
+  const searchSection = document.querySelector(
+    "ytd-search ytd-section-list-renderer"
+  )
+  if (searchSection) return searchSection
+
+  // 2. الصفحة الرئيسية والاشتراكات وفيديوهات القنوات (الحاوية الكبيرة للـ Grid)
+  const mainGrid = document.querySelector("ytd-rich-grid-renderer")
+  if (mainGrid) return mainGrid
+
+  return null
 }
 
 // 🎯 Append the button at the end of the targeted container

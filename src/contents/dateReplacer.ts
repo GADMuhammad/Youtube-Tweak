@@ -4,8 +4,6 @@ import "./../style.scss"
 
 import { Storage } from "@plasmohq/storage"
 
-import { organizeGridSections } from "./gridOrganizer"
-
 const storage = new Storage({ area: "local" })
 
 export const config: PlasmoCSConfig = {
@@ -14,9 +12,10 @@ export const config: PlasmoCSConfig = {
 
 const isArabic = document.documentElement.lang?.startsWith("ar")
 const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
-  weekday: "short",
+  weekday: "long",
   day: "numeric",
-  month: "short"
+  month: "short",
+  year: "numeric"
 })
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
@@ -77,38 +76,37 @@ export async function processVideosDates() {
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
   const videoBatches = createBatches(cardsArray, 5)
 
-  for (const batch of videoBatches) {
-    const promises = batch.map(async (card) => {
-      const anchor = card.querySelector(
-        "a.ytLockupMetadataViewModelTitle"
-      ) as HTMLAnchorElement | null
+  // for (const batch of videoBatches) {
+  const promises = cardsArray.map(async (card) => {
+    const anchor = card.querySelector(
+      "a.ytLockupMetadataViewModelTitle"
+    ) as HTMLAnchorElement | null
 
-      const dateSpan = card.querySelector(
-        "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
-      ) as HTMLSpanElement
+    const dateSpan = card.querySelector(
+      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
+    ) as HTMLSpanElement
 
-      const url = new URL(anchor.href)
-      const videoId = url.searchParams.get("v")
+    const url = new URL(anchor.href)
+    const videoId = url.searchParams.get("v")
 
-      if (videoId) {
-        const cachedISO = await storage.get<string>(videoId)
-        let exactDateISO = cachedISO
+    if (videoId) {
+      const cachedISO = await storage.get<string>(videoId)
+      let exactDateISO = cachedISO
 
-        if (!cachedISO) {
-          exactDateISO = await fetchVideoExactISO(videoId)
-          if (exactDateISO) storage.set(videoId, exactDateISO)
-        }
-
-        if (exactDateISO) {
-          const videoDate = new Date(exactDateISO)
-          dateSpan.innerText = formatter.format(videoDate)
-        }
+      if (!cachedISO) {
+        exactDateISO = await fetchVideoExactISO(videoId)
+        if (exactDateISO) storage.set(videoId, exactDateISO)
       }
-      card.dataset.dateProcessed = "true"
-    })
-    await Promise.all(promises)
-  }
-  await organizeGridSections(cardsArray)
+
+      if (exactDateISO) {
+        const videoDate = new Date(exactDateISO)
+        dateSpan.innerText = formatter.format(videoDate)
+      }
+    }
+    card.dataset.dateProcessed = "true"
+  })
+  await Promise.all(promises)
+  // }
 }
 
 // 🌐 Function to start observation temporarily and disconnect automatically to save CPU performance

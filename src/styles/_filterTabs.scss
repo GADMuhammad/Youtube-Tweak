@@ -68,3 +68,9 @@
     }
   }
 }
+
+// hide shorts section:
+ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer,
+ytd-rich-section-renderer:has(#rich-shelf-header-container) {
+  display: none !important;
+}
