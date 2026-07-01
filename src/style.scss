@@ -3,51 +3,24 @@
 
 /* بيصَفّر المارجن من جهة البداية (الشمال في الإنجليزي، واليمين في العربي) */
 // ytd-rich-item-renderer[data-day-first="true"] {
-// grid-column-start: 1 !important;
-// width: 100% !important;
-// max-width: 100% !important;
-// -webkit-margin-start: 0 !important;
-// margin-inline-start: 0 !important;
-// &::before {
-//   content: "";
-//   display: block;
-//   width: 100%;
-//   // اختياري: لو حابب تسيب مسافة عمودية (Gap) بين الـ Sections وبعضها
-//   height: 24px;
-// }
-
-// تصفير المارجن والـ Alignment للكارت الأول في السطر
-
-// -webkit-margin-start: 0 !important;
-// margin-inline-start: 0 !important;
-
-// flex-basis: 100%;
-// width: 100rem;
-// -moz-column-break-before: row;
-// break-before: row;
-// opacity: 0.1;
+//   opacity: 0.25;
 // }
 
 // الكارت اللي بيبدأ يوم جديد وبنخليه يفرش السطر كله في الـ Flexbox
+
+// نلغي الـ CSS القديم
 ytd-rich-item-renderer[data-day-first="true"] {
-  flex-basis: 100% !important;
-  content-visibility: auto; /* حزام أمان للـ Rendering */
+  flex-basis: auto !important;
+  -webkit-margin-start: auto !important;
+  margin-inline-start: auto !important;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
 
-  // تصفير المحاذاة من جهة البداية (عربي وإنجليزي) عشان يلتصق بالحافة
-  -webkit-margin-start: 0 !important;
-  margin-inline-start: 0 !important;
-
-  margin-top: 14rem;
-  margin-bottom: 14rem;
-
-  // إجبار الـ Wrapper الداخلي للفيديو إنه يحافظ على حجمه الطبيعي اللي يوتيوب حاسبه
-  > ytd-rich-grid-media,
-  > div.ytd-rich-item-renderer {
-    max-width: calc(
-      100% / var(--ytd-rich-grid-items-per-row, 4) - var(
-          --ytd-rich-grid-item-margin,
-          24px
-        )
-    ) !important;
-  }
+// الكود الجديد
+ytd-rich-item-renderer[data-day-first="true"]::before {
+  content: "";
+  flex-basis: 100%;
+  width: 0;
+  height: 0;
 }

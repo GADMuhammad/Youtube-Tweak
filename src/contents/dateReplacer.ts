@@ -16,8 +16,7 @@ const isArabic = document.documentElement.lang?.startsWith("ar")
 const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
   weekday: "short",
   day: "numeric",
-  month: "short",
-  timeZone: "UTC"
+  month: "short"
 })
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
@@ -102,6 +101,7 @@ export async function processVideosDates() {
 
         if (exactDateISO) {
           const videoDate = new Date(exactDateISO)
+          console.log(exactDateISO)
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
