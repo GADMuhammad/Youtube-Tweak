@@ -1,26 +1,24 @@
 @use "styles/triggerButton";
 @use "styles/filterTabs";
 
-/* بيصَفّر المارجن من جهة البداية (الشمال في الإنجليزي، واليمين في العربي) */
-// ytd-rich-item-renderer[data-day-first="true"] {
-//   opacity: 0.25;
-// }
-
-// الكارت اللي بيبدأ يوم جديد وبنخليه يفرش السطر كله في الـ Flexbox
-
-// نلغي الـ CSS القديم
-ytd-rich-item-renderer[data-day-first="true"] {
-  flex-basis: auto !important;
-  -webkit-margin-start: auto !important;
-  margin-inline-start: auto !important;
-  margin-top: 0 !important;
-  margin-bottom: 0 !important;
+/* الكلاس الجديد للفاصل */
+.day-breaker {
+  flex-basis: 100% !important;
+  width: 100% !important;
+  height: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  pointer-events: none; /* عشان ما يلقطش كليكات ويوتيوب يعطل */
+  content-visibility: auto; /* حزام أمان للـ rendering */
 }
 
-// الكود الجديد
-ytd-rich-item-renderer[data-day-first="true"]::before {
-  content: "";
-  flex-basis: 100%;
-  width: 0;
-  height: 0;
+/* الكروت اللي بتيجي بعد الفاصل مباشرة: إجبار على البداية من الحافة وتصفير الستايل اللي يوتيوب بيحطه */
+.day-breaker + ytd-rich-item-renderer {
+  -webkit-margin-start: 0 !important;
+  margin-inline-start: 0 !important;
+}
+
+/* حل مشكلة الحافة في الـ Safari ومتصفحات قديمة */
+.day-breaker + ytd-rich-item-renderer {
+  clear: left; /* أو clear: right بناء على الاتجاه */
 }

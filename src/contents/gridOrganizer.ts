@@ -35,6 +35,9 @@ export async function organizeGridSections(batchCards: HTMLElement[]) {
       card.dataset["dayFirst"] = "true"
       globalLastDate = currentDate
     } else if (currentDate !== globalLastDate) {
+      const breaker = document.createElement("div")
+      breaker.className = "day-breaker"
+      card.parentNode?.insertBefore(breaker, card)
       // New day detected ⬅️ Break the row and align to the first column
       card.dataset["dayFirst"] = "true"
       globalLastDate = currentDate
