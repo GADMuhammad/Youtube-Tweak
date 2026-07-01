@@ -13,12 +13,9 @@
 }
 
 /* الكروت اللي بتيجي بعد الفاصل مباشرة: إجبار على البداية من الحافة وتصفير الستايل اللي يوتيوب بيحطه */
-.day-breaker + ytd-rich-item-renderer {
+// .day-breaker + ytd-rich-item-renderer {
+ytd-rich-item-renderer[data-day-first="true"] {
   -webkit-margin-start: 0 !important;
   margin-inline-start: 0 !important;
-}
-
-/* حل مشكلة الحافة في الـ Safari ومتصفحات قديمة */
-.day-breaker + ytd-rich-item-renderer {
-  clear: left; /* أو clear: right بناء على الاتجاه */
+  opacity: 0.4;
 }

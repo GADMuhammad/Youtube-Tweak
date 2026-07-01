@@ -101,15 +101,14 @@ export async function processVideosDates() {
 
         if (exactDateISO) {
           const videoDate = new Date(exactDateISO)
-          console.log(exactDateISO)
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
       card.dataset.dateProcessed = "true"
     })
     await Promise.all(promises)
-    await organizeGridSections(batch)
   }
+  await organizeGridSections(cardsArray)
 }
 
 // 🌐 Function to start observation temporarily and disconnect automatically to save CPU performance

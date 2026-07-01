@@ -15,12 +15,12 @@ export async function organizeGridSections(batchCards: HTMLElement[]) {
     const anchor = card.querySelector(
       "a.ytLockupMetadataViewModelTitle"
     ) as HTMLAnchorElement | null
-    if (!anchor) continue
+    if (!anchor) console.log("no anchor")
 
     const url = new URL(anchor.href)
     const videoId = url.searchParams.get("v")
 
-    if (!videoId) continue
+    if (!videoId) console.log("no id")
     card.removeAttribute("is-in-first-column") // a built-in youtube attribute that must be removed
 
     // get the date from storage in order to be able to sort the video
@@ -32,14 +32,14 @@ export async function organizeGridSections(batchCards: HTMLElement[]) {
 
     // If statement to distribute CSS classes and attributes based on the date
     if (globalLastDate === "") {
-      card.dataset["dayFirst"] = "true"
+      card.dataset.dayFirst = "true"
       globalLastDate = currentDate
     } else if (currentDate !== globalLastDate) {
       const breaker = document.createElement("div")
       breaker.className = "day-breaker"
       card.parentNode?.insertBefore(breaker, card)
       // New day detected ⬅️ Break the row and align to the first column
-      card.dataset["dayFirst"] = "true"
+      card.dataset.dayFirst = "true"
       globalLastDate = currentDate
     }
   }
