@@ -83,16 +83,16 @@ function createBatches(
 
 export async function processVideosDates() {
   const selectors = getPageSelectors()
-  const newCards = () => document.querySelectorAll<HTMLElement>(selectors.card)
+  const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
 
-  const cardsArray = Array.from(newCards()).filter((card) =>
+  const cardsArray = Array.from(newCards).filter((card) =>
     card.querySelector(selectors.anchor)
   ) as HTMLElement[]
   // if (!cardsArray.length) return
   if (!cardsArray.length) console.log("empty")
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
-  const videoBatches = createBatches(cardsArray, 5)
+  const videoBatches = createBatches(cardsArray, 3)
 
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
@@ -127,44 +127,39 @@ export async function processVideosDates() {
   }
 }
 
-// 🌐 Function to start observation temporarily and disconnect automatically to save CPU performance
+// 🎯 1. التايمر لازم يتعرف بره خالص عشان قيمته تفضل ثابتة بين الاستدعاءات
+let debounceTimer: any = null
+let isProcessing = false
+
 export function triggerDateProcessor() {
-  const observer = new MutationObserver((mutations, observerInstance) => {
-    // Let's debounce disconncting observer، because Youtube renders videos consecutively (NOT in on shot)
-    function debounce(func, delay: number) {
-      let timeoutId: ReturnType<typeof setTimeout>
+  const observer = new MutationObserver((mutations) => {
+    // Smart Check: If no new nodes were actually added, return early to optimize CPU performance
+    const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
+    if (!hasNewNodes) return
 
-      return function () {
-        clearTimeout(timeoutId)
-        timeoutId = setTimeout(() => {
-          func()
-        }, delay)
+    // True Debounce: Cancel the previous timer if the Observer triggers again quickly
+    if (debounceTimer) clearTimeout(debounceTimer)
+
+    debounceTimer = setTimeout(async () => {
+      if (isProcessing) return
+
+      const selectors = getPageSelectors()
+      const hasUnprocessedCards = document.querySelectorAll(selectors.card)
+
+      if (hasUnprocessedCards.length) {
+        try {
+          isProcessing = true
+          window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
+          await processVideosDates()
+        } finally {
+          isProcessing = false
+        }
       }
-    }
-
-    // 🎯 Disconnect observer immediately after replacinf new cards dates so it doesn't run forever (to save user RAM, because it can leed to memory leak.)
-    const disconnectObserver = debounce(
-      () => observerInstance.disconnect(),
-      500
-    )
-
-    const selectors = getPageSelectors()
-
-    // Select only new cards that have not been processed yet
-    const newCards = Array.from(
-      document.querySelectorAll<HTMLElement>(selectors.card)
-    ).filter((card) => card.querySelector(selectors.anchor))
-
-    // use Debouncing instead:
-    if (newCards.length) {
-      window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
-      // Execute the video processing function in parallel
-      processVideosDates()
-      disconnectObserver()
-    }
+    }, 300) // 300ms كافية جداً عشان تلم كل الفيديوهات اللي نازلة ورا بعضها
   })
 
   observer.observe(document.body, { childList: true, subtree: true })
+  return observer
 }
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
