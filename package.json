@@ -31,7 +31,7 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://www.youtube.com/*"
+      "https://*.youtube.com/*"
     ]
   }
 }

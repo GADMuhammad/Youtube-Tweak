@@ -7,7 +7,7 @@ import { Storage } from "@plasmohq/storage"
 const storage = new Storage({ area: "local" })
 
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.youtube.com/feed/subscriptions"]
+  matches: ["https://*.youtube.com/*"]
 }
 
 const isArabic = document.documentElement.lang?.startsWith("ar")
@@ -17,6 +17,24 @@ const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
   month: "short",
   year: "numeric"
 })
+
+const isSearchPage = () => window.location.pathname === "/results"
+const getPageSelectors = () => {
+  if (isSearchPage()) {
+    return {
+      card: "ytd-video-renderer:not([data-date-processed])",
+      anchor: "a#video-title",
+      dateSpan: "#metadata-line span.inline-metadata-item"
+    }
+  } else {
+    return {
+      card: "ytd-rich-item-renderer:not([data-date-processed])",
+      anchor: "a.ytLockupMetadataViewModelTitle",
+      dateSpan:
+        "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
+    }
+  }
+}
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
 async function fetchVideoExactISO(videoId: string | null): Promise<string> {
@@ -64,67 +82,85 @@ function createBatches(
 }
 
 export async function processVideosDates() {
-  const cards = document.querySelectorAll<HTMLElement>(
-    "ytd-rich-item-renderer:not([data-date-processed])"
-  )
+  const selectors = getPageSelectors()
+  const newCards = () => document.querySelectorAll<HTMLElement>(selectors.card)
 
-  const cardsArray = Array.from(cards).filter((card) =>
-    card.querySelector("a.ytLockupMetadataViewModelTitle")
+  const cardsArray = Array.from(newCards()).filter((card) =>
+    card.querySelector(selectors.anchor)
   ) as HTMLElement[]
-  if (!cardsArray.length) return
+  // if (!cardsArray.length) return
+  if (!cardsArray.length) console.log("empty")
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
   const videoBatches = createBatches(cardsArray, 5)
 
-  // for (const batch of videoBatches) {
-  const promises = cardsArray.map(async (card) => {
-    const anchor = card.querySelector(
-      "a.ytLockupMetadataViewModelTitle"
-    ) as HTMLAnchorElement | null
+  for (const batch of videoBatches) {
+    const promises = batch.map(async (card) => {
+      const anchor = card.querySelector(
+        selectors.anchor
+      ) as HTMLAnchorElement | null
 
-    const dateSpan = card.querySelector(
-      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
-    ) as HTMLSpanElement
+      const dateSpans = card.querySelectorAll(selectors.dateSpan)
+      const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-    const url = new URL(anchor.href)
-    const videoId = url.searchParams.get("v")
+      const url = new URL(anchor.href)
+      const videoId = url.searchParams.get("v")
 
-    if (videoId) {
-      const cachedISO = await storage.get<string>(videoId)
-      let exactDateISO = cachedISO
+      if (videoId) {
+        const cachedISO = await storage.get<string>(videoId)
+        let exactDateISO = cachedISO
 
-      if (!cachedISO) {
-        exactDateISO = await fetchVideoExactISO(videoId)
-        if (exactDateISO) storage.set(videoId, exactDateISO)
+        if (!cachedISO) {
+          exactDateISO = await fetchVideoExactISO(videoId)
+          if (exactDateISO) storage.set(videoId, exactDateISO)
+        }
+
+        if (exactDateISO) {
+          const videoDate = new Date(exactDateISO)
+          if (dateSpan.innerText === formatter.format(videoDate)) return
+          dateSpan.innerText = formatter.format(videoDate)
+        }
       }
-
-      if (exactDateISO) {
-        const videoDate = new Date(exactDateISO)
-        dateSpan.innerText = formatter.format(videoDate)
-      }
-    }
-    card.dataset.dateProcessed = "true"
-  })
-  await Promise.all(promises)
-  // }
+      card.dataset.dateProcessed = "true"
+    })
+    await Promise.all(promises)
+  }
 }
 
 // 🌐 Function to start observation temporarily and disconnect automatically to save CPU performance
 export function triggerDateProcessor() {
   const observer = new MutationObserver((mutations, observerInstance) => {
-    // Select only new cards that have not been processed yet
-    const cards = Array.from(
-      document.querySelectorAll<HTMLElement>(
-        "ytd-rich-item-renderer:not([data-date-processed])"
-      )
-    ).filter((card) => card.querySelector("a.ytLockupMetadataViewModelTitle"))
+    // Let's debounce disconncting observer، because Youtube renders videos consecutively (NOT in on shot)
+    function debounce(func, delay: number) {
+      let timeoutId: ReturnType<typeof setTimeout>
 
-    if (cards.length) {
+      return function () {
+        clearTimeout(timeoutId)
+        timeoutId = setTimeout(() => {
+          func()
+        }, delay)
+      }
+    }
+
+    // 🎯 Disconnect observer immediately after replacinf new cards dates so it doesn't run forever (to save user RAM, because it can leed to memory leak.)
+    const disconnectObserver = debounce(
+      () => observerInstance.disconnect(),
+      500
+    )
+
+    const selectors = getPageSelectors()
+
+    // Select only new cards that have not been processed yet
+    const newCards = Array.from(
+      document.querySelectorAll<HTMLElement>(selectors.card)
+    ).filter((card) => card.querySelector(selectors.anchor))
+
+    // use Debouncing instead:
+    if (newCards.length) {
       window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
       // Execute the video processing function in parallel
       processVideosDates()
-      // 🎯 Disconnect immediately after finding new cards so it doesn't run forever
-      observerInstance.disconnect()
+      disconnectObserver()
     }
   })
 
