@@ -86,10 +86,15 @@ export async function processVideosDates() {
   const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
 
   const cardsArray = Array.from(newCards).filter((card) =>
-    card.querySelector(selectors.anchor)
+    card.querySelector(selectors.anchor && selectors.dateSpan)
   ) as HTMLElement[]
-  // if (!cardsArray.length) return
   if (!cardsArray.length) console.log("empty")
+  if (!cardsArray.length) return
+
+  //
+  cardsArray.forEach((card) => {
+    card.dataset.dateProcessed = "true"
+  })
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
   const videoBatches = createBatches(cardsArray, 3)
@@ -117,11 +122,13 @@ export async function processVideosDates() {
 
         if (exactDateISO) {
           const videoDate = new Date(exactDateISO)
+          if (dateSpan.innerText === formatter.format(videoDate))
+            console.log("return")
           if (dateSpan.innerText === formatter.format(videoDate)) return
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
-      card.dataset.dateProcessed = "true"
+      // card.dataset.dateProcessed = "true"
     })
     await Promise.all(promises)
   }
