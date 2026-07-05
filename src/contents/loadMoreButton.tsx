@@ -1,5 +1,5 @@
 import cssText from "data-text:~/style.scss"
-import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
+import type { PlasmoCSConfig } from "plasmo"
 
 import { getLoadMoreButtonPlace } from "~helpers/getSelectors"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
@@ -14,23 +14,9 @@ export const getStyle = (): HTMLStyleElement => {
 
 export const getInlineAnchor = getLoadMoreButtonPlace
 
-// Append the button at the end of the targeted container:
-export const getMountPoint = (anchor: HTMLElement) => anchor
-
-const PlasmoInlineButton = () => {
-  // console.log("LoadMore mounted", location.href)
+const loadMoreButton = () => {
   const { isLoading, loadingText, loadMoreText, handleLoadMore } =
     useInfiniteScrollBlocker()
-
-  // if (!hasMore) {
-  //     return (
-  //       <div className="custom-btn-container">
-  //         <p className="no-more-videos-msg">
-  //           {currentLang === "ar" ? "لا توجد فيديوهات أخرى" : "No more videos"}
-  //         </p>
-  //       </div>
-  //     )
-  //   }
 
   return (
     <div className="custom-btn-container">
@@ -44,4 +30,4 @@ const PlasmoInlineButton = () => {
   )
 }
 
-export default PlasmoInlineButton
+export default loadMoreButton

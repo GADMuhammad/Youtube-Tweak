@@ -25,36 +25,28 @@ export const getMountPoint = (anchor: HTMLElement) => {
 }
 
 const FilterTabs = () => {
-  const getCurrentTab = () =>
-    window.location.href.includes("/shorts") ? "shorts" : "videos"
-  const [activeTab, setActiveTab] = useState<"videos" | "shorts">(getCurrentTab)
+  const getCurrentTab = window.location.href.includes("/shorts")
+    ? "shorts"
+    : "videos"
 
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
-  const { videos, shorts } = filterTabsText[currentLang]
 
+  const { videos, shorts } = filterTabsText[currentLang]
   const filterButtons = [
     {
       id: "videos",
-      name: videos,
+      label: videos,
       url: "https://www.youtube.com/feed/subscriptions"
     },
     {
       id: "shorts",
-      name: shorts,
+      label: shorts,
       url: "https://www.youtube.com/feed/subscriptions/shorts"
     }
   ]
   const { isDarkMode } = useYoutubeThemeAndDom() // custom hook for filer buttons UI
-
-  useEffect(() => {
-    const handleUrlChange = () => setActiveTab(getCurrentTab())
-    window.addEventListener("yt-navigate-finish", handleUrlChange)
-    return () => {
-      window.removeEventListener("yt-navigate-finish", handleUrlChange)
-    }
-  }, [])
 
   const handleNavigation = (
     e: React.MouseEvent<HTMLAnchorElement>,
@@ -67,13 +59,13 @@ const FilterTabs = () => {
   return (
     <div
       className={`custom-filter-chips ${isDarkMode ? "theme-dark" : "theme-light"}`}>
-      {filterButtons.map(({ name, url, id }, index) => (
+      {filterButtons.map(({ label, url, id }, index) => (
         <a
-          key={name}
+          key={label}
           href={url}
           onClick={(e) => handleNavigation(e, url)}
-          className={`yt-chip-btn ${activeTab === id ? "yt-chip-active" : ""}`}>
-          {name.charAt(0).toUpperCase() + name.slice(1)}
+          className={`yt-chip-btn ${getCurrentTab === id ? "yt-chip-active" : ""}`}>
+          {label.charAt(0).toUpperCase() + label.slice(1)}
         </a>
       ))}
     </div>

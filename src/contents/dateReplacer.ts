@@ -119,18 +119,19 @@ export async function processVideosDates() {
   }
 }
 
-// 🎯 1. التايمر لازم يتعرف بره خالص عشان قيمته تفضل ثابتة بين الاستدعاءات
 let debounceTimer: any = null
 let isProcessing = false
+let activeObserver: MutationObserver | null = null
 
 export function triggerDateProcessor() {
   processVideosDates()
-  const observer = new MutationObserver((mutations, mutationsObserver) => {
-    // Smart Check: If no new nodes were actually added, return early to optimize CPU performance
+
+  if (activeObserver) return activeObserver
+
+  activeObserver = new MutationObserver((mutations) => {
     const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
     if (!hasNewNodes) return
 
-    // True Debounce: Cancel the previous timer if the Observer triggers again quickly
     if (debounceTimer) clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(async () => {
@@ -154,15 +155,26 @@ export function triggerDateProcessor() {
           await processVideosDates()
         } finally {
           isProcessing = false
-          mutationsObserver.disconnect()
         }
       }
     }, 300)
   })
 
-  observer.observe(document.body, { childList: true, subtree: true })
-  return observer
+  activeObserver.observe(document.body, { childList: true, subtree: true })
+  return activeObserver
 }
+
+const clearProcessedFlags = () => {
+  document.querySelectorAll("[data-date-processed]").forEach((card) => {
+    delete (card as HTMLElement).dataset.dateProcessed
+  })
+}
+
+// navigation starts — clear stale flags so new content gets processed
+window.addEventListener("yt-navigate-finish", clearProcessedFlags)
+
+// page data is applied to the DOM — now actually process the content
+window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 window.dispatchEvent(new CustomEvent("youtube-date-changing-started"))
