@@ -22,6 +22,18 @@ function queryVisible<T extends Element>(selector: string): T | null {
   return null
 }
 
+// Like queryVisible, but only excludes stale duplicates left behind by
+// YouTube's SPA caching (an ancestor with the `hidden` attribute) — not
+// elements our own code hides intentionally (e.g. the continuation item
+// while infinite scroll is blocked).
+function queryInActivePage<T extends Element>(selector: string): T | null {
+  const candidates = document.querySelectorAll<T>(selector)
+  for (const el of candidates) {
+    if (!el.closest("[hidden]")) return el
+  }
+  return null
+}
+
 export function getPageSelectors() {
   const pathname = window.location.pathname
 
@@ -62,9 +74,11 @@ export function getPageSelectors() {
 export function getContinuationItem(): HTMLElement | null {
   const pathname = window.location.pathname
   if (pathname === "/results")
-    return queryVisible("ytd-search ytd-continuation-item-renderer")
+    return queryInActivePage("ytd-search ytd-continuation-item-renderer")
 
-  return queryVisible("ytd-rich-grid-renderer ytd-continuation-item-renderer")
+  return queryInActivePage(
+    "ytd-rich-grid-renderer ytd-continuation-item-renderer"
+  )
 }
 
 type PromiseType = Promise<HTMLElement>

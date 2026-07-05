@@ -55,10 +55,10 @@ export const useInfiniteScrollBlocker = () => {
     if (isLoading || !hasMore) return
 
     const continuationItem = getContinuationItem()
-    // if (!continuationItem) {
-    //   setHasMore(false)
-    //   return
-    // }
+    if (!continuationItem) {
+      setHasMore(false)
+      return
+    }
 
     setIsLoading(true)
     triggerDateProcessor()
@@ -81,7 +81,7 @@ export const useInfiniteScrollBlocker = () => {
       if (newCards.length) {
         stopLoading()
         startBlocking()
-      } else if (!continuationItem) {
+      } else if (!getContinuationItem()) {
         stopLoading()
         setHasMore(false)
       }

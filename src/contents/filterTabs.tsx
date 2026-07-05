@@ -6,10 +6,9 @@ import { getFilterPlace } from "~helpers/getSelectors"
 import { filterTabsText } from "~helpers/translationObject"
 import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
 
-// Broad match: Chrome only injects content_scripts on real navigations, not
-// SPA route changes, so getFilterPlace gates the actual mount to /feed/subscriptions.
+// I need these buttons to be only in subscriptions page
 export const config: PlasmoCSConfig = {
-  matches: ["https://*.youtube.com/*"]
+  matches: ["https://*.youtube.com/feed/subscriptions/*"]
 }
 
 export const getStyle = (): HTMLStyleElement => {
