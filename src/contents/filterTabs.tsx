@@ -19,6 +19,7 @@ export const getStyle = (): HTMLStyleElement => {
 // The container above videos:
 export const getInlineAnchor = getFilterPlace
 
+// Append the button at the top of the targeted container:
 export const getMountPoint = (anchor: HTMLElement) => {
   return anchor.firstElementChild as HTMLElement
 }
