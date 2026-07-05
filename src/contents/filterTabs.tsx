@@ -48,7 +48,7 @@ const FilterTabs = () => {
       url: "https://www.youtube.com/feed/subscriptions/shorts"
     }
   ]
-  const { isDarkMode } = useYoutubeThemeAndDom(activeTab) // custom hook for filer button UI
+  const { isDarkMode } = useYoutubeThemeAndDom() // custom hook for filer buttons UI
 
   useEffect(() => {
     const handleUrlChange = () => setActiveTab(getCurrentTab())

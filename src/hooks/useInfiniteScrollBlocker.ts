@@ -1,45 +1,19 @@
 import { useEffect, useRef, useState } from "react"
 
 import { triggerDateProcessor } from "~contents/dateReplacer"
+import { getContinuationItem, getPageSelectors } from "~helpers/getSelectors"
 import { loadingButton } from "~helpers/translationObject"
 
 export const useInfiniteScrollBlocker = () => {
   const [isLoading, setIsLoading] = useState(false)
+  const [hasMore, setHasMore] = useState(true)
   const infiniteScrollObserverRef = useRef<MutationObserver | null>(null)
   const loadingObserverRef = useRef<MutationObserver | null>(null)
+
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
   const { loadingText, loadMoreText } = loadingButton[currentLang]
-
-  // 🎯 دالة مساعدة لمعرفة هل المستخدم في صفحة البحث حالياً
-  const isSearchPage = () => window.location.pathname === "/results"
-
-  // 🎯 تحديد العنصر المسبب للـ infinite scroll بناءً على الصفحة
-  const getContinuationItem = (): HTMLElement | null => {
-    if (isSearchPage()) {
-      return document.querySelector("ytd-search ytd-continuation-item-renderer")
-    } else {
-      return document.querySelector(
-        "ytd-rich-grid-renderer ytd-continuation-item-renderer"
-      )
-    }
-  }
-
-  // 🎯 تحديد الـ Selector الخاص بالفيديوهات الجديدة بناءً على الصفحة
-  const getNewVideosSelector = () => {
-    if (isSearchPage()) {
-      return {
-        item: "ytd-video-renderer:not([data-date-processed])",
-        title: "a#video-title"
-      }
-    } else {
-      return {
-        item: "ytd-rich-item-renderer:not([data-date-processed])",
-        title: "a.ytLockupMetadataViewModelTitle"
-      }
-    }
-  }
 
   const disableInfiniteScroll = () => {
     const continuationItem = getContinuationItem()
@@ -50,20 +24,17 @@ export const useInfiniteScrollBlocker = () => {
 
   const disableInfiniteScroll_observer = () => {
     if (infiniteScrollObserverRef.current) return
-
     disableInfiniteScroll()
-
-    infiniteScrollObserverRef.current = new MutationObserver(function () {
+    infiniteScrollObserverRef.current = new MutationObserver(() =>
       disableInfiniteScroll()
-    })
-
+    )
     infiniteScrollObserverRef.current.observe(document.body, {
       childList: true,
       subtree: true
     })
   }
 
-  const enableInfiniteScroll = () => {
+  const reEnableInfiniteScroll = () => {
     if (infiniteScrollObserverRef.current) {
       infiniteScrollObserverRef.current.disconnect()
       infiniteScrollObserverRef.current = null
@@ -73,8 +44,20 @@ export const useInfiniteScrollBlocker = () => {
   useEffect(() => {
     disableInfiniteScroll_observer()
 
+    const resetForNewPage = () => {
+      if (infiniteScrollObserverRef.current) {
+        infiniteScrollObserverRef.current.disconnect()
+        infiniteScrollObserverRef.current = null
+      }
+      setHasMore(true)
+      setIsLoading(false)
+    }
+
+    window.addEventListener("yt-navigate-finish", resetForNewPage)
+
     return () => {
-      enableInfiniteScroll()
+      reEnableInfiniteScroll()
+      window.removeEventListener("yt-navigate-finish", resetForNewPage)
       if (loadingObserverRef.current) {
         loadingObserverRef.current.disconnect()
         loadingObserverRef.current = null
@@ -83,26 +66,30 @@ export const useInfiniteScrollBlocker = () => {
   }, [])
 
   const handleLoadMore = () => {
-    if (isLoading) return
-    setIsLoading(true)
-
-    triggerDateProcessor()
-    enableInfiniteScroll()
+    if (isLoading || !hasMore) return
 
     const continuationItem = getContinuationItem()
-    if (continuationItem) {
-      continuationItem.style.display = "block"
+
+    if (!continuationItem) {
+      setHasMore(false)
+      return
     }
 
-    const selectors = getNewVideosSelector()
+    setIsLoading(true)
+    triggerDateProcessor()
+    reEnableInfiniteScroll()
+
+    continuationItem.style.display = "block"
+    const selectors = getPageSelectors()
 
     loadingObserverRef.current = new MutationObserver(
       (mutations, observerInstance) => {
         const newVideos = Array.from(
-          document.querySelectorAll(selectors.item)
-        ).filter((card) => card.querySelector(selectors.title))
+          document.querySelectorAll(selectors.card)
+        ).filter((card) => card.querySelector(selectors.anchor))
 
         const currentContinuation = getContinuationItem()
+
         const stopLoading = () => {
           observerInstance.disconnect()
           loadingObserverRef.current = null
@@ -114,6 +101,7 @@ export const useInfiniteScrollBlocker = () => {
           disableInfiniteScroll_observer()
         } else if (!currentContinuation) {
           stopLoading()
+          setHasMore(false)
         }
       }
     )
@@ -124,5 +112,5 @@ export const useInfiniteScrollBlocker = () => {
     })
   }
 
-  return { isLoading, loadingText, loadMoreText, handleLoadMore }
+  return { isLoading, hasMore, loadingText, loadMoreText, handleLoadMore }
 }

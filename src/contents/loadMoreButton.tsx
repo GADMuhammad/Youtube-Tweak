@@ -1,11 +1,10 @@
 import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 
+import { getAnchor } from "~helpers/getSelectors"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
-export const config: PlasmoCSConfig = {
-  matches: ["https://*.youtube.com/*"]
-}
+export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
 
 export const getStyle = (): HTMLStyleElement => {
   const styleElement = document.createElement("style")
@@ -13,26 +12,25 @@ export const getStyle = (): HTMLStyleElement => {
   return styleElement
 }
 
-export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
-  // 1. صفحة البحث (Search Results)
-  const searchSection = document.querySelector(
-    "ytd-search ytd-section-list-renderer"
-  )
-  if (searchSection) return searchSection
+export const getInlineAnchor = getAnchor
 
-  // 2. الصفحة الرئيسية والاشتراكات وفيديوهات القنوات (الحاوية الكبيرة للـ Grid)
-  const mainGrid = document.querySelector("ytd-rich-grid-renderer")
-  if (mainGrid) return mainGrid
-
-  return null
-}
-
-// 🎯 Append the button at the end of the targeted container
+// Append the button at the end of the targeted container:
 export const getMountPoint = (anchor: HTMLElement) => anchor
 
 const PlasmoInlineButton = () => {
+  // console.log("LoadMore mounted", location.href)
   const { isLoading, loadingText, loadMoreText, handleLoadMore } =
     useInfiniteScrollBlocker()
+
+  // if (!hasMore) {
+  //     return (
+  //       <div className="custom-btn-container">
+  //         <p className="no-more-videos-msg">
+  //           {currentLang === "ar" ? "لا توجد فيديوهات أخرى" : "No more videos"}
+  //         </p>
+  //       </div>
+  //     )
+  //   }
 
   return (
     <div className="custom-btn-container">

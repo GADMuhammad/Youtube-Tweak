@@ -4,6 +4,8 @@ import "./../style.scss"
 
 import { Storage } from "@plasmohq/storage"
 
+import { getPageSelectors } from "../helpers/getSelectors"
+
 const storage = new Storage({ area: "local" })
 
 export const config: PlasmoCSConfig = {
@@ -17,24 +19,6 @@ const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
   month: "short",
   year: "numeric"
 })
-
-const isSearchPage = () => window.location.pathname === "/results"
-const getPageSelectors = () => {
-  if (isSearchPage()) {
-    return {
-      card: "ytd-video-renderer:not([data-date-processed])",
-      anchor: "a#video-title",
-      dateSpan: "#metadata-line span.inline-metadata-item"
-    }
-  } else {
-    return {
-      card: "ytd-rich-item-renderer:not([data-date-processed])",
-      anchor: "a.ytLockupMetadataViewModelTitle",
-      dateSpan:
-        "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
-    }
-  }
-}
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
 async function fetchVideoExactISO(videoId: string | null): Promise<string> {
@@ -85,10 +69,13 @@ export async function processVideosDates() {
   const selectors = getPageSelectors()
   const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
 
-  const cardsArray = Array.from(newCards).filter((card) =>
-    card.querySelector(selectors.anchor && selectors.dateSpan)
+  const cardsArray = Array.from(newCards).filter(
+    (card) =>
+      card.querySelector(selectors.anchor) &&
+      card.querySelector(selectors.dateSpan)
   ) as HTMLElement[]
-  if (!cardsArray.length) console.log("empty")
+
+  // if (!cardsArray.length) console.log("empty")
   if (!cardsArray.length) return
 
   //
@@ -123,12 +110,12 @@ export async function processVideosDates() {
         if (exactDateISO) {
           const videoDate = new Date(exactDateISO)
           if (dateSpan.innerText === formatter.format(videoDate))
-            console.log("return")
+            console.log(dateSpan.innerText)
+
           if (dateSpan.innerText === formatter.format(videoDate)) return
           dateSpan.innerText = formatter.format(videoDate)
         }
       }
-      // card.dataset.dateProcessed = "true"
     })
     await Promise.all(promises)
   }
@@ -155,8 +142,11 @@ export function triggerDateProcessor() {
       const unprocessedCards = document.querySelectorAll<HTMLElement>(
         selectors.card
       )
-      const cardsArray = Array.from(unprocessedCards).filter((card) =>
-        card.querySelector(selectors.anchor && selectors.dateSpan)
+
+      const cardsArray = Array.from(unprocessedCards).filter(
+        (card) =>
+          card.querySelector(selectors.anchor) &&
+          card.querySelector(selectors.dateSpan)
       ) as HTMLElement[]
 
       if (cardsArray.length) {
@@ -166,7 +156,7 @@ export function triggerDateProcessor() {
           await processVideosDates()
         } finally {
           isProcessing = false
-          // if (!cardsArray.length) mutationsObserver.disconnect()
+          mutationsObserver.disconnect()
         }
       }
     }, 300)

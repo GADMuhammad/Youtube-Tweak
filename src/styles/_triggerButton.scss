@@ -80,3 +80,25 @@
     opacity: 0.8;
   }
 }
+
+.custom-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px 0;
+
+  .no-more-videos-msg {
+    font-size: 1.4rem;
+    font-weight: 500;
+    font-family: "Roboto", "Arial", sans-serif;
+
+    // يوتيوب بيستخدم المتغيرات دي للـ Dark/Light mode تلقائياً
+    color: var(--yt-spec-text-secondary, #606060);
+
+    padding: 12px 24px;
+    margin: 0;
+    text-align: center;
+    letter-spacing: 0.1px;
+  }
+}

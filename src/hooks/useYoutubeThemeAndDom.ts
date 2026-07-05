@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
+export default function useYoutubeThemeAndDom() {
   const [isDarkMode, setIsDarkMode] = useState(
     () => window.matchMedia("(prefers-color-scheme: dark)").matches
   )
@@ -32,20 +32,6 @@ export default function useYoutubeThemeAndDom(activeTab: "videos" | "shorts") {
     const hasDarkAttribute = document.documentElement.hasAttribute("dark")
     if (hasDarkAttribute !== isDarkMode) setIsDarkMode(hasDarkAttribute)
   }, [])
-
-  useEffect(() => {
-    const hideShorts = () => {
-      const shortsSection = document.querySelector(
-        "ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer, ytd-rich-section-renderer:has(#rich-shelf-header-container)"
-      ) as HTMLElement
-
-      if (shortsSection) {
-        shortsSection.style.setProperty("display", "none", "important")
-      }
-    }
-
-    hideShorts()
-  }, [activeTab])
 
   return { isDarkMode }
 }
