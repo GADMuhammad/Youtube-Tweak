@@ -11,7 +11,7 @@ export function getPageSelectors() {
     }
   }
 
-  if (pathname.endsWith("/featured")) {
+  if (pathname.match(/\/@[^\/]+\/?$/) || pathname.endsWith("/featured")) {
     return {
       card: "yt-lockup-view-model:not([data-date-processed])",
       anchor: "a[href*='watch?v=']",
