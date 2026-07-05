@@ -47,13 +47,25 @@ export function getContinuationItem(): HTMLElement | null {
   )
 }
 
-export const getAnchor: PlasmoGetInlineAnchor = async () => {
-  const pathname = window.location.pathname
-  if (pathname === "/results")
-    return document.querySelector("ytd-search ytd-section-list-renderer")
+type PromiseType = Promise<HTMLElement>
 
-  if (pathname === "/playlist")
-    return document.querySelector("ytd-playlist-video-list-renderer")
+// where we will put load more button
+export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
+  async function (): PromiseType {
+    const pathname = window.location.pathname
 
-  return document.querySelector("ytd-rich-grid-renderer")
+    if (pathname === "/results")
+      return document.querySelector("ytd-search ytd-section-list-renderer")
+
+    if (pathname === "/playlist")
+      return document.querySelector("ytd-playlist-video-list-renderer")
+
+    return document.querySelector("ytd-rich-grid-renderer")
+  }
+
+// where we will put filter buttons
+export const getFilterPlace: PlasmoGetInlineAnchor = async (): PromiseType => {
+  return document.querySelector(
+    "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
+  )
 }

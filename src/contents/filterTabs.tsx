@@ -2,6 +2,7 @@ import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 import { useEffect, useState } from "react"
 
+import { getFilterPlace } from "~helpers/getSelectors"
 import { filterTabsText } from "~helpers/translationObject"
 import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
 
@@ -16,11 +17,7 @@ export const getStyle = (): HTMLStyleElement => {
 }
 
 // The container above videos:
-export const getInlineAnchor: PlasmoGetInlineAnchor = async () => {
-  return document.querySelector(
-    "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
-  )
-}
+export const getInlineAnchor = getFilterPlace
 
 export const getMountPoint = (anchor: HTMLElement) => {
   return anchor.firstElementChild as HTMLElement

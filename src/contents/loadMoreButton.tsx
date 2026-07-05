@@ -1,7 +1,7 @@
 import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
 
-import { getAnchor } from "~helpers/getSelectors"
+import { getLoadMoreButtonPlace } from "~helpers/getSelectors"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
 export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
@@ -12,7 +12,7 @@ export const getStyle = (): HTMLStyleElement => {
   return styleElement
 }
 
-export const getInlineAnchor = getAnchor
+export const getInlineAnchor = getLoadMoreButtonPlace
 
 // Append the button at the end of the targeted container:
 export const getMountPoint = (anchor: HTMLElement) => anchor
