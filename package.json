@@ -1,8 +1,8 @@
 {
-  "name": "subscriptions-page-organizer",
-  "displayName": "Subscriptions page organizer",
+  "name": "TrueTube",
+  "displayName": "TrueTube",
   "version": "0.0.1",
-  "description": "A smart extension to sort and organize your YouTube Subscriptions page by date seamlessly and disable infinite scrolling.",
+  "description": "A smart extension to organize youtube for replacing relative date and infinite scroll and more.",
   "author": "Muhammad Gad",
   "scripts": {
     "dev": "plasmo dev",

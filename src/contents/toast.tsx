@@ -8,9 +8,7 @@ import { toastText } from "~helpers/translationObject"
 
 import { processVideosDates } from "./dateReplacer"
 
-export const config: PlasmoCSConfig = {
-  matches: ["https://*.youtube.com/*"]
-}
+export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
 
 export const getStyle = (): HTMLStyleElement => {
   const styleElement = document.createElement("style")

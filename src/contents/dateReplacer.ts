@@ -8,9 +8,7 @@ import { getPageSelectors } from "../helpers/getSelectors"
 
 const storage = new Storage({ area: "local" })
 
-export const config: PlasmoCSConfig = {
-  matches: ["https://*.youtube.com/*"]
-}
+export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
 
 const isArabic = document.documentElement.lang?.startsWith("ar")
 const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
