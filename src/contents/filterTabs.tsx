@@ -59,7 +59,7 @@ const FilterTabs = () => {
   return (
     <div
       className={`custom-filter-chips ${isDarkMode ? "theme-dark" : "theme-light"}`}>
-      {filterButtons.map(({ label, url, id }, index) => (
+      {filterButtons.map(({ label, url, id }) => (
         <a
           key={label}
           href={url}
