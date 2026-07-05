@@ -48,7 +48,7 @@ export const useInfiniteScrollBlocker = () => {
     }
   }
 
-  const disableInfiniteScrollObserver = () => {
+  const disableInfiniteScroll_observer = () => {
     if (infiniteScrollObserverRef.current) return
 
     disableInfiniteScroll()
@@ -63,7 +63,7 @@ export const useInfiniteScrollBlocker = () => {
     })
   }
 
-  const stopObserver = () => {
+  const enableInfiniteScroll = () => {
     if (infiniteScrollObserverRef.current) {
       infiniteScrollObserverRef.current.disconnect()
       infiniteScrollObserverRef.current = null
@@ -71,10 +71,10 @@ export const useInfiniteScrollBlocker = () => {
   }
 
   useEffect(() => {
-    disableInfiniteScrollObserver()
+    disableInfiniteScroll_observer()
 
     return () => {
-      stopObserver()
+      enableInfiniteScroll()
       if (loadingObserverRef.current) {
         loadingObserverRef.current.disconnect()
         loadingObserverRef.current = null
@@ -87,7 +87,7 @@ export const useInfiniteScrollBlocker = () => {
     setIsLoading(true)
 
     triggerDateProcessor()
-    stopObserver()
+    enableInfiniteScroll()
 
     const continuationItem = getContinuationItem()
     if (continuationItem) {
@@ -102,11 +102,18 @@ export const useInfiniteScrollBlocker = () => {
           document.querySelectorAll(selectors.item)
         ).filter((card) => card.querySelector(selectors.title))
 
-        if (newVideos.length) {
+        const currentContinuation = getContinuationItem()
+        const stopLoading = () => {
           observerInstance.disconnect()
           loadingObserverRef.current = null
-          disableInfiniteScrollObserver()
           setIsLoading(false)
+        }
+
+        if (newVideos.length) {
+          stopLoading()
+          disableInfiniteScroll_observer()
+        } else if (!currentContinuation) {
+          stopLoading()
         }
       }
     )

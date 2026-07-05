@@ -139,7 +139,8 @@ let debounceTimer: any = null
 let isProcessing = false
 
 export function triggerDateProcessor() {
-  const observer = new MutationObserver((mutations) => {
+  processVideosDates()
+  const observer = new MutationObserver((mutations, mutationsObserver) => {
     // Smart Check: If no new nodes were actually added, return early to optimize CPU performance
     const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
     if (!hasNewNodes) return
@@ -151,18 +152,24 @@ export function triggerDateProcessor() {
       if (isProcessing) return
 
       const selectors = getPageSelectors()
-      const hasUnprocessedCards = document.querySelectorAll(selectors.card)
+      const unprocessedCards = document.querySelectorAll<HTMLElement>(
+        selectors.card
+      )
+      const cardsArray = Array.from(unprocessedCards).filter((card) =>
+        card.querySelector(selectors.anchor && selectors.dateSpan)
+      ) as HTMLElement[]
 
-      if (hasUnprocessedCards.length) {
+      if (cardsArray.length) {
         try {
           isProcessing = true
           window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
           await processVideosDates()
         } finally {
           isProcessing = false
+          // if (!cardsArray.length) mutationsObserver.disconnect()
         }
       }
-    }, 300) // 300ms كافية جداً عشان تلم كل الفيديوهات اللي نازلة ورا بعضها
+    }, 300)
   })
 
   observer.observe(document.body, { childList: true, subtree: true })
@@ -170,8 +177,5 @@ export function triggerDateProcessor() {
 }
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
-
 window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
-processVideosDates().then(() => {
-  triggerDateProcessor()
-})
+triggerDateProcessor()
