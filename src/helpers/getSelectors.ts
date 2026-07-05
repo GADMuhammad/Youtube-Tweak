@@ -1,5 +1,27 @@
 import type { PlasmoGetInlineAnchor } from "plasmo"
 
+// YouTube's SPA keeps previous pages' containers in the DOM (toggling a
+// `hidden` ancestor) instead of removing them on client-side navigation, so a
+// plain querySelector can silently match a stale, invisible leftover element.
+function isElementVisible(el: Element | null): el is Element {
+  if (!el) return false
+  if (el.closest("[hidden]")) return false
+
+  const style = window.getComputedStyle(el)
+  if (style.display === "none" || style.visibility === "hidden") return false
+
+  const rect = el.getBoundingClientRect()
+  return rect.width > 0 || rect.height > 0
+}
+
+function queryVisible<T extends Element>(selector: string): T | null {
+  const candidates = document.querySelectorAll<T>(selector)
+  for (const el of candidates) {
+    if (isElementVisible(el)) return el
+  }
+  return null
+}
+
 export function getPageSelectors() {
   const pathname = window.location.pathname
 
@@ -40,11 +62,9 @@ export function getPageSelectors() {
 export function getContinuationItem(): HTMLElement | null {
   const pathname = window.location.pathname
   if (pathname === "/results")
-    return document.querySelector("ytd-search ytd-continuation-item-renderer")
+    return queryVisible("ytd-search ytd-continuation-item-renderer")
 
-  return document.querySelector(
-    "ytd-rich-grid-renderer ytd-continuation-item-renderer"
-  )
+  return queryVisible("ytd-rich-grid-renderer ytd-continuation-item-renderer")
 }
 
 type PromiseType = Promise<HTMLElement>
@@ -55,17 +75,19 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
     const pathname = window.location.pathname
 
     if (pathname === "/results")
-      return document.querySelector("ytd-search ytd-section-list-renderer")
+      return queryVisible("ytd-search ytd-section-list-renderer")
 
     if (pathname === "/playlist")
-      return document.querySelector("ytd-playlist-video-list-renderer")
+      return queryVisible("ytd-playlist-video-list-renderer")
 
-    return document.querySelector("ytd-rich-grid-renderer")
+    return queryVisible("ytd-rich-grid-renderer")
   }
 
 // where we will put filter buttons
 export const getFilterPlace: PlasmoGetInlineAnchor = async (): PromiseType => {
-  return document.querySelector(
+  if (!window.location.pathname.startsWith("/feed/subscriptions")) return null
+
+  return queryVisible(
     "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
   )
 }

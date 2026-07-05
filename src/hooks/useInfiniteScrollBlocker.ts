@@ -42,21 +42,8 @@ export const useInfiniteScrollBlocker = () => {
   useEffect(() => {
     startBlocking()
 
-    // const resetForNewPage = () => {
-    //   if (loadingObserverRef.current) {
-    //     loadingObserverRef.current.disconnect()
-    //     loadingObserverRef.current = null
-    //   }
-    //   setHasMore(true)
-    //   setIsLoading(false)
-    //   startBlocking()
-    // }
-
-    // window.addEventListener("yt-navigate-finish", resetForNewPage)
-
     return () => {
       stopBlocking()
-      // window.removeEventListener("yt-navigate-finish", resetForNewPage)
       if (loadingObserverRef.current) {
         loadingObserverRef.current.disconnect()
         loadingObserverRef.current = null
@@ -68,10 +55,10 @@ export const useInfiniteScrollBlocker = () => {
     if (isLoading || !hasMore) return
 
     const continuationItem = getContinuationItem()
-    if (!continuationItem) {
-      setHasMore(false)
-      return
-    }
+    // if (!continuationItem) {
+    //   setHasMore(false)
+    //   return
+    // }
 
     setIsLoading(true)
     triggerDateProcessor()
@@ -94,7 +81,7 @@ export const useInfiniteScrollBlocker = () => {
       if (newCards.length) {
         stopLoading()
         startBlocking()
-      } else if (!getContinuationItem()) {
+      } else if (!continuationItem) {
         stopLoading()
         setHasMore(false)
       }

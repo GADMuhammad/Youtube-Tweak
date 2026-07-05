@@ -6,8 +6,10 @@ import { getFilterPlace } from "~helpers/getSelectors"
 import { filterTabsText } from "~helpers/translationObject"
 import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
 
+// Broad match: Chrome only injects content_scripts on real navigations, not
+// SPA route changes, so getFilterPlace gates the actual mount to /feed/subscriptions.
 export const config: PlasmoCSConfig = {
-  matches: ["https://www.youtube.com/feed/subscriptions*"]
+  matches: ["https://*.youtube.com/*"]
 }
 
 export const getStyle = (): HTMLStyleElement => {
@@ -24,10 +26,18 @@ export const getMountPoint = (anchor: HTMLElement) => {
   return anchor.firstElementChild as HTMLElement
 }
 
+const getTabFromUrl = () =>
+  window.location.href.includes("/shorts") ? "shorts" : "videos"
+
 const FilterTabs = () => {
-  const getCurrentTab = window.location.href.includes("/shorts")
-    ? "shorts"
-    : "videos"
+  const [currentTab, setCurrentTab] = useState(getTabFromUrl)
+
+  useEffect(() => {
+    const handleNavigate = () => setCurrentTab(getTabFromUrl())
+    window.addEventListener("yt-navigate-finish", handleNavigate)
+    return () =>
+      window.removeEventListener("yt-navigate-finish", handleNavigate)
+  }, [])
 
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
@@ -64,7 +74,7 @@ const FilterTabs = () => {
           key={label}
           href={url}
           onClick={(e) => handleNavigation(e, url)}
-          className={`yt-chip-btn ${getCurrentTab === id ? "yt-chip-active" : ""}`}>
+          className={`yt-chip-btn ${currentTab === id ? "yt-chip-active" : ""}`}>
           {label.charAt(0).toUpperCase() + label.slice(1)}
         </a>
       ))}
