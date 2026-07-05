@@ -19,17 +19,16 @@ const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
 })
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
-async function fetchVideoExactISO(videoId: string | null): Promise<string> {
+async function fetchVideoExactISO(videoId: string): Promise<string> {
   try {
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}`)
     const text = await response.text()
 
-    // RegExp pattern to extract the exact publication date meta tag
-    const match: RegExpMatchArray = text.match(
+    const match: RegExpMatchArray | null = text.match(
       /<meta itemprop="datePublished" content="([^"]+)">/
     )
 
-    if (match) return match?.[1] ?? null
+    if (match) return match[1] ?? null
     return null
   } catch (e) {
     console.error(
@@ -73,10 +72,8 @@ export async function processVideosDates() {
       card.querySelector(selectors.dateSpan)
   ) as HTMLElement[]
 
-  // if (!cardsArray.length) console.log("empty")
   if (!cardsArray.length) return
 
-  //
   cardsArray.forEach((card) => {
     card.dataset.dateProcessed = "true"
   })
@@ -106,12 +103,9 @@ export async function processVideosDates() {
         }
 
         if (exactDateISO) {
-          const videoDate = new Date(exactDateISO)
-          if (dateSpan.innerText === formatter.format(videoDate))
-            console.log(dateSpan.innerText)
-
-          if (dateSpan.innerText === formatter.format(videoDate)) return
-          dateSpan.innerText = formatter.format(videoDate)
+          const formattedDate = formatter.format(new Date(exactDateISO))
+          if (dateSpan.innerText === formattedDate) return
+          dateSpan.innerText = formattedDate
         }
       }
     })
