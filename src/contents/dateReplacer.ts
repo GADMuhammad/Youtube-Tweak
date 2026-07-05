@@ -152,7 +152,7 @@ export function triggerDateProcessor() {
       if (cardsArray.length) {
         try {
           isProcessing = true
-          window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
+          window.dispatchEvent(new CustomEvent("youtube-date-changing-started"))
           await processVideosDates()
         } finally {
           isProcessing = false
@@ -167,5 +167,5 @@ export function triggerDateProcessor() {
 }
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
-window.dispatchEvent(new CustomEvent("youtube-date-sorting-started"))
+window.dispatchEvent(new CustomEvent("youtube-date-changing-started"))
 triggerDateProcessor()

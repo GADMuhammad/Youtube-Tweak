@@ -23,16 +23,16 @@ const { loading, success, error } = toastText[currentLanguage]
 
 export default function toast() {
   useEffect(() => {
-    const handleSortingSignal = () => {
+    const handleDateSignal = () => {
       toaster.promise(processVideosDates, { loading, success, error })
     }
 
-    window.addEventListener("youtube-date-sorting-started", handleSortingSignal)
+    window.addEventListener("youtube-date-changing-started", handleDateSignal)
 
     return () => {
       window.removeEventListener(
-        "youtube-date-sorting-started",
-        handleSortingSignal
+        "youtube-date-changing-started",
+        handleDateSignal
       )
     }
   }, [])

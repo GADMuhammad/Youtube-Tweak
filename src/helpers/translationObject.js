@@ -33,3 +33,8 @@ export const toastText = {
     error: "عذرًا حدث خطأ أثناء الترتيب. أعد تحميل الصفحة مرة أخري."
   }
 }
+
+export const noMoreText = {
+  en: "No more videos to display",
+  ar: "لا توجد فيديوهات أخرى"
+}
