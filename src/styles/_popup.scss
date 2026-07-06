@@ -1,0 +1,130 @@
+:root {
+  --popup-bg: #f7f7f8;
+  --popup-card-bg: #ffffff;
+  --popup-card-border: #e4e4e7;
+  --popup-card-hover-bg: #f0f0f2;
+  --popup-text: #18181b;
+  --popup-accent: #e6483f;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --popup-bg: #141414;
+    --popup-card-bg: #1c1c1c;
+    --popup-card-border: #262626;
+    --popup-card-hover-bg: #232323;
+    --popup-text: #ffffff;
+    --popup-accent: #ff5a4e;
+  }
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--popup-bg);
+}
+
+#__plasmo {
+  display: block;
+}
+
+.popup-root {
+  width: 400px;
+  min-height: 480px;
+  background-color: var(--popup-bg);
+  color: var(--popup-text);
+  padding: 20px;
+  font-family:
+    "Roboto",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+  box-sizing: border-box;
+}
+
+.popup-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.popup-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background-color: var(--popup-card-bg);
+  border: 1px solid var(--popup-card-border);
+  border-radius: 16px;
+  padding: 18px 20px;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+
+  &:hover {
+    background-color: var(--popup-card-hover-bg);
+  }
+
+  &:active {
+    transform: scale(0.99);
+  }
+}
+
+.popup-menu-item__content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.popup-menu-item__label {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--popup-text);
+  white-space: nowrap;
+}
+
+.popup-menu-item__icon {
+  color: var(--popup-accent);
+  flex-shrink: 0;
+}
+
+.popup-menu-item__chevron {
+  color: var(--popup-text);
+  flex-shrink: 0;
+}
+
+.popup-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.popup-back-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--popup-text);
+  font: inherit;
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 8px 4px;
+
+  &:hover {
+    color: var(--popup-accent);
+  }
+}
+
+.popup-back-btn__icon {
+  flex-shrink: 0;
+}
+
+[dir="rtl"] .popup-back-btn__icon {
+  transform: scaleX(-1);
+}

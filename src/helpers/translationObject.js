@@ -42,3 +42,18 @@ export const noMoreCommentsText = {
   en: "No more comments to display",
   ar: "لا توجد تعليقات أخرى"
 }
+
+export const popupText = {
+  en: {
+    date: "Date",
+    scroll: "Infinite Scroll",
+    support: "Support & Contact",
+    back: "Back"
+  },
+  ar: {
+    date: "التاريخ",
+    scroll: "التمرير اللانهائي",
+    support: "التواصل والدعم",
+    back: "رجوع"
+  }
+}
