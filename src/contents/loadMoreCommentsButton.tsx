@@ -17,18 +17,13 @@ export const getStyle = (): HTMLStyleElement => {
 export const getInlineAnchor = getCommentsPlace
 
 const loadMoreCommentsButton = () => {
-  const {
-    isLoading,
-    commentsSituation,
-    loadingText,
-    buttonText,
-    handleLoadMore
-  } = useCommentsInfiniteScrollBlocker()
+  const { isLoading, situation, loadingText, buttonText, handleLoadMore } =
+    useCommentsInfiniteScrollBlocker()
 
   // comments turned off by the uploader — nothing to load, ever
-  if (commentsSituation === "NoComments") return null
+  if (situation === "None") return null
 
-  if (commentsSituation === "NoMoreComments") {
+  if (situation === "NoMore") {
     const currentLang = document.documentElement.lang?.startsWith("ar")
       ? "ar"
       : "en"

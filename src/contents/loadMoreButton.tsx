@@ -17,18 +17,13 @@ export const getStyle = (): HTMLStyleElement => {
 export const getInlineAnchor = getLoadMoreButtonPlace
 
 const loadMoreButton = () => {
-  const {
-    isLoading,
-    videosSituation,
-    loadingText,
-    buttonText,
-    handleLoadMore
-  } = useInfiniteScrollBlocker()
+  const { isLoading, situation, loadingText, buttonText, handleLoadMore } =
+    useInfiniteScrollBlocker()
 
   // sometimes it happens in youtube like if you have no subscriptions, or you turn of history.
-  if (videosSituation === "NoVideos") return null
+  if (situation === "None") return null
 
-  if (videosSituation === "NoMoreVideos") {
+  if (situation === "NoMore") {
     const currentLang = document.documentElement.lang?.startsWith("ar")
       ? "ar"
       : "en"
