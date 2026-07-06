@@ -3,21 +3,22 @@ import type { PlasmoGetInlineAnchor } from "plasmo"
 // YouTube's SPA keeps previous pages' containers in the DOM (toggling a
 // `hidden` ancestor) instead of removing them on client-side navigation, so a
 // plain querySelector can silently match a stale, invisible leftover element.
-function isElementVisible(element: Element | null): element is Element {
+function isElementVisible(element: Element | null): element is HTMLElement {
   if (!element) return false
   if (element.closest("[hidden]")) return false
 
   const style = window.getComputedStyle(element)
   if (style.display === "none" || style.visibility === "hidden") return false
 
-  const rect = element.getBoundingClientRect()
-  return rect.width > 0 || rect.height > 0
+  const { height, width } = element.getBoundingClientRect()
+  return width > 0 || height > 0
 }
 
-function queryVisible<T extends Element>(selector: string): T | null {
+//  It filters out anything not actually rendered, including elements our own code deliberately hid (e.g. a continuation item held back during infinite scroll).
+function queryVisible<T extends HTMLElement>(selector: string): T | null {
   const candidates = document.querySelectorAll<T>(selector)
   for (const element of candidates) {
-    if (isElementVisible(element)) return element
+    if (isElementVisible(element)) return element // youtube changes element continuously, here we'll find the current element
   }
   return null
 }
@@ -26,7 +27,8 @@ function queryVisible<T extends Element>(selector: string): T | null {
 // YouTube's SPA caching (an ancestor with the `hidden` attribute) — not
 // elements our own code hides intentionally (e.g. the continuation item
 // while infinite scroll is blocked).
-function queryInActivePage<T extends Element>(selector: string): T | null {
+// only checks for a [hidden] ancestor, skipping the computed-style and bounding-rect checks. It treats an element as valid as long as it's not a stale leftover from YouTube's SPA navigation, even if it's invisible for some other, intentional reason.
+function queryInActivePage<T extends HTMLElement>(selector: string): T | null {
   const candidates = document.querySelectorAll<T>(selector)
   for (const element of candidates) {
     if (!element.closest("[hidden]")) return element
@@ -75,6 +77,11 @@ export function getContinuationItem(): HTMLElement | null {
   const pathname = window.location.pathname
   if (pathname === "/results")
     return queryInActivePage("ytd-search ytd-continuation-item-renderer")
+
+  if (pathname === "/playlist")
+    return queryInActivePage(
+      "ytd-playlist-video-list-renderer ytd-continuation-item-renderer"
+    )
 
   return queryInActivePage(
     "ytd-rich-grid-renderer ytd-continuation-item-renderer"
