@@ -1,7 +1,7 @@
 import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig } from "plasmo"
-import { useEffect, useState } from "react"
 
+import { LoadMoreButton } from "~components/LoadMoreButton"
 import { getLoadMoreButtonPlace } from "~helpers/getSelectors"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
@@ -20,14 +20,12 @@ const loadMoreButton = () => {
     useInfiniteScrollBlocker()
 
   return (
-    <div className="custom-btn-container">
-      <button
-        className={`custom-trigger-btn ${isLoading ? "loading" : ""}`}
-        onClick={handleLoadMore}
-        disabled={isLoading}>
-        {isLoading ? loadingText : buttonText}
-      </button>
-    </div>
+    <LoadMoreButton
+      isLoading={isLoading}
+      loadingText={loadingText}
+      buttonText={buttonText}
+      onClick={handleLoadMore}
+    />
   )
 }
 
