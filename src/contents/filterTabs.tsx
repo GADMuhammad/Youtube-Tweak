@@ -6,9 +6,13 @@ import { getFilterPlace } from "~helpers/getSelectors"
 import { filterTabsText } from "~helpers/translationObject"
 import useYoutubeThemeAndDom from "~hooks/useYoutubeThemeAndDom"
 
-// I need these buttons to be only in subscriptions page
+// Matched broadly (like the other content scripts) because Chrome only
+// injects content scripts on a real navigation/frame load, not on YouTube's
+// SPA route changes — a narrower match here would leave this script
+// uninjected if the extension first loaded on some other YouTube page.
+// getFilterPlace() below already restricts rendering to the subscriptions feed.
 export const config: PlasmoCSConfig = {
-  matches: ["https://*.youtube.com/feed/subscriptions/*"]
+  matches: ["https://*.youtube.com/*"]
 }
 
 export const getStyle = (): HTMLStyleElement => {

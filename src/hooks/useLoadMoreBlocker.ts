@@ -38,7 +38,7 @@ export const useLoadMoreBlocker = ({
     const itemCount = countItems()
 
     if (!continuationItem && itemCount > 0) setSituation("NoMore")
-    else if (!continuationItem && itemCount === 0) setSituation("None")
+    else if (!continuationItem && !itemCount) setSituation("None")
     else if (blockWhenEmpty || itemCount > 0) setSituation("Normal")
 
     // Hiding is a one-off side effect, kept independent of the situation

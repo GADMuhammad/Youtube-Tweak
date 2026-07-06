@@ -41,6 +41,7 @@ export function getPageSelectors() {
 
   if (pathname === "/results") {
     return {
+      container: "ytd-search",
       card: "ytd-video-renderer:not([data-date-processed])",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
@@ -53,6 +54,10 @@ export function getPageSelectors() {
     pathname === "/watch"
   ) {
     return {
+      container:
+        pathname === "/watch"
+          ? "ytd-watch-next-secondary-results-renderer"
+          : "ytd-rich-grid-renderer",
       card: "yt-lockup-view-model:not([data-date-processed])",
       anchor: "a[href*='watch?v=']",
       dateSpan:
@@ -62,6 +67,7 @@ export function getPageSelectors() {
 
   if (pathname === "/playlist") {
     return {
+      container: "ytd-playlist-video-list-renderer",
       card: "ytd-playlist-video-renderer:not([data-date-processed]).style-scope.ytd-playlist-video-list-renderer",
       anchor: "a#video-title",
       dateSpan:
@@ -70,31 +76,27 @@ export function getPageSelectors() {
   }
 
   return {
+    container: "ytd-rich-grid-renderer",
     card: "ytd-rich-item-renderer:not([data-date-processed])",
-    anchor: "a.ytLockupMetadataViewModelTitle",
+    // href-based (not class-based) so non-video interstitials rendered with
+    // the same card/lockup markup — e.g. the "Your watch history is off"
+    // notice on an empty feed — don't get counted as a real video card.
+    anchor: "a.ytLockupMetadataViewModelTitle[href*='watch?v=']",
     dateSpan:
       "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
   }
 }
 
+// The active grid/list container for the current page — scoping card counts
+// to this (instead of querying the whole document) avoids counting stale
+// cards left behind elsewhere in the DOM by YouTube's SPA caching.
+export function getActiveContainer(): HTMLElement | null {
+  return queryInActivePage(getPageSelectors().container)
+}
+
 export function getContinuationItem(): HTMLElement | null {
-  const pathname = window.location.pathname
-  if (pathname === "/results")
-    return queryInActivePage("ytd-search ytd-continuation-item-renderer")
-
-  if (pathname === "/playlist")
-    return queryInActivePage(
-      "ytd-playlist-video-list-renderer ytd-continuation-item-renderer"
-    )
-
-  if (pathname === "/watch")
-    return queryInActivePage(
-      "ytd-watch-next-secondary-results-renderer ytd-continuation-item-renderer"
-    )
-
-  return queryInActivePage(
-    "ytd-rich-grid-renderer ytd-continuation-item-renderer"
-  )
+  const { container } = getPageSelectors()
+  return queryInActivePage(`${container} ytd-continuation-item-renderer`)
 }
 
 // The comments continuation item lives in the same slot as the per-thread
