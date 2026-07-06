@@ -82,7 +82,7 @@ export async function processVideosDates() {
   if (!cardsArray.length) return
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
-  const videoBatches = createBatches(cardsArray, 3)
+  const videoBatches = createBatches(cardsArray, 5)
 
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
