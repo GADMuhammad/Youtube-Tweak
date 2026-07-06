@@ -41,7 +41,7 @@ export function getPageSelectors() {
 
   if (pathname === "/results") {
     return {
-      container: "ytd-search",
+      container: "ytd-search", // the loading element
       card: "ytd-video-renderer",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
@@ -81,7 +81,8 @@ export function getPageSelectors() {
     // href-based (not class-based) so non-video interstitials rendered with
     // the same card/lockup markup — e.g. the "Your watch history is off"
     // notice on an empty feed — don't get counted as a real video card.
-    anchor: "a.ytLockupMetadataViewModelTitle[href*='watch?v=']",
+    anchor:
+      "a.ytLockupMetadataViewModelTitle[href*='watch?v='], a[href*='/shorts/']",
     dateSpan:
       "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
   }

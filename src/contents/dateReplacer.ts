@@ -117,6 +117,7 @@ export async function processVideosDates() {
   }
 }
 
+// Let's debounce processing Videos Dates:
 let debounceTimer: any = null
 let isProcessing = false
 let activeObserver: MutationObserver | null = null
@@ -125,7 +126,6 @@ export function triggerDateProcessor() {
   processVideosDates()
 
   if (activeObserver) return activeObserver
-
   activeObserver = new MutationObserver((mutations) => {
     const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
     if (!hasNewNodes) return

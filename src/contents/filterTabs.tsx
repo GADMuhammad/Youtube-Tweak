@@ -61,14 +61,6 @@ const FilterTabs = () => {
   ]
   const { isDarkMode } = useYoutubeThemeAndDom() // custom hook for filer buttons UI
 
-  const handleNavigation = (
-    e: React.MouseEvent<HTMLAnchorElement>,
-    url: string
-  ) => {
-    e.preventDefault()
-    window.location.href = url
-  }
-
   return (
     <div
       className={`custom-filter-chips ${isDarkMode ? "theme-dark" : "theme-light"}`}>
@@ -76,7 +68,6 @@ const FilterTabs = () => {
         <a
           key={label}
           href={url}
-          onClick={(e) => handleNavigation(e, url)}
           className={`yt-chip-btn ${currentTab === id ? "yt-chip-active" : ""}`}>
           {label.charAt(0).toUpperCase() + label.slice(1)}
         </a>
