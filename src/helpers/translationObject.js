@@ -9,6 +9,19 @@ export const loadingButton = {
   }
 }
 
+export const loadingCommentsButton = {
+  en: {
+    loadingText: "Loading New Comments...",
+    loadText: "Load Comments",
+    loadMoreText: "Load More Comments"
+  },
+  ar: {
+    loadingText: "...جاري تحميل تعليقات جديدة",
+    loadText: "تحميل التعليقات",
+    loadMoreText: "تحميل المزيد من التعليقات"
+  }
+}
+
 export const filterTabsText = {
   en: {
     videos: "videos",

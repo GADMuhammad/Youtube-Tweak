@@ -97,6 +97,22 @@ export function getContinuationItem(): HTMLElement | null {
   )
 }
 
+// The comments continuation item lives in the same slot as the per-thread
+// "show more replies" continuation, so we must skip any candidate nested
+// inside a comment thread's replies renderer — otherwise we'd hide/reveal a
+// reply-expander instead of the "load more comment threads" continuation.
+export function getCommentsContinuationItem(): HTMLElement | null {
+  const candidates = document.querySelectorAll<HTMLElement>(
+    "ytd-comments#comments ytd-continuation-item-renderer"
+  )
+  for (const element of candidates) {
+    if (element.closest("ytd-comment-replies-renderer")) continue
+    if (element.closest("[hidden]")) continue
+    return element
+  }
+  return null
+}
+
 type PromiseType = Promise<HTMLElement>
 
 // where we will put load more button
@@ -115,6 +131,10 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
 
     return queryVisible("ytd-rich-grid-renderer")
   }
+
+// where we will put the load more comments button
+export const getCommentsPlace: PlasmoGetInlineAnchor = async (): PromiseType =>
+  queryVisible("ytd-comments#comments")
 
 // where we will put filter buttons
 export const getFilterPlace: PlasmoGetInlineAnchor = async (): PromiseType => {
