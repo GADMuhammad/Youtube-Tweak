@@ -149,7 +149,6 @@ export function triggerDateProcessor() {
       if (cardsArray.length) {
         try {
           isProcessing = true
-          window.dispatchEvent(new CustomEvent("youtube-date-changing-started"))
           await processVideosDates()
         } finally {
           isProcessing = false
@@ -175,5 +174,4 @@ window.addEventListener("yt-navigate-finish", clearProcessedFlags)
 window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
-window.dispatchEvent(new CustomEvent("youtube-date-changing-started"))
 triggerDateProcessor()
