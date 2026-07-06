@@ -51,3 +51,8 @@ export const noMoreText = {
   en: "No more videos to display",
   ar: "لا توجد فيديوهات أخرى"
 }
+
+export const noMoreCommentsText = {
+  en: "No more comments to display",
+  ar: "لا توجد تعليقات أخرى"
+}

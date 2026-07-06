@@ -3,14 +3,20 @@ import { useEffect, useRef, useState } from "react"
 import { getCommentsContinuationItem } from "~helpers/getSelectors"
 import { loadingCommentsButton } from "~helpers/translationObject"
 
+const countThreads = () =>
+  document.querySelectorAll("ytd-comments#comments ytd-comment-thread-renderer")
+    .length
+
 export const useCommentsInfiniteScrollBlocker = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
-  const [hasComments, setHasComments] = useState(
-    () =>
-      document.querySelectorAll("ytd-comments#comments ytd-comment-thread-renderer")
-        .length > 0
-  )
+  const [commentsSituation, setCommentsSituation] = useState<
+    "Normal" | "NoMoreComments" | "NoComments"
+  >("Normal")
+  // tracks whether any comment has ever been loaded, purely to pick the
+  // button label ("Load Comments" vs "Load More Comments") — unlike videos,
+  // our block also gates the very first batch, so 0 threads is the normal
+  // starting state, not an empty-page signal.
+  const [hasComments, setHasComments] = useState(() => countThreads() > 0)
   const blockObserverRef = useRef<MutationObserver | null>(null)
   const loadingObserverRef = useRef<MutationObserver | null>(null)
 
@@ -23,8 +29,16 @@ export const useCommentsInfiniteScrollBlocker = () => {
 
   const hideContinuationItem = () => {
     const continuationItem = getCommentsContinuationItem()
+    const threadCount = countThreads()
+
+    if (!continuationItem && threadCount > 0)
+      setCommentsSituation("NoMoreComments")
+    if (!continuationItem && threadCount === 0)
+      setCommentsSituation("NoComments")
+
     if (continuationItem && continuationItem.style.display !== "none") {
       continuationItem.style.display = "none"
+      setCommentsSituation("Normal")
     }
   }
 
@@ -58,17 +72,15 @@ export const useCommentsInfiniteScrollBlocker = () => {
   }, [])
 
   const handleLoadMore = () => {
-    if (isLoading || !hasMore) return
+    if (isLoading || commentsSituation === "NoMoreComments") return
 
     const continuationItem = getCommentsContinuationItem()
     if (!continuationItem) {
-      setHasMore(false)
+      setCommentsSituation("NoMoreComments")
       return
     }
 
-    const threadCountBefore = document.querySelectorAll(
-      "ytd-comments#comments ytd-comment-thread-renderer"
-    ).length
+    const threadCountBefore = countThreads()
 
     setIsLoading(true)
     stopBlocking()
@@ -82,9 +94,7 @@ export const useCommentsInfiniteScrollBlocker = () => {
         setIsLoading(false)
       }
 
-      const threadCountAfter = document.querySelectorAll(
-        "ytd-comments#comments ytd-comment-thread-renderer"
-      ).length
+      const threadCountAfter = countThreads()
 
       if (threadCountAfter > threadCountBefore) {
         stopLoading()
@@ -92,7 +102,7 @@ export const useCommentsInfiniteScrollBlocker = () => {
         startBlocking()
       } else if (!getCommentsContinuationItem()) {
         stopLoading()
-        setHasMore(false)
+        setCommentsSituation("NoMoreComments")
       }
     })
 
@@ -102,5 +112,11 @@ export const useCommentsInfiniteScrollBlocker = () => {
     })
   }
 
-  return { isLoading, hasMore, loadingText, buttonText, handleLoadMore }
+  return {
+    isLoading,
+    commentsSituation,
+    loadingText,
+    buttonText,
+    handleLoadMore
+  }
 }

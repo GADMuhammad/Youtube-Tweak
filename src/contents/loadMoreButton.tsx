@@ -3,6 +3,7 @@ import type { PlasmoCSConfig } from "plasmo"
 
 import { LoadMoreButton } from "~components/LoadMoreButton"
 import { getLoadMoreButtonPlace } from "~helpers/getSelectors"
+import { noMoreText } from "~helpers/translationObject"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
 export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
@@ -16,8 +17,28 @@ export const getStyle = (): HTMLStyleElement => {
 export const getInlineAnchor = getLoadMoreButtonPlace
 
 const loadMoreButton = () => {
-  const { isLoading, loadingText, buttonText, handleLoadMore } =
-    useInfiniteScrollBlocker()
+  const {
+    isLoading,
+    videosSituation,
+    loadingText,
+    buttonText,
+    handleLoadMore
+  } = useInfiniteScrollBlocker()
+
+  // sometimes it happens in youtube like if you have no subscriptions, or you turn of history.
+  if (videosSituation === "NoVideos") return null
+
+  if (videosSituation === "NoMoreVideos") {
+    const currentLang = document.documentElement.lang?.startsWith("ar")
+      ? "ar"
+      : "en"
+
+    return (
+      <div className="custom-btn-container">
+        <p className="no-more-videos-msg">{noMoreText[currentLang]}</p>
+      </div>
+    )
+  }
 
   return (
     <LoadMoreButton

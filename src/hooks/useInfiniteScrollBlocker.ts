@@ -6,7 +6,9 @@ import { loadingButton } from "~helpers/translationObject"
 
 export const useInfiniteScrollBlocker = () => {
   const [isLoading, setIsLoading] = useState(false)
-  const [hasMore, setHasMore] = useState(true)
+  const [videosSituation, setVideosSituation] = useState<
+    "Normal" | "NoMoreVideos" | "NoVideos"
+  >("Normal")
   const blockObserverRef = useRef<MutationObserver | null>(null)
   const loadingObserverRef = useRef<MutationObserver | null>(null)
 
@@ -17,8 +19,23 @@ export const useInfiniteScrollBlocker = () => {
 
   const hideContinuationItem = () => {
     const continuationItem = getContinuationItem()
-    if (continuationItem && continuationItem.style.display !== "none") {
+    const selectors = getPageSelectors()
+    const cleanCardSelector = selectors.card.replace(
+      ":not([data-date-processed])",
+      ""
+    )
+    const numberOfVideos = document.querySelectorAll(cleanCardSelector).length
+    if (!continuationItem && numberOfVideos > 0)
+      setVideosSituation("NoMoreVideos")
+    if (!numberOfVideos) setVideosSituation("NoVideos")
+
+    if (
+      numberOfVideos &&
+      continuationItem &&
+      continuationItem.style.display !== "none"
+    ) {
       continuationItem.style.display = "none"
+      setVideosSituation("Normal")
     }
   }
 
@@ -52,11 +69,11 @@ export const useInfiniteScrollBlocker = () => {
   }, [])
 
   const handleLoadMore = () => {
-    if (isLoading || !hasMore) return
+    if (isLoading || videosSituation === "NoMoreVideos") return
 
     const continuationItem = getContinuationItem()
     if (!continuationItem) {
-      setHasMore(false)
+      setVideosSituation("NoMoreVideos")
       return
     }
 
@@ -83,7 +100,7 @@ export const useInfiniteScrollBlocker = () => {
         startBlocking()
       } else if (!getContinuationItem()) {
         stopLoading()
-        setHasMore(false)
+        setVideosSituation("NoMoreVideos")
       }
     })
 
@@ -93,5 +110,5 @@ export const useInfiniteScrollBlocker = () => {
     })
   }
 
-  return { isLoading, hasMore, loadingText, buttonText, handleLoadMore }
+  return { isLoading, videosSituation, loadingText, buttonText, handleLoadMore }
 }
