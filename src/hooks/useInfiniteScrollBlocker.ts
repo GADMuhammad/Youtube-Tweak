@@ -13,7 +13,7 @@ export const useInfiniteScrollBlocker = () => {
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
-  const { loadingText, loadMoreText } = loadingButton[currentLang]
+  const { loadingText, loadMoreText: buttonText } = loadingButton[currentLang]
 
   const hideContinuationItem = () => {
     const continuationItem = getContinuationItem()
@@ -93,5 +93,5 @@ export const useInfiniteScrollBlocker = () => {
     })
   }
 
-  return { isLoading, hasMore, loadingText, loadMoreText, handleLoadMore }
+  return { isLoading, hasMore, loadingText, buttonText, handleLoadMore }
 }

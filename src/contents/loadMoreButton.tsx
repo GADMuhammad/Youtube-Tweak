@@ -15,8 +15,8 @@ export const getStyle = (): HTMLStyleElement => {
 
 export const getInlineAnchor = getLoadMoreButtonPlace
 
-const LoadMoreButton = () => {
-  const { isLoading, loadingText, loadMoreText, handleLoadMore } =
+const loadMoreButton = () => {
+  const { isLoading, loadingText, buttonText, handleLoadMore } =
     useInfiniteScrollBlocker()
 
   return (
@@ -25,23 +25,10 @@ const LoadMoreButton = () => {
         className={`custom-trigger-btn ${isLoading ? "loading" : ""}`}
         onClick={handleLoadMore}
         disabled={isLoading}>
-        {isLoading ? loadingText : loadMoreText}
+        {isLoading ? loadingText : buttonText}
       </button>
     </div>
   )
-}
-
-const loadMoreButton = () => {
-  const [navKey, setNavKey] = useState(0)
-
-  useEffect(() => {
-    const handleNavigate = () => setNavKey((key) => key + 1)
-    window.addEventListener("yt-navigate-finish", handleNavigate)
-    return () =>
-      window.removeEventListener("yt-navigate-finish", handleNavigate)
-  }, [])
-
-  return <LoadMoreButton key={navKey} />
 }
 
 export default loadMoreButton

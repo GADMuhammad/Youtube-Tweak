@@ -1,6 +1,5 @@
 import cssText from "data-text:~/style.scss"
 import type { PlasmoCSConfig } from "plasmo"
-import { useEffect, useState } from "react"
 
 import { getCommentsPlace } from "~helpers/getSelectors"
 import { useCommentsInfiniteScrollBlocker } from "~hooks/useCommentsInfiniteScrollBlocker"
@@ -15,7 +14,7 @@ export const getStyle = (): HTMLStyleElement => {
 
 export const getInlineAnchor = getCommentsPlace
 
-const LoadMoreCommentsButton = () => {
+const loadMoreCommentsButton = () => {
   const { isLoading, loadingText, buttonText, handleLoadMore } =
     useCommentsInfiniteScrollBlocker()
 
@@ -30,7 +29,5 @@ const LoadMoreCommentsButton = () => {
     </div>
   )
 }
-
-const loadMoreCommentsButton = () => <LoadMoreCommentsButton />
 
 export default loadMoreCommentsButton
