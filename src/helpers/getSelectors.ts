@@ -47,7 +47,11 @@ export function getPageSelectors() {
     }
   }
 
-  if (pathname.match(/\/@[^\/]+\/?$/) || pathname.endsWith("/featured")) {
+  if (
+    pathname.match(/\/@[^\/]+\/?$/) ||
+    pathname.endsWith("/featured") ||
+    pathname === "/watch"
+  ) {
     return {
       card: "yt-lockup-view-model:not([data-date-processed])",
       anchor: "a[href*='watch?v=']",
@@ -83,6 +87,11 @@ export function getContinuationItem(): HTMLElement | null {
       "ytd-playlist-video-list-renderer ytd-continuation-item-renderer"
     )
 
+  if (pathname === "/watch")
+    return queryInActivePage(
+      "ytd-watch-next-secondary-results-renderer ytd-continuation-item-renderer"
+    )
+
   return queryInActivePage(
     "ytd-rich-grid-renderer ytd-continuation-item-renderer"
   )
@@ -100,6 +109,9 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
 
     if (pathname === "/playlist")
       return queryVisible("ytd-playlist-video-list-renderer")
+
+    if (pathname === "/watch")
+      return queryVisible("ytd-watch-next-secondary-results-renderer")
 
     return queryVisible("ytd-rich-grid-renderer")
   }
