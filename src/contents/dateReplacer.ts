@@ -14,7 +14,7 @@ const isArabic = document.documentElement.lang?.startsWith("ar")
 const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
   weekday: "long",
   day: "numeric",
-  month: "short",
+  month: "long",
   year: "numeric"
 })
 
