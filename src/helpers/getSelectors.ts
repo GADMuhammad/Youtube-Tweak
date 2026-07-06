@@ -3,21 +3,21 @@ import type { PlasmoGetInlineAnchor } from "plasmo"
 // YouTube's SPA keeps previous pages' containers in the DOM (toggling a
 // `hidden` ancestor) instead of removing them on client-side navigation, so a
 // plain querySelector can silently match a stale, invisible leftover element.
-function isElementVisible(el: Element | null): el is Element {
-  if (!el) return false
-  if (el.closest("[hidden]")) return false
+function isElementVisible(element: Element | null): element is Element {
+  if (!element) return false
+  if (element.closest("[hidden]")) return false
 
-  const style = window.getComputedStyle(el)
+  const style = window.getComputedStyle(element)
   if (style.display === "none" || style.visibility === "hidden") return false
 
-  const rect = el.getBoundingClientRect()
+  const rect = element.getBoundingClientRect()
   return rect.width > 0 || rect.height > 0
 }
 
 function queryVisible<T extends Element>(selector: string): T | null {
   const candidates = document.querySelectorAll<T>(selector)
-  for (const el of candidates) {
-    if (isElementVisible(el)) return el
+  for (const element of candidates) {
+    if (isElementVisible(element)) return element
   }
   return null
 }
@@ -28,8 +28,8 @@ function queryVisible<T extends Element>(selector: string): T | null {
 // while infinite scroll is blocked).
 function queryInActivePage<T extends Element>(selector: string): T | null {
   const candidates = document.querySelectorAll<T>(selector)
-  for (const el of candidates) {
-    if (!el.closest("[hidden]")) return el
+  for (const element of candidates) {
+    if (!element.closest("[hidden]")) return element
   }
   return null
 }
