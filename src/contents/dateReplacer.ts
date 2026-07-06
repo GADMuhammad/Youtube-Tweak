@@ -66,17 +66,20 @@ export async function processVideosDates() {
   const selectors = getPageSelectors()
   const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
 
-  const cardsArray = Array.from(newCards).filter(
-    (card) =>
-      card.querySelector(selectors.anchor) &&
-      card.querySelector(selectors.dateSpan)
-  ) as HTMLElement[]
+  // Keyed by video ID rather than a plain boolean: YouTube's sort tabs
+  // (Latest/Popular/Oldest) reuse the same card element and swap its
+  // content to a different video instead of removing/re-adding the node,
+  // so a permanent "processed" flag would wrongly keep blocking a recycled
+  // card that now shows a different, unprocessed video.
+  const cardsArray = Array.from(newCards).filter((card) => {
+    const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
+    if (!anchor || !card.querySelector(selectors.dateSpan)) return false
+
+    const videoId = new URL(anchor.href).searchParams.get("v")
+    return card.dataset.dateProcessedFor !== videoId
+  }) as HTMLElement[]
 
   if (!cardsArray.length) return
-
-  cardsArray.forEach((card) => {
-    card.dataset.dateProcessed = "true"
-  })
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
   const videoBatches = createBatches(cardsArray, 3)
@@ -104,6 +107,7 @@ export async function processVideosDates() {
 
         if (exactDateISO) {
           const formattedDate = formatter.format(new Date(exactDateISO))
+          card.dataset.dateProcessedFor = videoId
           if (dateSpan.innerText === formattedDate) return
           dateSpan.innerText = formattedDate
         }
@@ -159,8 +163,8 @@ export function triggerDateProcessor() {
 }
 
 const clearProcessedFlags = () => {
-  document.querySelectorAll("[data-date-processed]").forEach((card) => {
-    delete (card as HTMLElement).dataset.dateProcessed
+  document.querySelectorAll("[data-date-processed-for]").forEach((card) => {
+    delete (card as HTMLElement).dataset.dateProcessedFor
   })
 }
 

@@ -13,27 +13,18 @@ const countVideos = () => {
   if (!container) return 0
 
   const selectors = getPageSelectors()
-  const cleanCardSelector = selectors.card.replace(
-    ":not([data-date-processed])",
-    ""
-  )
   // YouTube reuses the same card wrapper tag for non-video interstitials too
   // (e.g. the "Your watch history is off" notice on an empty feed), so only
   // count elements that actually contain a video-title anchor.
-  return Array.from(container.querySelectorAll(cleanCardSelector)).filter(
+  return Array.from(container.querySelectorAll(selectors.card)).filter(
     (card) => card.querySelector(selectors.anchor)
   ).length
 }
 
-const hasNewContent = () => {
-  const container = getActiveContainer()
-  if (!container) return false
-
-  const selectors = getPageSelectors()
-  return Array.from(container.querySelectorAll(selectors.card)).some((card) =>
-    card.querySelector(selectors.anchor)
-  )
-}
+// "New content" means more video cards than before the load-more click —
+// counting directly rather than relying on any per-card processed marker,
+// since those track date-formatting state, not arrival order.
+const hasNewContent = (countBefore: number) => countVideos() > countBefore
 
 export const useInfiniteScrollBlocker = () => {
   const currentLang = document.documentElement.lang?.startsWith("ar")

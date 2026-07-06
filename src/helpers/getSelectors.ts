@@ -42,7 +42,7 @@ export function getPageSelectors() {
   if (pathname === "/results") {
     return {
       container: "ytd-search",
-      card: "ytd-video-renderer:not([data-date-processed])",
+      card: "ytd-video-renderer",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
     }
@@ -58,7 +58,7 @@ export function getPageSelectors() {
         pathname === "/watch"
           ? "ytd-watch-next-secondary-results-renderer"
           : "ytd-rich-grid-renderer",
-      card: "yt-lockup-view-model:not([data-date-processed])",
+      card: "yt-lockup-view-model",
       anchor: "a[href*='watch?v=']",
       dateSpan:
         "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
@@ -68,7 +68,7 @@ export function getPageSelectors() {
   if (pathname === "/playlist") {
     return {
       container: "ytd-playlist-video-list-renderer",
-      card: "ytd-playlist-video-renderer:not([data-date-processed]).style-scope.ytd-playlist-video-list-renderer",
+      card: "ytd-playlist-video-renderer.style-scope.ytd-playlist-video-list-renderer",
       anchor: "a#video-title",
       dateSpan:
         "yt-formatted-string#video-info span.style-scope.yt-formatted-string"
@@ -77,7 +77,7 @@ export function getPageSelectors() {
 
   return {
     container: "ytd-rich-grid-renderer",
-    card: "ytd-rich-item-renderer:not([data-date-processed])",
+    card: "ytd-rich-item-renderer",
     // href-based (not class-based) so non-video interstitials rendered with
     // the same card/lockup markup — e.g. the "Your watch history is off"
     // notice on an empty feed — don't get counted as a real video card.
