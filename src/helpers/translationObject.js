@@ -57,3 +57,32 @@ export const popupText = {
     back: "رجوع"
   }
 }
+
+export const dateSectionText = {
+  en: {
+    dateType: "Date Type",
+    gregorian: "Gregorian",
+    hijri: "Hijri",
+    weekday: "Weekday Format",
+    weekdayNone: "None",
+    day: "Day Format",
+    month: "Month Format",
+    year: "Year Format",
+    preview: "Preview",
+    previewArabic: "Arabic",
+    previewEnglish: "English"
+  },
+  ar: {
+    dateType: "نوع التاريخ",
+    gregorian: "الميلادي",
+    hijri: "الهجري",
+    weekday: "تنسيق يوم الأسبوع",
+    weekdayNone: "بدون",
+    day: "تنسيق اليوم",
+    month: "تنسيق الشهر",
+    year: "تنسيق السنة",
+    preview: "معاينة التاريخ",
+    previewArabic: "عربي",
+    previewEnglish: "إنجليزي"
+  }
+}
