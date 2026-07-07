@@ -1,6 +1,7 @@
 import { supportSectionText } from "~helpers/translationObject"
 
 import {
+  GitHubIcon,
   InstaPayIcon,
   LinkedInIcon,
   MailIcon,
@@ -17,6 +18,11 @@ const CONTACT_LINKS = [
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/mohgad/",
     icon: <LinkedInIcon />
+  },
+  {
+    label: "GitHub",
+    href: "https://github.com/GADMuhammad",
+    icon: <GitHubIcon />
   },
   {
     label: "Telegram",
