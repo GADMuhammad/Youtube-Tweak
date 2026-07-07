@@ -45,15 +45,11 @@ body {
   background-color: var(--popup-bg);
   color: var(--popup-text);
   padding: 20px;
-  font-family: "Roboto", "Segoe UI", Arial, sans-serif;
+  font-family: "Cairo", "Segoe UI", Arial, sans-serif;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 16px;
-
-  &[dir="rtl"] {
-    font-family: "Cairo", "Segoe UI", Arial, sans-serif;
-  }
 }
 
 .popup-tabbar {
