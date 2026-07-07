@@ -60,6 +60,25 @@ export const popupText = {
   }
 }
 
+export const supportSectionText = {
+  en: {
+    contactTitle: "Suggestions & Feedback",
+    contactDescription:
+      "For suggestions, comments, or to get in touch, reach us through the links below:",
+    supportTitle: "Support This Extension",
+    supportDescription:
+      "Many exciting features and improvements are coming soon. This extension will remain free; to support its ongoing development, you can contribute via the links below."
+  },
+  ar: {
+    contactTitle: "الإقتراحات والتعليقات",
+    contactDescription:
+      "للإقتراحات والتعليقات والتواصل يمكنك التواصل معنا عن طريق الروابط الآتية:",
+    supportTitle: "دعم استمرار تطوير الإضافة",
+    supportDescription:
+      "تنتظر هذه الإضافة الكثير من الميزات والتحسينات القادمة. ستظل الإضافة مجانية دائماً، ولضمان استمراريتها وتطويرها، يمكنك دعمنا عبر أحد الروابط التالية:"
+  }
+}
+
 export const dateSectionText = {
   en: {
     dateType: "Date Type",
