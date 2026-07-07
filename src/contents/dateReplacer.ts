@@ -4,19 +4,35 @@ import "./../style.scss"
 
 import { Storage } from "@plasmohq/storage"
 
+import type { DateFormat } from "~helpers/dateFormat"
+
 import { getPageSelectors } from "../helpers/getSelectors"
 
 const storage = new Storage({ area: "local" })
 
 export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
 
-const isArabic = document.documentElement.lang?.startsWith("ar")
-const formatter = new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
-  weekday: "long",
-  day: "numeric",
-  month: "long",
-  year: "numeric"
-})
+async function createFormatter(): Promise<Intl.DateTimeFormat> {
+  const savedSettings = await storage.get<DateFormat>("dateFormat")
+
+  const dateType = savedSettings?.dateType || "gregorian"
+  const weekday = savedSettings?.weekday || "long"
+  const day = savedSettings?.day || "numeric"
+  const month = savedSettings?.month || "long"
+  const year = savedSettings?.year || "numeric"
+
+  const isArabic = document.documentElement.lang?.startsWith("ar")
+  const calendar = dateType === "hijri" ? "islamic" : "gregory"
+  const weekdayOption = weekday === "none" ? undefined : weekday
+
+  return new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
+    calendar,
+    weekday: weekdayOption,
+    day,
+    month,
+    year
+  })
+}
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
 async function fetchVideoExactISO(videoId: string): Promise<string> {
@@ -62,7 +78,7 @@ function createBatches(
   return allBatches
 }
 
-export async function processVideosDates() {
+export async function processVideosDates(convertCase = "initial") {
   const selectors = getPageSelectors()
   const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
 
@@ -70,6 +86,7 @@ export async function processVideosDates() {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
     const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
     if (!anchor || !span) return false
+    if (convertCase === "update") return true
 
     // const videoId = new URL(anchor.href).searchParams.get("v")
     // return (
@@ -80,6 +97,8 @@ export async function processVideosDates() {
   }) as HTMLElement[]
 
   if (!cardsArray.length) return
+
+  const dynamicFormatter = await createFormatter()
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
   const videoBatches = createBatches(cardsArray, 5)
@@ -102,7 +121,7 @@ export async function processVideosDates() {
       }
 
       if (exactDateISO) {
-        const formattedDate = formatter.format(new Date(exactDateISO))
+        const formattedDate = dynamicFormatter.format(new Date(exactDateISO))
         // card.dataset.dateProcessedFor = videoId
         if (dateSpan.innerText === formattedDate) return
         dateSpan.innerText = formattedDate
@@ -170,3 +189,14 @@ window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 triggerDateProcessor()
+
+// 🚀 مراقبة التغييرات في الـ Storage وتحديث الصفحة فوراً
+storage.watch({
+  dateFormat: async (change) => {
+    // console.log("[YouTube Extension] Date format changed, re-processing...")
+    // const selectors = getPageSelectors()
+    // const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
+
+    await processVideosDates("update")
+  }
+})
