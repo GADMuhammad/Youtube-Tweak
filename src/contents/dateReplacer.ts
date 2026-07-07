@@ -25,7 +25,7 @@ async function createFormatter(): Promise<Intl.DateTimeFormat> {
 
   const isArabic = document.documentElement.lang?.startsWith("ar")
   return new Intl.DateTimeFormat(
-    isArabic ? "ar-EG" : "en-UK",
+    isArabic ? "ar-EG" : "en-GB",
     toIntlOptions(dateFormat)
   )
 }
@@ -43,10 +43,6 @@ async function fetchVideoExactISO(videoId: string): Promise<string> {
     if (match) return match[1] ?? null
     return null
   } catch (e) {
-    console.error(
-      `[YouTube Extension] Error fetching video ISO for ID ${videoId}:`,
-      e
-    )
     return null
   }
 }
@@ -69,7 +65,7 @@ function createBatches(
   }
 
   // Push any remaining cards that didn't fill the last batch completely
-  if (currentBatch.length > 0) allBatches.push(currentBatch)
+  if (currentBatch.length) allBatches.push(currentBatch)
 
   return allBatches
 }
@@ -97,7 +93,7 @@ export async function processVideosDates(convertCase = "initial") {
   const dynamicFormatter = await createFormatter()
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
-  const videoBatches = createBatches(cardsArray, 5)
+  const videoBatches = createBatches(cardsArray, 4)
 
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
@@ -106,7 +102,8 @@ export async function processVideosDates(convertCase = "initial") {
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
       const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-      const videoId = new URL(anchor.href).searchParams.get("v")
+      const videoId = new URL(anchor?.href)?.searchParams.get("v")
+      if (!videoId || videoId === "null") return
 
       const cachedISO = await storage.get<string>(videoId)
       let exactDateISO = cachedISO

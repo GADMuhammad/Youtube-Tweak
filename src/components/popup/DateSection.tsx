@@ -122,13 +122,13 @@ export function DateSection() {
   )
 
   const englishPreview = useMemo(
-    () => new Intl.DateTimeFormat("en-UK", previewOptions).format(PREVIEW_DATE),
+    () => new Intl.DateTimeFormat("en-GB", previewOptions).format(PREVIEW_DATE),
     [previewOptions]
   )
 
   const datePreview = [
-    { label: text.previewArabic, preview: arabicPreview },
-    { label: text.previewEnglish, preview: englishPreview }
+    { label: text.previewArabic, preview: arabicPreview, dir: "rtl" as const },
+    { label: text.previewEnglish, preview: englishPreview, dir: "ltr" as const }
   ]
 
   if (!isLoaded) return <Panel />
@@ -185,10 +185,10 @@ export function DateSection() {
 
       <div className="popup-preview">
         <span className="popup-preview__label">{text.preview}</span>
-        {datePreview.map(({ label, preview }) => (
+        {datePreview.map(({ label, preview, dir }) => (
           <div key={preview} className="popup-preview__row">
             <span className="popup-preview__tag">{label}</span>
-            <span className="popup-preview__value" dir="rtl">
+            <span className="popup-preview__value" dir={dir}>
               {preview}
             </span>
           </div>
