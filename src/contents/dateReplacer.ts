@@ -68,14 +68,15 @@ export async function processVideosDates() {
 
   const cardsArray = Array.from(newCards).filter((card) => {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-    const span = card.querySelector(selectors.dateSpan) as HTMLSpanElement
+    const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
     if (!anchor || !span) return false
 
-    const videoId = new URL(anchor.href).searchParams.get("v")
-    return (
-      card.dataset.dateProcessedFor !== videoId ||
-      (span.innerText.match(/\d/g) || []).length === 1
-    )
+    // const videoId = new URL(anchor.href).searchParams.get("v")
+    // return (
+    //   card.dataset.dateProcessedFor !== videoId ||
+    //   (span.innerText.match(/\d/g) || []).length === 1
+    // )
+    return (span.innerText.match(/\d/g) || []).length <= 2
   }) as HTMLElement[]
 
   if (!cardsArray.length) return
@@ -85,9 +86,7 @@ export async function processVideosDates() {
 
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
-      const anchor = card.querySelector(
-        selectors.anchor
-      ) as HTMLAnchorElement | null
+      const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
 
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
       const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
@@ -104,7 +103,7 @@ export async function processVideosDates() {
 
       if (exactDateISO) {
         const formattedDate = formatter.format(new Date(exactDateISO))
-        card.dataset.dateProcessedFor = videoId
+        // card.dataset.dateProcessedFor = videoId
         if (dateSpan.innerText === formattedDate) return
         dateSpan.innerText = formattedDate
       }
