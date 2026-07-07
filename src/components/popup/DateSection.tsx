@@ -25,29 +25,23 @@ const dateTypeTabs: Tab<DateType>[] = [
 ]
 
 const weekdayTabs: Tab<WeekdayFormat>[] = [
-  { id: "long", label: "long" },
-  { id: "narrow", label: "narrow" },
-  { id: "short", label: "short" },
+  { id: "long" },
+  { id: "narrow" },
+  { id: "short" },
   { id: "none", label: text.weekdayNone }
 ]
 
-const dayTabs: Tab<DayFormat>[] = [
-  { id: "2-digit", label: "2-digit" },
-  { id: "numeric", label: "numeric" }
-]
+const dayTabs: Tab<DayFormat>[] = [{ id: "2-digit" }, { id: "numeric" }]
 
 const monthTabs: Tab<MonthFormat>[] = [
-  { id: "2-digit", label: "2-digit" },
-  { id: "long", label: "long" },
-  { id: "narrow", label: "narrow" },
-  { id: "numeric", label: "numeric" },
-  { id: "short", label: "short" }
+  { id: "2-digit" },
+  { id: "long" },
+  { id: "narrow" },
+  { id: "numeric" },
+  { id: "short" }
 ]
 
-const yearTabs: Tab<YearFormat>[] = [
-  { id: "2-digit", label: "2-digit" },
-  { id: "numeric", label: "numeric" }
-]
+const yearTabs: Tab<YearFormat>[] = [{ id: "2-digit" }, { id: "numeric" }]
 
 interface SettingRowProps<T extends string> {
   label: string
@@ -113,6 +107,11 @@ export function DateSection() {
     [calendar, weekdayOption, day, month, year]
   )
 
+  const datePreview = [
+    { label: text.previewArabic, preview: arabicPreview },
+    { label: text.previewEnglish, preview: englishPreview }
+  ]
+
   return (
     <Panel>
       <div className="popup-settings">
@@ -150,18 +149,15 @@ export function DateSection() {
 
       <div className="popup-preview">
         <span className="popup-preview__label">{text.preview}</span>
-        <div className="popup-preview__row">
-          <span className="popup-preview__tag">{text.previewArabic}</span>
-          <span className="popup-preview__value" dir="rtl">
-            {arabicPreview}
-          </span>
-        </div>
-        <div className="popup-preview__row">
-          <span className="popup-preview__tag">{text.previewEnglish}</span>
-          <span className="popup-preview__value" dir="ltr">
-            {englishPreview}
-          </span>
-        </div>
+
+        {datePreview.map(({ label, preview }) => (
+          <div key={preview} className="popup-preview__row">
+            <span className="popup-preview__tag">{label}</span>
+            <span className="popup-preview__value" dir="rtl">
+              {preview}
+            </span>
+          </div>
+        ))}
       </div>
     </Panel>
   )
