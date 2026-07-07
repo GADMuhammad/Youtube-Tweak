@@ -1,8 +1,8 @@
 {
-  "name": "TrueTube",
-  "displayName": "TrueTube",
+  "name": "Youtube Tweak",
+  "displayName": "Youtube Tweak",
   "version": "0.0.1",
-  "description": "A smart extension to organize youtube for replacing relative date and infinite scroll and more.",
+  "description": "A smart extension to organize youtube for replacing relative date, infinite scroll and more.",
   "author": "Muhammad Gad",
   "scripts": {
     "dev": "plasmo dev",
