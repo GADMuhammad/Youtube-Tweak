@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap");
+
 :root {
   --popup-bg: #f7f7f8;
   --popup-panel-bg: #fff;
@@ -48,6 +50,10 @@ body {
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  &[dir="rtl"] {
+    font-family: "Cairo", "Segoe UI", Arial, sans-serif;
+  }
 }
 
 .popup-tabbar {
