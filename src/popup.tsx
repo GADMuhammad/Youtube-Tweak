@@ -2,8 +2,8 @@ import { useState } from "react"
 
 import { DateSection } from "~components/popup/DateSection"
 import { InfiniteScrollSection } from "~components/popup/InfiniteScrollSection"
-import { MainMenu, type PopupSection } from "~components/popup/MainMenu"
 import { SupportSection } from "~components/popup/SupportSection"
+import { TabBar } from "~components/popup/TabBar"
 import { popupText } from "~helpers/translationObject"
 
 import "~styles/_popup.scss"
@@ -14,31 +14,25 @@ import "~styles/_popup.scss"
 const isArabic = chrome.i18n.getUILanguage().startsWith("ar")
 const text = popupText[isArabic ? "ar" : "en"]
 
-type View = "main" | PopupSection
+type Sections = "date" | "scroll" | "support"
 
 function Popup() {
-  const [view, setView] = useState<View>("main")
-  const goBack = () => setView("main")
+  const [active, setActive] = useState<Sections>("date")
 
   return (
     <div className="popup-root" dir={isArabic ? "rtl" : "ltr"}>
-      {view === "main" && (
-        <MainMenu
-          labels={{
-            date: text.date,
-            scroll: text.scroll,
-            support: text.support
-          }}
-          onSelect={setView}
-        />
-      )}
-      {view === "date" && <DateSection backLabel={text.back} onBack={goBack} />}
-      {view === "scroll" && (
-        <InfiniteScrollSection backLabel={text.back} onBack={goBack} />
-      )}
-      {view === "support" && (
-        <SupportSection backLabel={text.back} onBack={goBack} />
-      )}
+      <TabBar<Sections>
+        active={active}
+        onChange={setActive}
+        tabs={[
+          { id: "date", label: text.date },
+          { id: "scroll", label: text.scroll },
+          { id: "support", label: text.support }
+        ]}
+      />
+      {active === "date" && <DateSection />}
+      {active === "scroll" && <InfiniteScrollSection />}
+      {active === "support" && <SupportSection />}
     </div>
   )
 }

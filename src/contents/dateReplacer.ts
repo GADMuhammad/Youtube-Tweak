@@ -66,17 +66,16 @@ export async function processVideosDates() {
   const selectors = getPageSelectors()
   const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
 
-  // Keyed by video ID rather than a plain boolean: YouTube's sort tabs
-  // (Latest/Popular/Oldest) reuse the same card element and swap its
-  // content to a different video instead of removing/re-adding the node,
-  // so a permanent "processed" flag would wrongly keep blocking a recycled
-  // card that now shows a different, unprocessed video.
   const cardsArray = Array.from(newCards).filter((card) => {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-    if (!anchor || !card.querySelector(selectors.dateSpan)) return false
+    const span = card.querySelector(selectors.dateSpan) as HTMLSpanElement
+    if (!anchor || !span) return false
 
     const videoId = new URL(anchor.href).searchParams.get("v")
-    return card.dataset.dateProcessedFor !== videoId
+    return (
+      card.dataset.dateProcessedFor !== videoId ||
+      (span.innerText.match(/\d/g) || []).length === 1
+    )
   }) as HTMLElement[]
 
   if (!cardsArray.length) return
@@ -93,24 +92,21 @@ export async function processVideosDates() {
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
       const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-      const url = new URL(anchor.href)
-      const videoId = url.searchParams.get("v")
+      const videoId = new URL(anchor.href).searchParams.get("v")
 
-      if (videoId) {
-        const cachedISO = await storage.get<string>(videoId)
-        let exactDateISO = cachedISO
+      const cachedISO = await storage.get<string>(videoId)
+      let exactDateISO = cachedISO
 
-        if (!cachedISO) {
-          exactDateISO = await fetchVideoExactISO(videoId)
-          if (exactDateISO) storage.set(videoId, exactDateISO)
-        }
+      if (!cachedISO) {
+        exactDateISO = await fetchVideoExactISO(videoId)
+        if (exactDateISO) storage.set(videoId, exactDateISO)
+      }
 
-        if (exactDateISO) {
-          const formattedDate = formatter.format(new Date(exactDateISO))
-          card.dataset.dateProcessedFor = videoId
-          if (dateSpan.innerText === formattedDate) return
-          dateSpan.innerText = formattedDate
-        }
+      if (exactDateISO) {
+        const formattedDate = formatter.format(new Date(exactDateISO))
+        card.dataset.dateProcessedFor = videoId
+        if (dateSpan.innerText === formattedDate) return
+        dateSpan.innerText = formattedDate
       }
     })
     await Promise.all(promises)
@@ -161,14 +157,14 @@ export function triggerDateProcessor() {
   return activeObserver
 }
 
-const clearProcessedFlags = () => {
-  document.querySelectorAll("[data-date-processed-for]").forEach((card) => {
-    delete (card as HTMLElement).dataset.dateProcessedFor
-  })
-}
+// const clearProcessedFlags = () => {
+//   document.querySelectorAll("[data-date-processed-for]").forEach((card) => {
+//     delete (card as HTMLElement).dataset.dateProcessedFor
+//   })
+// }
 
 // navigation starts — clear stale flags so new content gets processed
-window.addEventListener("yt-navigate-finish", clearProcessedFlags)
+// window.addEventListener("yt-navigate-finish", clearProcessedFlags)
 
 // page data is applied to the DOM — now actually process the content
 window.addEventListener("yt-page-data-updated", triggerDateProcessor)

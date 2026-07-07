@@ -1,14 +1,5 @@
-import { BackButton } from "./BackButton"
+import { Panel } from "./Panel"
 
-interface DateSectionProps {
-  backLabel: string
-  onBack: () => void
-}
-
-export function DateSection({ backLabel, onBack }: DateSectionProps) {
-  return (
-    <div className="popup-section">
-      <BackButton label={backLabel} onClick={onBack} />
-    </div>
-  )
+export function DateSection() {
+  return <Panel />
 }
