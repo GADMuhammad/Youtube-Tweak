@@ -149,7 +149,6 @@ export function DateSection() {
 
       <div className="popup-preview">
         <span className="popup-preview__label">{text.preview}</span>
-
         {datePreview.map(({ label, preview }) => (
           <div key={preview} className="popup-preview__row">
             <span className="popup-preview__tag">{label}</span>
