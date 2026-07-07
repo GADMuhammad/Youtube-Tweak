@@ -26,7 +26,12 @@ function Popup() {
         onChange={setActive}
         tabs={[
           { id: "date", label: text.date },
-          { id: "scroll", label: text.scroll },
+          {
+            id: "scroll",
+            label: text.scroll,
+            disabled: true,
+            tooltip: text.comingSoon
+          },
           { id: "support", label: text.support }
         ]}
       />
