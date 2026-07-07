@@ -1,5 +1,16 @@
-import { useMemo, useState } from "react"
+import { useStorage } from "@plasmohq/storage/hook"
+import { useMemo } from "react"
 
+import {
+  DATE_FORMAT_STORAGE_KEY,
+  dateFormatStorage,
+  DEFAULT_DATE_FORMAT_CONFIG,
+  type DayFormat,
+  type DateType,
+  type MonthFormat,
+  type WeekdayFormat,
+  type YearFormat
+} from "~helpers/dateFormat"
 import { dateSectionText } from "~helpers/translationObject"
 
 import { Panel } from "./Panel"
@@ -8,12 +19,6 @@ import { TabBar } from "./TabBar"
 
 const isArabic = chrome.i18n.getUILanguage().startsWith("ar")
 const text = dateSectionText[isArabic ? "ar" : "en"]
-
-type DateType = "gregorian" | "hijri"
-type WeekdayFormat = "long" | "narrow" | "short" | "none"
-type DayFormat = "2-digit" | "numeric"
-type MonthFormat = "2-digit" | "long" | "narrow" | "numeric" | "short"
-type YearFormat = "2-digit" | "numeric"
 
 // Fixed rather than `new Date()` so the preview doesn't silently change
 // depending on which weekday/day the user happens to open the popup on.
@@ -70,12 +75,28 @@ function SettingRow<T extends string>({
 }
 
 export function DateSection() {
-  // Defaults mirror the formatter currently hardcoded in dateReplacer.ts.
-  const [dateType, setDateType] = useState<DateType>("gregorian")
-  const [weekday, setWeekday] = useState<WeekdayFormat>("long")
-  const [day, setDay] = useState<DayFormat>("numeric")
-  const [month, setMonth] = useState<MonthFormat>("long")
-  const [year, setYear] = useState<YearFormat>("numeric")
+  // Persisted via chrome.storage so dateReplacer.ts (a separate content
+  // script context) can read the same choice and react live via storage.watch.
+  const [dateType, setDateType] = useStorage<DateType>(
+    { key: DATE_FORMAT_STORAGE_KEY + ".dateType", instance: dateFormatStorage },
+    DEFAULT_DATE_FORMAT_CONFIG.dateType
+  )
+  const [weekday, setWeekday] = useStorage<WeekdayFormat>(
+    { key: DATE_FORMAT_STORAGE_KEY + ".weekday", instance: dateFormatStorage },
+    DEFAULT_DATE_FORMAT_CONFIG.weekday
+  )
+  const [day, setDay] = useStorage<DayFormat>(
+    { key: DATE_FORMAT_STORAGE_KEY + ".day", instance: dateFormatStorage },
+    DEFAULT_DATE_FORMAT_CONFIG.day
+  )
+  const [month, setMonth] = useStorage<MonthFormat>(
+    { key: DATE_FORMAT_STORAGE_KEY + ".month", instance: dateFormatStorage },
+    DEFAULT_DATE_FORMAT_CONFIG.month
+  )
+  const [year, setYear] = useStorage<YearFormat>(
+    { key: DATE_FORMAT_STORAGE_KEY + ".year", instance: dateFormatStorage },
+    DEFAULT_DATE_FORMAT_CONFIG.year
+  )
 
   const calendar = dateType === "hijri" ? "islamic" : "gregory"
 
