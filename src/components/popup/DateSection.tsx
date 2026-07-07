@@ -2,12 +2,13 @@ import { useEffect, useMemo, useState } from "react"
 
 import { Storage } from "@plasmohq/storage"
 
-import type {
-  DateFormat,
-  DateType,
-  MonthFormat,
-  WeekdayFormat,
-  Year_DayFormat
+import {
+  toIntlOptions,
+  type DateFormat,
+  type DateType,
+  type MonthFormat,
+  type WeekdayFormat,
+  type Year_DayFormat
 } from "~helpers/dateFormat"
 import { dateSectionText } from "~helpers/translationObject"
 
@@ -81,11 +82,12 @@ export function DateSection() {
   const [day, setDay] = useState<Year_DayFormat>("numeric")
   const [month, setMonth] = useState<MonthFormat>("long")
   const [year, setYear] = useState<Year_DayFormat>("numeric")
+  const [isLoaded, setIsLoaded] = useState(false)
 
-  const calendar = dateType === "hijri" ? "islamic" : "gregory"
-  // Intl has no "none" weekday token — showing no weekday just means
-  // omitting the option entirely.
-  const weekdayOption = weekday === "none" ? undefined : weekday
+  const previewOptions = useMemo(
+    () => toIntlOptions({ dateType, weekday, day, month, year }),
+    [dateType, weekday, day, month, year]
+  )
 
   useEffect(() => {
     async function loadSettings() {
@@ -97,6 +99,7 @@ export function DateSection() {
         if (savedSettings.month) setMonth(savedSettings.month)
         if (savedSettings.year) setYear(savedSettings.year)
       }
+      setIsLoaded(true)
     }
     loadSettings()
   }, [])
@@ -114,33 +117,21 @@ export function DateSection() {
   }
 
   const arabicPreview = useMemo(
-    () =>
-      new Intl.DateTimeFormat("ar-EG", {
-        calendar,
-        weekday: weekdayOption,
-        day,
-        month,
-        year
-      }).format(PREVIEW_DATE),
-    [calendar, weekdayOption, day, month, year]
+    () => new Intl.DateTimeFormat("ar-EG", previewOptions).format(PREVIEW_DATE),
+    [previewOptions]
   )
 
   const englishPreview = useMemo(
-    () =>
-      new Intl.DateTimeFormat("en-UK", {
-        calendar,
-        weekday: weekdayOption,
-        day,
-        month,
-        year
-      }).format(PREVIEW_DATE),
-    [calendar, weekdayOption, day, month, year]
+    () => new Intl.DateTimeFormat("en-UK", previewOptions).format(PREVIEW_DATE),
+    [previewOptions]
   )
 
   const datePreview = [
     { label: text.previewArabic, preview: arabicPreview },
     { label: text.previewEnglish, preview: englishPreview }
   ]
+
+  if (!isLoaded) return <Panel />
 
   return (
     <Panel>

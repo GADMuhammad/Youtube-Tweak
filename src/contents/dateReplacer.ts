@@ -4,7 +4,7 @@ import "./../style.scss"
 
 import { Storage } from "@plasmohq/storage"
 
-import type { DateFormat } from "~helpers/dateFormat"
+import { toIntlOptions, type DateFormat } from "~helpers/dateFormat"
 
 import { getPageSelectors } from "../helpers/getSelectors"
 
@@ -15,23 +15,19 @@ export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
 async function createFormatter(): Promise<Intl.DateTimeFormat> {
   const savedSettings = await storage.get<DateFormat>("dateFormat")
 
-  const dateType = savedSettings?.dateType || "gregorian"
-  const weekday = savedSettings?.weekday || "long"
-  const day = savedSettings?.day || "numeric"
-  const month = savedSettings?.month || "long"
-  const year = savedSettings?.year || "numeric"
+  const dateFormat: DateFormat = {
+    dateType: savedSettings?.dateType || "gregorian",
+    weekday: savedSettings?.weekday || "long",
+    day: savedSettings?.day || "numeric",
+    month: savedSettings?.month || "long",
+    year: savedSettings?.year || "numeric"
+  }
 
   const isArabic = document.documentElement.lang?.startsWith("ar")
-  const calendar = dateType === "hijri" ? "islamic" : "gregory"
-  const weekdayOption = weekday === "none" ? undefined : weekday
-
-  return new Intl.DateTimeFormat(isArabic ? "ar-EG" : "en-UK", {
-    calendar,
-    weekday: weekdayOption,
-    day,
-    month,
-    year
-  })
+  return new Intl.DateTimeFormat(
+    isArabic ? "ar-EG" : "en-UK",
+    toIntlOptions(dateFormat)
+  )
 }
 
 // Fetch the video page source code and extract the clean ISO date using RegExp
@@ -192,11 +188,15 @@ triggerDateProcessor()
 
 // 🚀 مراقبة التغييرات في الـ Storage وتحديث الصفحة فوراً
 storage.watch({
-  dateFormat: async (change) => {
-    // console.log("[YouTube Extension] Date format changed, re-processing...")
-    // const selectors = getPageSelectors()
-    // const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
-
-    await processVideosDates("update")
+  dateFormat: async () => {
+    // Shares the isProcessing guard with the MutationObserver's debounced
+    // run below so a popup change mid-scroll can't interleave with it.
+    if (isProcessing) return
+    try {
+      isProcessing = true
+      await processVideosDates("update")
+    } finally {
+      isProcessing = false
+    }
   }
 })
