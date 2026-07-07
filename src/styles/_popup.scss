@@ -110,7 +110,7 @@ body {
   &::after {
     content: attr(data-tooltip);
     position: absolute;
-    bottom: calc(100% + 10px);
+    top: calc(100% + 10px);
     left: 50%;
     transform: translateX(-50%);
     background-color: #26262a;
@@ -127,13 +127,13 @@ body {
   &::before {
     content: "";
     position: absolute;
-    bottom: calc(100% + 5px);
+    top: calc(100% + 5px);
     left: 50%;
     transform: translateX(-50%);
     width: 0;
     height: 0;
     border: 5px solid transparent;
-    border-top-color: #26262a;
+    border-bottom-color: #26262a;
     z-index: 10;
   }
 }
