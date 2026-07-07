@@ -48,13 +48,15 @@ export const popupText = {
     date: "Date",
     scroll: "Infinite Scroll",
     support: "Support & Contact",
-    back: "Back"
+    back: "Back",
+    comingSoon: "Coming Soon"
   },
   ar: {
     date: "التاريخ",
     scroll: "التمرير اللانهائي",
     support: "التواصل والدعم",
-    back: "رجوع"
+    back: "رجوع",
+    comingSoon: "قريباً"
   }
 }
 

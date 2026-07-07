@@ -1,15 +1,14 @@
-import { useStorage } from "@plasmohq/storage/hook"
-import { useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
+
+import { Storage } from "@plasmohq/storage"
 
 import {
-  DATE_FORMAT_STORAGE_KEY,
-  dateFormatStorage,
-  DEFAULT_DATE_FORMAT_CONFIG,
-  type DayFormat,
+  toIntlOptions,
+  type DateFormat,
   type DateType,
   type MonthFormat,
   type WeekdayFormat,
-  type YearFormat
+  type Year_DayFormat
 } from "~helpers/dateFormat"
 import { dateSectionText } from "~helpers/translationObject"
 
@@ -19,6 +18,8 @@ import { TabBar } from "./TabBar"
 
 const isArabic = chrome.i18n.getUILanguage().startsWith("ar")
 const text = dateSectionText[isArabic ? "ar" : "en"]
+
+const storage = new Storage({ area: "local" })
 
 // Fixed rather than `new Date()` so the preview doesn't silently change
 // depending on which weekday/day the user happens to open the popup on.
@@ -36,7 +37,7 @@ const weekdayTabs: Tab<WeekdayFormat>[] = [
   { id: "none", label: text.weekdayNone }
 ]
 
-const dayTabs: Tab<DayFormat>[] = [{ id: "2-digit" }, { id: "numeric" }]
+const dayTabs: Tab<Year_DayFormat>[] = [{ id: "2-digit" }, { id: "numeric" }]
 
 const monthTabs: Tab<MonthFormat>[] = [
   { id: "2-digit" },
@@ -46,7 +47,7 @@ const monthTabs: Tab<MonthFormat>[] = [
   { id: "short" }
 ]
 
-const yearTabs: Tab<YearFormat>[] = [{ id: "2-digit" }, { id: "numeric" }]
+const yearTabs: Tab<Year_DayFormat>[] = [{ id: "2-digit" }, { id: "numeric" }]
 
 interface SettingRowProps<T extends string> {
   label: string
@@ -75,63 +76,62 @@ function SettingRow<T extends string>({
 }
 
 export function DateSection() {
-  // Persisted via chrome.storage so dateReplacer.ts (a separate content
-  // script context) can read the same choice and react live via storage.watch.
-  const [dateType, setDateType] = useStorage<DateType>(
-    { key: DATE_FORMAT_STORAGE_KEY + ".dateType", instance: dateFormatStorage },
-    DEFAULT_DATE_FORMAT_CONFIG.dateType
-  )
-  const [weekday, setWeekday] = useStorage<WeekdayFormat>(
-    { key: DATE_FORMAT_STORAGE_KEY + ".weekday", instance: dateFormatStorage },
-    DEFAULT_DATE_FORMAT_CONFIG.weekday
-  )
-  const [day, setDay] = useStorage<DayFormat>(
-    { key: DATE_FORMAT_STORAGE_KEY + ".day", instance: dateFormatStorage },
-    DEFAULT_DATE_FORMAT_CONFIG.day
-  )
-  const [month, setMonth] = useStorage<MonthFormat>(
-    { key: DATE_FORMAT_STORAGE_KEY + ".month", instance: dateFormatStorage },
-    DEFAULT_DATE_FORMAT_CONFIG.month
-  )
-  const [year, setYear] = useStorage<YearFormat>(
-    { key: DATE_FORMAT_STORAGE_KEY + ".year", instance: dateFormatStorage },
-    DEFAULT_DATE_FORMAT_CONFIG.year
+  // Defaults mirror the formatter currently hardcoded in dateReplacer.ts.
+  const [dateType, setDateType] = useState<DateType>("gregorian")
+  const [weekday, setWeekday] = useState<WeekdayFormat>("long")
+  const [day, setDay] = useState<Year_DayFormat>("numeric")
+  const [month, setMonth] = useState<MonthFormat>("long")
+  const [year, setYear] = useState<Year_DayFormat>("numeric")
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  const previewOptions = useMemo(
+    () => toIntlOptions({ dateType, weekday, day, month, year }),
+    [dateType, weekday, day, month, year]
   )
 
-  const calendar = dateType === "hijri" ? "islamic" : "gregory"
+  useEffect(() => {
+    async function loadSettings() {
+      const savedSettings = await storage.get<DateFormat>("dateFormat")
+      if (savedSettings) {
+        if (savedSettings.dateType) setDateType(savedSettings.dateType)
+        if (savedSettings.weekday) setWeekday(savedSettings.weekday)
+        if (savedSettings.day) setDay(savedSettings.day)
+        if (savedSettings.month) setMonth(savedSettings.month)
+        if (savedSettings.year) setYear(savedSettings.year)
+      }
+      setIsLoaded(true)
+    }
+    loadSettings()
+  }, [])
 
-  // Intl has no "none" weekday token — showing no weekday just means
-  // omitting the option entirely.
-  const weekdayOption = weekday === "none" ? undefined : weekday
+  const saveToStorage = async (updatedFields: Partial<DateFormat>) => {
+    const currentSettings: DateFormat = {
+      dateType,
+      weekday,
+      day,
+      month,
+      year,
+      ...updatedFields
+    }
+    await storage.set("dateFormat", currentSettings)
+  }
 
   const arabicPreview = useMemo(
-    () =>
-      new Intl.DateTimeFormat("ar-EG", {
-        calendar,
-        weekday: weekdayOption,
-        day,
-        month,
-        year
-      }).format(PREVIEW_DATE),
-    [calendar, weekdayOption, day, month, year]
+    () => new Intl.DateTimeFormat("ar-EG", previewOptions).format(PREVIEW_DATE),
+    [previewOptions]
   )
 
   const englishPreview = useMemo(
-    () =>
-      new Intl.DateTimeFormat("en-UK", {
-        calendar,
-        weekday: weekdayOption,
-        day,
-        month,
-        year
-      }).format(PREVIEW_DATE),
-    [calendar, weekdayOption, day, month, year]
+    () => new Intl.DateTimeFormat("en-UK", previewOptions).format(PREVIEW_DATE),
+    [previewOptions]
   )
 
   const datePreview = [
     { label: text.previewArabic, preview: arabicPreview },
     { label: text.previewEnglish, preview: englishPreview }
   ]
+
+  if (!isLoaded) return <Panel />
 
   return (
     <Panel>
@@ -140,31 +140,46 @@ export function DateSection() {
           label={text.dateType}
           tabs={dateTypeTabs}
           active={dateType}
-          onChange={setDateType}
+          onChange={(val) => {
+            setDateType(val)
+            saveToStorage({ dateType: val })
+          }}
         />
         <SettingRow<WeekdayFormat>
           label={text.weekday}
           tabs={weekdayTabs}
           active={weekday}
-          onChange={setWeekday}
+          onChange={(val) => {
+            setWeekday(val)
+            saveToStorage({ weekday: val })
+          }}
         />
-        <SettingRow<DayFormat>
+        <SettingRow<Year_DayFormat>
           label={text.day}
           tabs={dayTabs}
           active={day}
-          onChange={setDay}
+          onChange={(val) => {
+            setDay(val)
+            saveToStorage({ day: val })
+          }}
         />
         <SettingRow<MonthFormat>
           label={text.month}
           tabs={monthTabs}
           active={month}
-          onChange={setMonth}
+          onChange={(val) => {
+            setMonth(val)
+            saveToStorage({ month: val })
+          }}
         />
-        <SettingRow<YearFormat>
+        <SettingRow<Year_DayFormat>
           label={text.year}
           tabs={yearTabs}
           active={year}
-          onChange={setYear}
+          onChange={(val) => {
+            setYear(val)
+            saveToStorage({ year: val })
+          }}
         />
       </div>
 
