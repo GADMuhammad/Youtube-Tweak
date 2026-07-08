@@ -46,6 +46,7 @@ async function fetchVideoExactISO(videoId: string): Promise<string> {
     return null
   }
 }
+
 // 📦 Helper function to split the detected video cards into smaller groups (batches)
 function createBatches(
   cardsArray: HTMLElement[],
@@ -168,17 +169,8 @@ export function triggerDateProcessor() {
   return activeObserver
 }
 
-// const clearProcessedFlags = () => {
-//   document.querySelectorAll("[data-date-processed-for]").forEach((card) => {
-//     delete (card as HTMLElement).dataset.dateProcessedFor
-//   })
-// }
-
-// navigation starts — clear stale flags so new content gets processed
-// window.addEventListener("yt-navigate-finish", clearProcessedFlags)
-
 // page data is applied to the DOM — now actually process the content
-window.addEventListener("yt-page-data-updated", triggerDateProcessor)
+// window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 triggerDateProcessor()
@@ -186,12 +178,6 @@ triggerDateProcessor()
 // 🚀 مراقبة التغييرات في الـ Storage وتحديث الصفحة فوراً
 storage.watch({
   dateFormat: () => {
-    // Deliberately ignores the isProcessing guard: the "update" pass only
-    // touches cards already marked dateProcessedFor, while any in-flight
-    // fetch batch only touches cards that aren't yet — disjoint sets, so
-    // running both at once is safe. Guarding on isProcessing here would
-    // silently drop a format change made mid-fetch until some later
-    // mutation happened to trigger another run.
     processVideosDates("update")
   }
 })
