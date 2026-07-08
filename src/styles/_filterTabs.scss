@@ -71,8 +71,11 @@
 
 // hide shorts section:
 ytd-browse[page-subtype="subscriptions"]
-  ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer,
-ytd-browse[page-subtype="subscriptions"]
-  ytd-rich-section-renderer:has(#rich-shelf-header-container) {
+  ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer {
   display: none !important;
+}
+
+// hide "latest" word
+h2.style-scope.ytd-shelf-renderer {
+  display: none;
 }
