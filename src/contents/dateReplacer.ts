@@ -80,12 +80,11 @@ export async function processVideosDates(convertCase = "initial") {
     if (!anchor || !span) return false
     if (convertCase === "update") return true
 
-    // const videoId = new URL(anchor.href).searchParams.get("v")
-    // return (
-    //   card.dataset.dateProcessedFor !== videoId ||
-    //   (span.innerText.match(/\d/g) || []).length === 1
-    // )
-    return (span.innerText.match(/\d/g) || []).length <= 2
+    const videoId = new URL(anchor.href).searchParams.get("v")
+    return (
+      card.dataset.dateProcessedFor !== videoId ||
+      (span.innerText.match(/\d/g) || []).length <= 2
+    )
   }) as HTMLElement[]
 
   if (!cardsArray.length) return
@@ -115,7 +114,7 @@ export async function processVideosDates(convertCase = "initial") {
 
       if (exactDateISO) {
         const formattedDate = dynamicFormatter.format(new Date(exactDateISO))
-        // card.dataset.dateProcessedFor = videoId
+        card.dataset.dateProcessedFor = videoId
         if (dateSpan.innerText === formattedDate) return
         dateSpan.innerText = formattedDate
       }
