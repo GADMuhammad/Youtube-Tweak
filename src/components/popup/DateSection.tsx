@@ -116,19 +116,72 @@ export function DateSection() {
     await storage.set("dateFormat", currentSettings)
   }
 
+  const settingRows: {
+    label: string
+    tabs: Tab<string>[]
+    active: string
+    onChange: (value: string) => void
+  }[] = [
+    {
+      label: text.dateType,
+      tabs: dateTypeTabs,
+      active: dateType,
+      onChange: (val) => {
+        setDateType(val as DateType)
+        saveToStorage({ dateType: val as DateType })
+      }
+    },
+    {
+      label: text.weekday,
+      tabs: weekdayTabs,
+      active: weekday,
+      onChange: (val) => {
+        setWeekday(val as WeekdayFormat)
+        saveToStorage({ weekday: val as WeekdayFormat })
+      }
+    },
+    {
+      label: text.day,
+      tabs: dayTabs,
+      active: day,
+      onChange: (val) => {
+        setDay(val as Year_DayFormat)
+        saveToStorage({ day: val as Year_DayFormat })
+      }
+    },
+    {
+      label: text.month,
+      tabs: monthTabs,
+      active: month,
+      onChange: (val) => {
+        setMonth(val as MonthFormat)
+        saveToStorage({ month: val as MonthFormat })
+      }
+    },
+    {
+      label: text.year,
+      tabs: yearTabs,
+      active: year,
+      onChange: (val) => {
+        setYear(val as Year_DayFormat)
+        saveToStorage({ year: val as Year_DayFormat })
+      }
+    }
+  ]
+
   const arabicPreview = useMemo(
     () => new Intl.DateTimeFormat("ar-EG", previewOptions).format(PREVIEW_DATE),
     [previewOptions]
   )
 
   const englishPreview = useMemo(
-    () => new Intl.DateTimeFormat("en-UK", previewOptions).format(PREVIEW_DATE),
+    () => new Intl.DateTimeFormat("en-GB", previewOptions).format(PREVIEW_DATE),
     [previewOptions]
   )
 
   const datePreview = [
-    { label: text.previewArabic, preview: arabicPreview },
-    { label: text.previewEnglish, preview: englishPreview }
+    { label: text.previewArabic, preview: arabicPreview, dir: "rtl" as const },
+    { label: text.previewEnglish, preview: englishPreview, dir: "ltr" as const }
   ]
 
   if (!isLoaded) return <Panel />
@@ -136,59 +189,17 @@ export function DateSection() {
   return (
     <Panel>
       <div className="popup-settings">
-        <SettingRow<DateType>
-          label={text.dateType}
-          tabs={dateTypeTabs}
-          active={dateType}
-          onChange={(val) => {
-            setDateType(val)
-            saveToStorage({ dateType: val })
-          }}
-        />
-        <SettingRow<WeekdayFormat>
-          label={text.weekday}
-          tabs={weekdayTabs}
-          active={weekday}
-          onChange={(val) => {
-            setWeekday(val)
-            saveToStorage({ weekday: val })
-          }}
-        />
-        <SettingRow<Year_DayFormat>
-          label={text.day}
-          tabs={dayTabs}
-          active={day}
-          onChange={(val) => {
-            setDay(val)
-            saveToStorage({ day: val })
-          }}
-        />
-        <SettingRow<MonthFormat>
-          label={text.month}
-          tabs={monthTabs}
-          active={month}
-          onChange={(val) => {
-            setMonth(val)
-            saveToStorage({ month: val })
-          }}
-        />
-        <SettingRow<Year_DayFormat>
-          label={text.year}
-          tabs={yearTabs}
-          active={year}
-          onChange={(val) => {
-            setYear(val)
-            saveToStorage({ year: val })
-          }}
-        />
+        {settingRows.map((row) => (
+          <SettingRow key={row.label} {...row} />
+        ))}
       </div>
 
       <div className="popup-preview">
         <span className="popup-preview__label">{text.preview}</span>
-        {datePreview.map(({ label, preview }) => (
+        {datePreview.map(({ label, preview, dir }) => (
           <div key={preview} className="popup-preview__row">
             <span className="popup-preview__tag">{label}</span>
-            <span className="popup-preview__value" dir="rtl">
+            <span className="popup-preview__value" dir={dir}>
               {preview}
             </span>
           </div>

@@ -25,7 +25,7 @@ async function createFormatter(): Promise<Intl.DateTimeFormat> {
 
   const isArabic = document.documentElement.lang?.startsWith("ar")
   return new Intl.DateTimeFormat(
-    isArabic ? "ar-EG" : "en-UK",
+    isArabic ? "ar-EG" : "en-GB",
     toIntlOptions(dateFormat)
   )
 }
@@ -43,13 +43,10 @@ async function fetchVideoExactISO(videoId: string): Promise<string> {
     if (match) return match[1] ?? null
     return null
   } catch (e) {
-    console.error(
-      `[YouTube Extension] Error fetching video ISO for ID ${videoId}:`,
-      e
-    )
     return null
   }
 }
+
 // 📦 Helper function to split the detected video cards into smaller groups (batches)
 function createBatches(
   cardsArray: HTMLElement[],
@@ -69,7 +66,7 @@ function createBatches(
   }
 
   // Push any remaining cards that didn't fill the last batch completely
-  if (currentBatch.length > 0) allBatches.push(currentBatch)
+  if (currentBatch.length) allBatches.push(currentBatch)
 
   return allBatches
 }
@@ -82,14 +79,14 @@ export async function processVideosDates(convertCase = "initial") {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
     const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
     if (!anchor || !span) return false
-    if (convertCase === "update") return true
+    if (convertCase === "update") return card.dataset.dateProcessedFor
 
-    // const videoId = new URL(anchor.href).searchParams.get("v")
-    // return (
-    //   card.dataset.dateProcessedFor !== videoId ||
-    //   (span.innerText.match(/\d/g) || []).length === 1
-    // )
-    return (span.innerText.match(/\d/g) || []).length <= 2
+    const videoId = new URL(anchor.href).searchParams.get("v")
+
+    return (
+      card.dataset.dateProcessedFor !== videoId ||
+      (span.innerText.match(/\d/g) || []).length <= 2
+    )
   }) as HTMLElement[]
 
   if (!cardsArray.length) return
@@ -106,7 +103,8 @@ export async function processVideosDates(convertCase = "initial") {
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
       const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-      const videoId = new URL(anchor.href).searchParams.get("v")
+      const videoId = new URL(anchor?.href)?.searchParams.get("v")
+      if (!videoId || videoId === "null") return
 
       const cachedISO = await storage.get<string>(videoId)
       let exactDateISO = cachedISO
@@ -118,7 +116,7 @@ export async function processVideosDates(convertCase = "initial") {
 
       if (exactDateISO) {
         const formattedDate = dynamicFormatter.format(new Date(exactDateISO))
-        // card.dataset.dateProcessedFor = videoId
+        card.dataset.dateProcessedFor = videoId
         if (dateSpan.innerText === formattedDate) return
         dateSpan.innerText = formattedDate
       }
@@ -171,32 +169,15 @@ export function triggerDateProcessor() {
   return activeObserver
 }
 
-// const clearProcessedFlags = () => {
-//   document.querySelectorAll("[data-date-processed-for]").forEach((card) => {
-//     delete (card as HTMLElement).dataset.dateProcessedFor
-//   })
-// }
-
-// navigation starts — clear stale flags so new content gets processed
-// window.addEventListener("yt-navigate-finish", clearProcessedFlags)
-
 // page data is applied to the DOM — now actually process the content
-window.addEventListener("yt-page-data-updated", triggerDateProcessor)
+// window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 triggerDateProcessor()
 
 // 🚀 مراقبة التغييرات في الـ Storage وتحديث الصفحة فوراً
 storage.watch({
-  dateFormat: async () => {
-    // Shares the isProcessing guard with the MutationObserver's debounced
-    // run below so a popup change mid-scroll can't interleave with it.
-    if (isProcessing) return
-    try {
-      isProcessing = true
-      await processVideosDates("update")
-    } finally {
-      isProcessing = false
-    }
+  dateFormat: () => {
+    processVideosDates("update")
   }
 })
