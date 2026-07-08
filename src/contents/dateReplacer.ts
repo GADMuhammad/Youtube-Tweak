@@ -99,12 +99,13 @@ export async function processVideosDates(convertCase = "initial") {
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
       const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
+      if (!anchor) return
 
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
       const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-      const videoId = new URL(anchor?.href)?.searchParams.get("v")
-      if (!videoId || videoId === "null") return
+      const videoId = new URL(anchor.href).searchParams.get("v")
+      if (!videoId) return
 
       const cachedISO = await storage.get<string>(videoId)
       let exactDateISO = cachedISO
