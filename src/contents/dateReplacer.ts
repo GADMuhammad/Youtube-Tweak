@@ -185,15 +185,13 @@ triggerDateProcessor()
 
 // 🚀 مراقبة التغييرات في الـ Storage وتحديث الصفحة فوراً
 storage.watch({
-  dateFormat: async () => {
-    // Shares the isProcessing guard with the MutationObserver's debounced
-    // run below so a popup change mid-scroll can't interleave with it.
-    if (isProcessing) return
-    try {
-      isProcessing = true
-      await processVideosDates("update")
-    } finally {
-      isProcessing = false
-    }
+  dateFormat: () => {
+    // Deliberately ignores the isProcessing guard: the "update" pass only
+    // touches cards already marked dateProcessedFor, while any in-flight
+    // fetch batch only touches cards that aren't yet — disjoint sets, so
+    // running both at once is safe. Guarding on isProcessing here would
+    // silently drop a format change made mid-fetch until some later
+    // mutation happened to trigger another run.
+    processVideosDates("update")
   }
 })
