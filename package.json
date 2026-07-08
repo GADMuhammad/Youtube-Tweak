@@ -1,7 +1,7 @@
 {
   "name": "youtube-tweak",
   "displayName": "Youtube Tweak",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "A smart extension to organize youtube for replacing relative date, infinite scroll and more.",
   "author": "Muhammad Gad",
   "scripts": {
