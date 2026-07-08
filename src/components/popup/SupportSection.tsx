@@ -1,3 +1,5 @@
+import { type ReactNode } from "react"
+
 import { supportSectionText } from "~helpers/translationObject"
 
 import {
@@ -52,7 +54,7 @@ const DONATION_LINKS = [
 interface LinkRowProps {
   label: string
   href: string
-  icon: React.ReactNode
+  icon: ReactNode
 }
 
 function LinkRow({ label, href, icon }: LinkRowProps) {

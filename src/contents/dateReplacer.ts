@@ -93,7 +93,7 @@ export async function processVideosDates(convertCase = "initial") {
   const dynamicFormatter = await createFormatter()
 
   // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
-  const videoBatches = createBatches(cardsArray, 4)
+  const videoBatches = createBatches(cardsArray, 5)
 
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
