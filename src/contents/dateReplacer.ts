@@ -78,9 +78,10 @@ export async function processVideosDates(convertCase = "initial") {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
     const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
     if (!anchor || !span) return false
-    if (convertCase === "update") return true
+    if (convertCase === "update") return card.dataset.dateProcessedFor
 
     const videoId = new URL(anchor.href).searchParams.get("v")
+
     return (
       card.dataset.dateProcessedFor !== videoId ||
       (span.innerText.match(/\d/g) || []).length <= 2
