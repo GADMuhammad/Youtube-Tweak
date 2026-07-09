@@ -1,33 +1,32 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# YouTube Tweak 🚀
 
-## Getting Started
+A lightweight Chrome extension designed to declutter the YouTube user interface, restore sanity to your timeline, and eliminate addictive UI patterns. Built for developers and power users who value their time and focus.
 
-First, run the development server:
+## ✨ Features
 
-```bash
-pnpm dev
-# or
-npm run dev
-```
+### 🟢 Available Now
+- **Feed Filtering:** Filter the Subscriptions page to show either Videos or Shorts.
+- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing.
+- **Absolute Timestamps:** Display the exact publication date instead of relative timestamps (e.g., "2 days ago").
+- **Customization:** Choose your preferred date format.
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
+### 🟡 Coming Soon
+- **Granular Control:** Choose which pages should use the Load More button.
+- **Content Filtering:** Hide videos based on keywords in their titles.
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
+### 🔵 Planned
+- **Smart Grouping:** Group videos on the Subscriptions page by publication date, with each day's uploads displayed in a separate section.
 
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
+## 🛠️ Tech Stack
 
-## Making production build
+- **Core:** JavaScript / TypeScript 
+- **Platform:** Chrome Extensions API (Manifest V3)
+- **Styling & DOM:** Tailwind CSS / Native DOM Utilities
 
-Run the following:
+## 📦 Installation (Local/Developer Mode)
 
-```bash
-pnpm build
-# or
-npm run build
-```
+If you want to run or test this project locally from the source code:
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
-
-## Submit to the webstores
-
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+1. Clone this repository to your local machine:
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/youtube-tweak.git](https://github.com/YOUR_USERNAME/youtube-tweak.git)
