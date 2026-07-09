@@ -85,8 +85,7 @@ export async function processVideosDates(convertCase = "initial") {
   const cardsArray = Array.from(newCards).filter((card) => {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
 
-    const dateSpans = card.querySelectorAll(selectors.dateSpan)
-    const span = dateSpans[dateSpans.length - 1] as HTMLSpanElement
+    const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
 
     if (!anchor || !span) return false
     if (convertCase === "update") return card.dataset.dateProcessedFor

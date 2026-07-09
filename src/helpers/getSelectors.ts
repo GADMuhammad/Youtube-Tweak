@@ -65,13 +65,29 @@ export function getPageSelectors() {
     }
   }
 
-  if (pathname === "/playlist") {
+  if (
+    pathname === "/playlist" &&
+    document.querySelector("ytd-playlist-video-list-renderer")
+  ) {
     return {
       container: "ytd-playlist-video-list-renderer",
       card: "ytd-playlist-video-renderer.style-scope.ytd-playlist-video-list-renderer",
       anchor: "a#video-title",
       dateSpan:
         "yt-formatted-string#video-info span.style-scope.yt-formatted-string"
+    }
+  }
+
+  if (
+    pathname === "/playlist" &&
+    document.querySelector("yt-section-list-renderer")
+  ) {
+    return {
+      container: "yt-section-list-renderer",
+      card: "yt-lockup-view-model",
+      anchor: "a.ytLockupMetadataViewModelTitle, a[href*='watch?v=']",
+      dateSpan:
+        "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
     }
   }
 
@@ -123,8 +139,17 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
     if (pathname === "/results")
       return queryVisible("ytd-search ytd-section-list-renderer")
 
-    if (pathname === "/playlist")
+    if (
+      pathname === "/playlist" &&
+      document.querySelector("ytd-playlist-video-list-renderer")
+    )
       return queryVisible("ytd-playlist-video-list-renderer")
+
+    if (
+      pathname === "/playlist" &&
+      document.querySelector("yt-section-list-renderer")
+    )
+      return queryVisible("yt-item-section-renderer")
 
     if (pathname === "/watch")
       return queryVisible("ytd-watch-next-secondary-results-renderer")
