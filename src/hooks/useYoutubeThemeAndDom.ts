@@ -6,6 +6,12 @@ export default function useYoutubeThemeAndDom() {
   )
 
   useEffect(() => {
+    // Hide 'latest' H2 to replace it with filter buttons:
+    const latestTextH2 = document.querySelector<HTMLElement>(
+      "h2.style-scope.ytd-shelf-renderer"
+    )
+    if (latestTextH2) latestTextH2.style.display = "none"
+
     // targeting the outside host element
     const allPlasmoCsuis = document.querySelectorAll("plasmo-csui")
 

@@ -77,6 +77,6 @@ ytd-browse[page-subtype="subscriptions"]
 }
 
 // hide "latest" word
-ytd-browse[page-subtype="subscriptions"] h2.ytd-shelf-renderer {
+ytd-browse[page-subtype="subscriptions"] h2.style-scope.ytd-shelf-renderer {
   display: none !important;
 }
