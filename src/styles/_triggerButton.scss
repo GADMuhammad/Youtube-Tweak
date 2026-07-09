@@ -1,0 +1,112 @@
+.custom-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  clear: both;
+}
+
+.custom-trigger-btn {
+  font-size: 16px;
+  background-color: #ff0000;
+  color: #ffffff;
+  border-radius: 50px;
+  padding: 16px 40px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  letter-spacing: 0.5px;
+  word-spacing: 2px;
+
+  &:hover {
+    transform: scale(1.04);
+    background-color: #cc0000;
+    box-shadow: 0 12px 30px rgba(255, 0, 0, 0.3);
+    -webkit-transform: scale(1.04);
+    -moz-transform: scale(1.04);
+    -ms-transform: scale(1.04);
+    -o-transform: scale(1.04);
+  }
+
+  &:disabled:hover {
+    transform: scale(1);
+    -webkit-transform: scale(1);
+    -moz-transform: scale(1);
+    -ms-transform: scale(1);
+    -o-transform: scale(1);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.loading {
+    background-color: #555555;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+}
+
+.custom-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+  clear: both;
+}
+
+.custom-trigger-btn {
+  font-family: inherit;
+  font-size: 16px;
+  background-color: #ff0000;
+  color: #ffffff;
+  border-radius: 50px;
+  padding: 16px 40px;
+  border: none;
+  box-shadow: 0 8px 25px rgba(255, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  letter-spacing: 0.5px;
+  word-spacing: 2px;
+
+  &:hover {
+    transform: scale(1.04);
+    background-color: #cc0000;
+    box-shadow: 0 12px 30px rgba(255, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+
+  &.loading {
+    background-color: #555555;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.8;
+  }
+}
+
+.custom-btn-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 24px 0;
+
+  .no-more-videos-msg {
+    font-size: 1.7rem;
+    font-weight: 500;
+    font-family: "Roboto", "Arial", sans-serif;
+
+    // يوتيوب بيستخدم المتغيرات دي للـ Dark/Light mode تلقائياً
+    color: var(--yt-spec-text-secondary, #606060);
+
+    padding: 12px 24px;
+    margin: 0;
+    text-align: center;
+    letter-spacing: 0.1px;
+  }
+}
