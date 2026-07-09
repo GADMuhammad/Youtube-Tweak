@@ -1,3 +1,7 @@
+<p align="center">
+  <a href="https://github.com/DenverCoder1/readme-typing-svg"><img src="https://readme-typing-svg.herokuapp.com/?lines=New+Extension;Making+Youtube+Simplier;Stay+tuned&font=Fira+Code&center=true&width=440&height=45&color=f75c7e&vCenter=true&size=22"></a>
+</p> 
+
 # YouTube Tweak 🚀
 
 A lightweight Chrome extension designed to declutter the YouTube user interface, restore sanity to your timeline, and eliminate addictive UI patterns. Built for developers and power users who value their time and focus.
