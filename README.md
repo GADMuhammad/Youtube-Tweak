@@ -21,7 +21,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 
 - **Core:** JavaScript / TypeScript / React
 - **Platform:** Chrome Extensions API (Manifest V3)
-- **Styling & DOM:** SASS
+- **Styling & DOM:** SASS / Native DOM Utilities
 
 ## 📦 Installation (Local/Developer Mode)
 
