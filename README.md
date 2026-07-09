@@ -3,7 +3,6 @@
 </p> 
 
 # YouTube Tweak 🚀
-#### version 1.0.0
 
 A lightweight Chrome extension designed to declutter the YouTube user interface, restore sanity to your timeline, and eliminate addictive UI patterns. Built for developers and power users who value their time and focus.
 
