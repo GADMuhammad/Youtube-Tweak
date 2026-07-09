@@ -1,5 +1,5 @@
 import cssText from "data-text:~/style.scss"
-import type { PlasmoCSConfig, PlasmoGetInlineAnchor } from "plasmo"
+import type { PlasmoCSConfig } from "plasmo"
 import { useEffect, useState } from "react"
 
 import { getFilterPlace } from "~helpers/getSelectors"

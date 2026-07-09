@@ -1,7 +1,5 @@
 import type { PlasmoCSConfig } from "plasmo"
 
-import "./../style.scss"
-
 import { Storage } from "@plasmohq/storage"
 
 import { toIntlOptions, type DateFormat } from "~helpers/dateFormat"
@@ -9,6 +7,15 @@ import { toIntlOptions, type DateFormat } from "~helpers/dateFormat"
 import { getPageSelectors } from "../helpers/getSelectors"
 
 const storage = new Storage({ area: "local" })
+
+function getVideoId(anchor: HTMLAnchorElement): string | null {
+  const url = new URL(anchor.href)
+
+  const longVideoId = url.searchParams.get("v")
+  const shortVideoId = url.pathname.split("/")[2]
+
+  return longVideoId || shortVideoId || null
+}
 
 export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
 
@@ -77,11 +84,14 @@ export async function processVideosDates(convertCase = "initial") {
 
   const cardsArray = Array.from(newCards).filter((card) => {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-    const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
+
+    const dateSpans = card.querySelectorAll(selectors.dateSpan)
+    const span = dateSpans[dateSpans.length - 1] as HTMLSpanElement
+
     if (!anchor || !span) return false
     if (convertCase === "update") return card.dataset.dateProcessedFor
 
-    const videoId = new URL(anchor.href).searchParams.get("v")
+    const videoId = getVideoId(anchor)
 
     return (
       card.dataset.dateProcessedFor !== videoId ||
@@ -99,12 +109,11 @@ export async function processVideosDates(convertCase = "initial") {
   for (const batch of videoBatches) {
     const promises = batch.map(async (card) => {
       const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-      if (!anchor) return
 
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
       const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-      const videoId = new URL(anchor.href).searchParams.get("v")
+      const videoId = getVideoId(anchor)
       if (!videoId) return
 
       const cachedISO = await storage.get<string>(videoId)

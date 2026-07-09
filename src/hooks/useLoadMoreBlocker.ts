@@ -37,9 +37,9 @@ export const useLoadMoreBlocker = ({
     const continuationItem = getContinuationItem()
     const itemCount = countItems()
 
-    if (!continuationItem && itemCount > 0) setSituation("NoMore")
+    if (!continuationItem && itemCount) setSituation("NoMore")
     else if (!continuationItem && !itemCount) setSituation("None")
-    else if (blockWhenEmpty || itemCount > 0) setSituation("Normal")
+    else if (blockWhenEmpty || itemCount) setSituation("Normal")
 
     // Hiding is a one-off side effect, kept independent of the situation
     // above: on SPA navigation YouTube can reuse the same continuation node

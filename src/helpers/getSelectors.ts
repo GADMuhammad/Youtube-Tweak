@@ -78,13 +78,10 @@ export function getPageSelectors() {
   return {
     container: "ytd-rich-grid-renderer",
     card: "ytd-rich-item-renderer",
-    // href-based (not class-based) so non-video interstitials rendered with
-    // the same card/lockup markup — e.g. the "Your watch history is off"
-    // notice on an empty feed — don't get counted as a real video card.
     anchor:
       "a.ytLockupMetadataViewModelTitle[href*='watch?v='], a[href*='/shorts/']",
     dateSpan:
-      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
+      "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label], #metadata-line span.inline-metadata-item"
   }
 }
 
