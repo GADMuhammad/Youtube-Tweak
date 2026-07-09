@@ -32,6 +32,33 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 If you want to run or test this project locally from the source code:
 
 1. Clone this repository to your local machine:
+
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/youtube-tweak.git](https://github.com/YOUR_USERNAME/youtube-tweak.git)
+   git clone https://github.com/YOUR_USERNAME/youtube-tweak.git
+   cd youtube-tweak
    ```
+
+2. Install dependencies with [pnpm](https://pnpm.io/):
+
+   ```bash
+   pnpm install
+   ```
+
+3. Start the development build:
+
+   ```bash
+   pnpm dev
+   ```
+
+4. Load the extension into Chrome:
+   - Open `chrome://extensions`
+   - Enable **Developer mode** (top right)
+   - Click **Load unpacked** and select the generated `build/chrome-mv3-dev` folder
+
+## 🚀 Scripts
+
+| Command        | Description                                           |
+| -------------- | ----------------------------------------------------- |
+| `pnpm dev`     | Run the extension in development mode with hot reload |
+| `pnpm build`   | Create a production build                             |
+| `pnpm package` | Package the production build into a distributable zip |
