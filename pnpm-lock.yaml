@@ -36,21 +36,12 @@ importers:
       '@types/react-dom':
         specifier: 18.2.18
         version: 18.2.18
-      autoprefixer:
-        specifier: ^10.5.2
-        version: 10.5.2(postcss@8.5.15)
-      postcss:
-        specifier: ^8.5.15
-        version: 8.5.15
       prettier:
         specifier: 3.2.4
         version: 3.2.4
       sass:
         specifier: ^1.101.0
         version: 1.101.0
-      tailwindcss:
-        specifier: ^4.3.1
-        version: 4.3.1
       typescript:
         specifier: 5.3.3
         version: 5.3.3
@@ -1670,13 +1661,6 @@ packages:
     resolution: {integrity: sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==}
     engines: {node: '>=8'}
 
-  autoprefixer@10.5.2:
-    resolution: {integrity: sha512-rD5t5DwOjJdmSORcTq64j8MawTC+tbQ+HHqjR4NDumamy/ambn1UJrlKL+KdwujWxMkFjPM3pPHOEA9tl4767Q==}
-    engines: {node: ^10 || ^12 || >=14}
-    hasBin: true
-    peerDependencies:
-      postcss: ^8.1.0
-
   axobject-query@3.2.4:
     resolution: {integrity: sha512-aPTElBrbifBU1krmZxGZOlBkslORe7Ll7+BDnI50Wy4LgOt69luMgevkDfTq1O/ZgprooPCtWpjCwKSZw/iZ4A==}
     engines: {node: '>= 0.4'}
@@ -2019,9 +2003,6 @@ packages:
   form-data-encoder@4.1.0:
     resolution: {integrity: sha512-G6NsmEW15s0Uw9XnCg+33H3ViYRyiM0hMrMhhqQOR8NFc5GhYrI+6I3u7OTw7b91J2g8rtvMBZJDbcGb2YUniw==}
     engines: {node: '>= 18'}
-
-  fraction.js@5.3.4:
-    resolution: {integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==}
 
   fs-extra@11.1.1:
     resolution: {integrity: sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==}
@@ -2908,9 +2889,6 @@ packages:
     resolution: {integrity: sha512-TyzE4NVGLUFy+H/Uy4N6c3G0HEeprsVfge6Lmq+0FdQQ/zqoVYB62IsBZORsiL+o96s6ff/V6/3UQo/C0cgCAA==}
     engines: {node: '>=10.13.0'}
     hasBin: true
-
-  tailwindcss@4.3.1:
-    resolution: {integrity: sha512-hk+TB1m+K8CYNrP6rjQaq/Y+4Zylwpa87mLYBKCunwnnQ9p+fHb7kmSfGqyEJoxF/O6CDyABWVFEafNSYKll+Q==}
 
   temp-dir@3.0.0:
     resolution: {integrity: sha512-nHc6S/bwIilKHNRgK/3jlhDoIHcp45YgyiwcAk46Tr0LfEqGBVpmiAyuiuxeVE44m3mXnEeVhaipLOEWmH+Njw==}
@@ -4935,15 +4913,6 @@ snapshots:
 
   array-union@2.1.0: {}
 
-  autoprefixer@10.5.2(postcss@8.5.15):
-    dependencies:
-      browserslist: 4.28.4
-      caniuse-lite: 1.0.30001799
-      fraction.js: 5.3.4
-      picocolors: 1.1.1
-      postcss: 8.5.15
-      postcss-value-parser: 4.2.0
-
   axobject-query@3.2.4: {}
 
   base-x@3.0.11:
@@ -5297,8 +5266,6 @@ snapshots:
   form-data-encoder@2.1.4: {}
 
   form-data-encoder@4.1.0: {}
-
-  fraction.js@5.3.4: {}
 
   fs-extra@11.1.1:
     dependencies:
@@ -6170,8 +6137,6 @@ snapshots:
       picocolors: 1.1.1
       sax: 1.6.0
       stable: 0.1.8
-
-  tailwindcss@4.3.1: {}
 
   temp-dir@3.0.0: {}
 
