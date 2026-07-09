@@ -19,6 +19,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 
 ## 🛠️ Tech Stack
 
+- **Framework:** [Plasmo](https://www.plasmo.com/) (The Browser Extension Framework)
 - **Core:** JavaScript / TypeScript / React
 - **Platform:** Chrome Extensions API (Manifest V3)
 - **Styling & DOM:** SASS / Native DOM Utilities
