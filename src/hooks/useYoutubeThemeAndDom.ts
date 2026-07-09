@@ -11,6 +11,14 @@ export default function useYoutubeThemeAndDom() {
       "h2.style-scope.ytd-shelf-renderer"
     )
     if (latestTextH2) latestTextH2.style.display = "none"
+
+    const shortsSection = document.querySelector(
+      "ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer, ytd-rich-section-renderer:has(#rich-shelf-header-container)"
+    ) as HTMLElement
+
+    if (shortsSection) {
+      shortsSection.style.setProperty("display", "none", "important")
+    }
   }
 
   useEffect(() => {
