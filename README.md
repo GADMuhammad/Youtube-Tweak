@@ -49,7 +49,7 @@ If you want to run or test this project locally from the source code:
 
 4. Load the extension into Chrome:
    - Open `chrome://extensions`
-   - Enable **Developer mode** (top right)
+   - Enable **Developer mode** (top right or left)
    - Click **Load unpacked** and select the generated `build/chrome-mv3-dev` folder
 
 ## 🚀 Scripts
