@@ -65,7 +65,6 @@ function getCardsFromMutations(
   mutations.forEach((mutation) => {
     for (const node of mutation.addedNodes) {
       if (!(node instanceof HTMLElement)) continue
-
       if (node.matches(cardSelector)) cards.add(node)
 
       node
@@ -77,28 +76,25 @@ function getCardsFromMutations(
   return Array.from(cards)
 }
 
-// 📦 Helper function to split the detected video cards into smaller groups (batches)
-function createBatches(
-  cardsArray: HTMLElement[],
-  batchSize: number
-): HTMLElement[][] {
-  const allBatches: HTMLElement[][] = []
-  let currentBatch: HTMLElement[] = []
+// Concurrency Lanes to get absolute dates faster:
+async function processWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>
+): Promise<void> {
+  let nextIndex = 0
 
-  for (const card of cardsArray) {
-    currentBatch.push(card)
-
-    // Once the current batch reaches the specified size (5 for example), push it and reset
-    if (currentBatch.length === batchSize) {
-      allBatches.push(currentBatch)
-      currentBatch = []
+  async function runLane(): Promise<void> {
+    while (nextIndex < items.length) {
+      const item = items[nextIndex++]
+      await worker(item)
     }
   }
 
-  // Push any remaining cards that didn't fill the last batch completely
-  if (currentBatch.length) allBatches.push(currentBatch)
-
-  return allBatches
+  // تشغيل الحارات جنب بعضها بالتوازي بناءً على الـ limit المحدد
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, runLane)
+  )
 }
 
 export async function processVideosDates(
@@ -127,12 +123,12 @@ export async function processVideosDates(
   if (!cardsArray.length) return
 
   const dynamicFormatter = await createFormatter()
+  const FETCH_CONCURRENCY_LIMIT = 8
 
-  // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
-  const videoBatches = createBatches(cardsArray, 10)
-
-  for (const batch of videoBatches) {
-    const promises = batch.map(async (card) => {
+  await processWithConcurrency(
+    cardsArray,
+    FETCH_CONCURRENCY_LIMIT,
+    async (card) => {
       const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
 
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
@@ -155,9 +151,8 @@ export async function processVideosDates(
         if (dateSpan.innerText === formattedDate) return
         dateSpan.innerText = formattedDate
       }
-    })
-    await Promise.all(promises)
-  }
+    }
+  )
 }
 
 // Let's debounce processing Videos Dates:
