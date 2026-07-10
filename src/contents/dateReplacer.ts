@@ -101,6 +101,27 @@ function createBatches(
   return allBatches
 }
 
+// Concurrency Lanes to get absolute dates faster:
+async function processWithConcurrency<T>(
+  items: T[],
+  limit: number,
+  worker: (item: T) => Promise<void>
+): Promise<void> {
+  let nextIndex = 0
+
+  async function runLane(): Promise<void> {
+    while (nextIndex < items.length) {
+      const item = items[nextIndex++]
+      await worker(item)
+    }
+  }
+
+  // تشغيل الحارات جنب بعضها بالتوازي بناءً على الـ limit المحدد
+  await Promise.all(
+    Array.from({ length: Math.min(limit, items.length) }, runLane)
+  )
+}
+
 export async function processVideosDates(
   convertCase = "initial",
   candidateCards?: HTMLElement[]
@@ -127,12 +148,12 @@ export async function processVideosDates(
   if (!cardsArray.length) return
 
   const dynamicFormatter = await createFormatter()
+  const FETCH_CONCURRENCY_LIMIT = 7 // عدد الحارات الشغالة بالتوازي
 
-  // Split the filtered cards into smaller batches, with a size of 5 cards per batch.
-  const videoBatches = createBatches(cardsArray, 10)
-
-  for (const batch of videoBatches) {
-    const promises = batch.map(async (card) => {
+  await processWithConcurrency(
+    cardsArray,
+    FETCH_CONCURRENCY_LIMIT,
+    async (card) => {
       const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
 
       const dateSpans = card.querySelectorAll(selectors.dateSpan)
@@ -155,9 +176,8 @@ export async function processVideosDates(
         if (dateSpan.innerText === formattedDate) return
         dateSpan.innerText = formattedDate
       }
-    })
-    await Promise.all(promises)
-  }
+    }
+  )
 }
 
 // Let's debounce processing Videos Dates:
