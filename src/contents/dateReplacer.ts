@@ -84,7 +84,6 @@ export async function processVideosDates(convertCase = "initial") {
 
   const cardsArray = Array.from(newCards).filter((card) => {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-
     const span = card.querySelector<HTMLSpanElement>(selectors.dateSpan)
 
     if (!anchor || !span) return false
@@ -152,15 +151,14 @@ export function triggerDateProcessor() {
     debounceTimer = setTimeout(async () => {
       if (isProcessing) return
 
-      const selectors = getPageSelectors()
-      const unprocessedCards = document.querySelectorAll<HTMLElement>(
-        selectors.card
-      )
+      const { card, anchor, dateSpan } = getPageSelectors()
+      const unprocessedCards = document.querySelectorAll<HTMLElement>(card)
 
       const cardsArray = Array.from(unprocessedCards).filter(
         (card) =>
-          card.querySelector(selectors.anchor) &&
-          card.querySelector(selectors.dateSpan)
+          card.querySelector(anchor) &&
+          card.querySelector(dateSpan) &&
+          !card.dataset.dateProcessedFor
       ) as HTMLElement[]
 
       if (cardsArray.length) {
