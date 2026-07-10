@@ -169,23 +169,29 @@ export function triggerDateProcessor() {
 
   if (activeObserver) return activeObserver
   activeObserver = new MutationObserver((mutations) => {
-    const { card } = getPageSelectors()
-    const newCards = getCardsFromMutations(mutations, card)
-    if (!newCards.length) return
-
-    newCards.forEach((card) => pendingCards.add(card))
+    // 1. رجعنا للشرط القديم المضمون: لو حصل أي إضافة نودز في الصفحة (حتى لو سبينر يوتيوب)
+    const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
+    if (!hasNewNodes) return
 
     if (debounceTimer) clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(async () => {
       if (isProcessing) return
 
-      const cardsToProcess = Array.from(pendingCards)
-      pendingCards.clear()
+      // 2. اقش كل الكروت الحالية في الصفحة عشان نضمن إن فلاتر يوتيوب اتلقطت
+      const selectors = getPageSelectors()
+      const allCards = document.querySelectorAll<HTMLElement>(selectors.card)
+
+      const cardsToProcess = Array.from(allCards).filter(
+        (card) =>
+          card.querySelector(selectors.anchor) &&
+          card.querySelector(selectors.dateSpan)
+      )
 
       if (cardsToProcess.length) {
         try {
           isProcessing = true
+          // 3. ابعت الكروت دي لمنظومتك الذكية اللي هتعديهم على الكاش والـ Observer فوراً!
           await processVideosDates("initial", cardsToProcess)
         } finally {
           isProcessing = false
