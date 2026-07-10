@@ -98,6 +98,36 @@ async function processWithConcurrency<T>(
   )
 }
 
+// دالة بتفحص الكارت: لو متخزن بتحدثه فوراً وترجع true، لو مش متخزن ترجع false
+async function checkCardCache(
+  card: HTMLElement,
+  selectors: any,
+  dynamicFormatter: Intl.DateTimeFormat
+): Promise<boolean> {
+  const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
+  if (!anchor) return false
+
+  const videoId = getVideoId(anchor)
+  if (!videoId) return false
+
+  const cachedISO = await storage.get<string>(videoId)
+
+  if (cachedISO) {
+    const dateSpans = card.querySelectorAll(selectors.dateSpan)
+    const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
+
+    const formattedDate = dynamicFormatter.format(new Date(cachedISO))
+    card.dataset.dateProcessedFor = videoId
+
+    if (dateSpan.innerText !== formattedDate) {
+      dateSpan.innerText = formattedDate
+    }
+    return true // الكارت كان في الكاش وتحدث بنجاح
+  }
+
+  return false // الكارت مش في الكاش ومحتاج نت
+}
+
 export async function processVideosDates(
   convertCase = "initial",
   candidateCards?: HTMLElement[]
@@ -132,41 +162,8 @@ export async function processVideosDates(
     // 1. افحص الكاش فوراً
     const isCached = await checkCardCache(card, selectors, dynamicFormatter)
 
-    // 2. لو مش في الكاش، خليه يقف في طابور المراقبة وميعملش Fetch غير لما يظهر على الشاشة
-    if (!isCached) {
-      observer.observe(card)
-    }
+    if (!isCached) observer.observe(card)
   }
-}
-
-// دالة بتفحص الكارت: لو متخزن بتحدثه فوراً وترجع true، لو مش متخزن ترجع false
-async function checkCardCache(
-  card: HTMLElement,
-  selectors: any,
-  dynamicFormatter: Intl.DateTimeFormat
-): Promise<boolean> {
-  const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-  if (!anchor) return false
-
-  const videoId = getVideoId(anchor)
-  if (!videoId) return false
-
-  const cachedISO = await storage.get<string>(videoId)
-
-  if (cachedISO) {
-    const dateSpans = card.querySelectorAll(selectors.dateSpan)
-    const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
-
-    const formattedDate = dynamicFormatter.format(new Date(cachedISO))
-    card.dataset.dateProcessedFor = videoId
-
-    if (dateSpan.innerText !== formattedDate) {
-      dateSpan.innerText = formattedDate
-    }
-    return true // الكارت كان في الكاش وتحدث بنجاح
-  }
-
-  return false // الكارت مش في الكاش ومحتاج نت
 }
 
 let intersectionObserver: IntersectionObserver | null = null
