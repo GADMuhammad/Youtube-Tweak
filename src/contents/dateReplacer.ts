@@ -62,7 +62,7 @@ function getCardsFromMutations(
   // using (set) instaed of regular array to prevent reputations.
   const cards = new Set<HTMLElement>()
 
-  for (const mutation of mutations) {
+  mutations.forEach((mutation) => {
     for (const node of mutation.addedNodes) {
       if (!(node instanceof HTMLElement)) continue
 
@@ -72,7 +72,7 @@ function getCardsFromMutations(
         .querySelectorAll<HTMLElement>(cardSelector)
         .forEach((card) => cards.add(card))
     }
-  }
+  })
 
   return Array.from(cards)
 }
