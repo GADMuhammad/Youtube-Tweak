@@ -77,30 +77,6 @@ function getCardsFromMutations(
   return Array.from(cards)
 }
 
-// 📦 Helper function to split the detected video cards into smaller groups (batches)
-function createBatches(
-  cardsArray: HTMLElement[],
-  batchSize: number
-): HTMLElement[][] {
-  const allBatches: HTMLElement[][] = []
-  let currentBatch: HTMLElement[] = []
-
-  for (const card of cardsArray) {
-    currentBatch.push(card)
-
-    // Once the current batch reaches the specified size (5 for example), push it and reset
-    if (currentBatch.length === batchSize) {
-      allBatches.push(currentBatch)
-      currentBatch = []
-    }
-  }
-
-  // Push any remaining cards that didn't fill the last batch completely
-  if (currentBatch.length) allBatches.push(currentBatch)
-
-  return allBatches
-}
-
 // Concurrency Lanes to get absolute dates faster:
 async function processWithConcurrency<T>(
   items: T[],
@@ -148,36 +124,96 @@ export async function processVideosDates(
   if (!cardsArray.length) return
 
   const dynamicFormatter = await createFormatter()
-  const FETCH_CONCURRENCY_LIMIT = 7 // عدد الحارات الشغالة بالتوازي
 
-  await processWithConcurrency(
-    cardsArray,
-    FETCH_CONCURRENCY_LIMIT,
-    async (card) => {
-      const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
+  // 🚀 تشغيل المنظومة الذكية: الكاش أولاً، والنت يستنى الـ Observer
+  const observer = getIntersectionObserver(selectors, dynamicFormatter)
 
-      const dateSpans = card.querySelectorAll(selectors.dateSpan)
-      const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
+  for (const card of cardsArray) {
+    // 1. افحص الكاش فوراً
+    const isCached = await checkCardCache(card, selectors, dynamicFormatter)
 
-      const videoId = getVideoId(anchor)
-      if (!videoId) return
-
-      const cachedISO = await storage.get<string>(videoId)
-      let exactDateISO = cachedISO
-
-      if (!cachedISO) {
-        exactDateISO = await fetchVideoExactISO(videoId)
-        if (exactDateISO) storage.set(videoId, exactDateISO)
-      }
-
-      if (exactDateISO) {
-        const formattedDate = dynamicFormatter.format(new Date(exactDateISO))
-        card.dataset.dateProcessedFor = videoId
-        if (dateSpan.innerText === formattedDate) return
-        dateSpan.innerText = formattedDate
-      }
+    // 2. لو مش في الكاش، خليه يقف في طابور المراقبة وميعملش Fetch غير لما يظهر على الشاشة
+    if (!isCached) {
+      observer.observe(card)
     }
+  }
+}
+
+// دالة بتفحص الكارت: لو متخزن بتحدثه فوراً وترجع true، لو مش متخزن ترجع false
+async function checkCardCache(
+  card: HTMLElement,
+  selectors: any,
+  dynamicFormatter: Intl.DateTimeFormat
+): Promise<boolean> {
+  const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
+  if (!anchor) return false
+
+  const videoId = getVideoId(anchor)
+  if (!videoId) return false
+
+  const cachedISO = await storage.get<string>(videoId)
+
+  if (cachedISO) {
+    const dateSpans = card.querySelectorAll(selectors.dateSpan)
+    const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
+
+    const formattedDate = dynamicFormatter.format(new Date(cachedISO))
+    card.dataset.dateProcessedFor = videoId
+
+    if (dateSpan.innerText !== formattedDate) {
+      dateSpan.innerText = formattedDate
+    }
+    return true // الكارت كان في الكاش وتحدث بنجاح
+  }
+
+  return false // الكارت مش في الكاش ومحتاج نت
+}
+
+let intersectionObserver: IntersectionObserver | null = null
+function getIntersectionObserver(
+  selectors: any,
+  dynamicFormatter: Intl.DateTimeFormat
+) {
+  if (intersectionObserver) return intersectionObserver
+
+  intersectionObserver = new IntersectionObserver(
+    (entries) => {
+      const cardsToFetch: HTMLElement[] = []
+
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const card = entry.target as HTMLElement
+          cardsToFetch.push(card)
+          intersectionObserver?.unobserve(card) // خلاص لقطناه، وقف مراقبته
+        }
+      })
+
+      // الكروت اللي ظهرت قدام العين ومش في الكاش، بنشغلها جوه الحارات المتوازية لطلب النت
+      if (cardsToFetch.length > 0) {
+        processWithConcurrency(cardsToFetch, 7, async (card) => {
+          const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
+          const dateSpans = card.querySelectorAll(selectors.dateSpan)
+          const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
+
+          const videoId = getVideoId(anchor)
+          if (!videoId) return
+
+          const exactDateISO = await fetchVideoExactISO(videoId)
+          if (exactDateISO) {
+            storage.set(videoId, exactDateISO)
+            const formattedDate = dynamicFormatter.format(
+              new Date(exactDateISO)
+            )
+            card.dataset.dateProcessedFor = videoId
+            dateSpan.innerText = formattedDate
+          }
+        })
+      }
+    },
+    { rootMargin: "200px" }
   )
+
+  return intersectionObserver
 }
 
 // Let's debounce processing Videos Dates:
@@ -188,7 +224,6 @@ let activeObserver: MutationObserver | null = null
 // Accumulates cards across mutation batches so a debounce reset never drops
 // cards discovered by an earlier batch.
 const pendingCards = new Set<HTMLElement>()
-
 export function triggerDateProcessor() {
   processVideosDates()
 
@@ -222,9 +257,6 @@ export function triggerDateProcessor() {
   activeObserver.observe(document.body, { childList: true, subtree: true })
   return activeObserver
 }
-
-// page data is applied to the DOM — now actually process the content
-// window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 triggerDateProcessor()
