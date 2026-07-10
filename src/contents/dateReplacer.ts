@@ -65,7 +65,6 @@ function getCardsFromMutations(
   mutations.forEach((mutation) => {
     for (const node of mutation.addedNodes) {
       if (!(node instanceof HTMLElement)) continue
-
       if (node.matches(cardSelector)) cards.add(node)
 
       node
@@ -98,36 +97,6 @@ async function processWithConcurrency<T>(
   )
 }
 
-// دالة بتفحص الكارت: لو متخزن بتحدثه فوراً وترجع true، لو مش متخزن ترجع false
-async function checkCardCache(
-  card: HTMLElement,
-  selectors: any,
-  dynamicFormatter: Intl.DateTimeFormat
-): Promise<boolean> {
-  const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-  if (!anchor) return false
-
-  const videoId = getVideoId(anchor)
-  if (!videoId) return false
-
-  const cachedISO = await storage.get<string>(videoId)
-
-  if (cachedISO) {
-    const dateSpans = card.querySelectorAll(selectors.dateSpan)
-    const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
-
-    const formattedDate = dynamicFormatter.format(new Date(cachedISO))
-    card.dataset.dateProcessedFor = videoId
-
-    if (dateSpan.innerText !== formattedDate) {
-      dateSpan.innerText = formattedDate
-    }
-    return true // الكارت كان في الكاش وتحدث بنجاح
-  }
-
-  return false // الكارت مش في الكاش ومحتاج نت
-}
-
 export async function processVideosDates(
   convertCase = "initial",
   candidateCards?: HTMLElement[]
@@ -154,63 +123,36 @@ export async function processVideosDates(
   if (!cardsArray.length) return
 
   const dynamicFormatter = await createFormatter()
+  const FETCH_CONCURRENCY_LIMIT = 8
 
-  // 🚀 تشغيل المنظومة الذكية: الكاش أولاً، والنت يستنى الـ Observer
-  const observer = getIntersectionObserver(selectors, dynamicFormatter)
+  await processWithConcurrency(
+    cardsArray,
+    FETCH_CONCURRENCY_LIMIT,
+    async (card) => {
+      const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
 
-  for (const card of cardsArray) {
-    // 1. افحص الكاش فوراً
-    const isCached = await checkCardCache(card, selectors, dynamicFormatter)
+      const dateSpans = card.querySelectorAll(selectors.dateSpan)
+      const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
 
-    if (!isCached) observer.observe(card)
-  }
-}
+      const videoId = getVideoId(anchor)
+      if (!videoId) return
 
-let intersectionObserver: IntersectionObserver | null = null
-function getIntersectionObserver(
-  selectors: any,
-  dynamicFormatter: Intl.DateTimeFormat
-) {
-  if (intersectionObserver) return intersectionObserver
+      const cachedISO = await storage.get<string>(videoId)
+      let exactDateISO = cachedISO
 
-  intersectionObserver = new IntersectionObserver(
-    (entries) => {
-      const cardsToFetch: HTMLElement[] = []
-
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          const card = entry.target as HTMLElement
-          cardsToFetch.push(card)
-          intersectionObserver?.unobserve(card) // خلاص لقطناه، وقف مراقبته
-        }
-      })
-
-      // الكروت اللي ظهرت قدام العين ومش في الكاش، بنشغلها جوه الحارات المتوازية لطلب النت
-      if (cardsToFetch.length > 0) {
-        processWithConcurrency(cardsToFetch, 7, async (card) => {
-          const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
-          const dateSpans = card.querySelectorAll(selectors.dateSpan)
-          const dateSpan = dateSpans[dateSpans.length - 1] as HTMLSpanElement
-
-          const videoId = getVideoId(anchor)
-          if (!videoId) return
-
-          const exactDateISO = await fetchVideoExactISO(videoId)
-          if (exactDateISO) {
-            storage.set(videoId, exactDateISO)
-            const formattedDate = dynamicFormatter.format(
-              new Date(exactDateISO)
-            )
-            card.dataset.dateProcessedFor = videoId
-            dateSpan.innerText = formattedDate
-          }
-        })
+      if (!cachedISO) {
+        exactDateISO = await fetchVideoExactISO(videoId)
+        if (exactDateISO) storage.set(videoId, exactDateISO)
       }
-    },
-    { rootMargin: "200px" }
-  )
 
-  return intersectionObserver
+      if (exactDateISO) {
+        const formattedDate = dynamicFormatter.format(new Date(exactDateISO))
+        card.dataset.dateProcessedFor = videoId
+        if (dateSpan.innerText === formattedDate) return
+        dateSpan.innerText = formattedDate
+      }
+    }
+  )
 }
 
 // Let's debounce processing Videos Dates:
@@ -221,28 +163,35 @@ let activeObserver: MutationObserver | null = null
 // Accumulates cards across mutation batches so a debounce reset never drops
 // cards discovered by an earlier batch.
 const pendingCards = new Set<HTMLElement>()
+
 export function triggerDateProcessor() {
   processVideosDates()
 
   if (activeObserver) return activeObserver
   activeObserver = new MutationObserver((mutations) => {
-    const { card } = getPageSelectors()
-    const newCards = getCardsFromMutations(mutations, card)
-    if (!newCards.length) return
-
-    newCards.forEach((card) => pendingCards.add(card))
+    // 1. رجعنا للشرط القديم المضمون: لو حصل أي إضافة نودز في الصفحة (حتى لو سبينر يوتيوب)
+    const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
+    if (!hasNewNodes) return
 
     if (debounceTimer) clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(async () => {
       if (isProcessing) return
 
-      const cardsToProcess = Array.from(pendingCards)
-      pendingCards.clear()
+      // 2. اقش كل الكروت الحالية في الصفحة عشان نضمن إن فلاتر يوتيوب اتلقطت
+      const selectors = getPageSelectors()
+      const allCards = document.querySelectorAll<HTMLElement>(selectors.card)
+
+      const cardsToProcess = Array.from(allCards).filter(
+        (card) =>
+          card.querySelector(selectors.anchor) &&
+          card.querySelector(selectors.dateSpan)
+      )
 
       if (cardsToProcess.length) {
         try {
           isProcessing = true
+          // 3. ابعت الكروت دي لمنظومتك الذكية اللي هتعديهم على الكاش والـ Observer فوراً!
           await processVideosDates("initial", cardsToProcess)
         } finally {
           isProcessing = false
@@ -254,6 +203,9 @@ export function triggerDateProcessor() {
   activeObserver.observe(document.body, { childList: true, subtree: true })
   return activeObserver
 }
+
+// page data is applied to the DOM — now actually process the content
+// window.addEventListener("yt-page-data-updated", triggerDateProcessor)
 
 // 🚀 Execute the observer automatically for the initial batch of videos when the page loads
 triggerDateProcessor()
