@@ -54,6 +54,29 @@ async function fetchVideoExactISO(videoId: string): Promise<string> {
   }
 }
 
+// 🔎 Collect only the cards introduced by these mutations (added nodes + their descendants)
+function getCardsFromMutations(
+  mutations: MutationRecord[],
+  cardSelector: string
+): HTMLElement[] {
+  // using (set) instaed of regular array to prevent reputations.
+  const cards = new Set<HTMLElement>()
+
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (!(node instanceof HTMLElement)) continue
+
+      if (node.matches(cardSelector)) cards.add(node)
+
+      node
+        .querySelectorAll<HTMLElement>(cardSelector)
+        .forEach((card) => cards.add(card))
+    }
+  }
+
+  return Array.from(cards)
+}
+
 // 📦 Helper function to split the detected video cards into smaller groups (batches)
 function createBatches(
   cardsArray: HTMLElement[],
@@ -78,9 +101,13 @@ function createBatches(
   return allBatches
 }
 
-export async function processVideosDates(convertCase = "initial") {
+export async function processVideosDates(
+  convertCase = "initial",
+  candidateCards?: HTMLElement[]
+) {
   const selectors = getPageSelectors()
-  const newCards = document.querySelectorAll<HTMLElement>(selectors.card)
+  const newCards =
+    candidateCards ?? document.querySelectorAll<HTMLElement>(selectors.card)
 
   const cardsArray = Array.from(newCards).filter((card) => {
     const anchor = card.querySelector<HTMLAnchorElement>(selectors.anchor)
@@ -138,33 +165,33 @@ let debounceTimer: any = null
 let isProcessing = false
 let activeObserver: MutationObserver | null = null
 
+// Accumulates cards across mutation batches so a debounce reset never drops
+// cards discovered by an earlier batch.
+const pendingCards = new Set<HTMLElement>()
+
 export function triggerDateProcessor() {
   processVideosDates()
 
   if (activeObserver) return activeObserver
   activeObserver = new MutationObserver((mutations) => {
-    const hasNewNodes = mutations.some((mutation) => mutation.addedNodes.length)
-    if (!hasNewNodes) return
+    const { card } = getPageSelectors()
+    const newCards = getCardsFromMutations(mutations, card)
+    if (!newCards.length) return
+
+    newCards.forEach((card) => pendingCards.add(card))
 
     if (debounceTimer) clearTimeout(debounceTimer)
 
     debounceTimer = setTimeout(async () => {
       if (isProcessing) return
 
-      const { card, anchor, dateSpan } = getPageSelectors()
-      const unprocessedCards = document.querySelectorAll<HTMLElement>(card)
+      const cardsToProcess = Array.from(pendingCards)
+      pendingCards.clear()
 
-      const cardsArray = Array.from(unprocessedCards).filter(
-        (card) =>
-          card.querySelector(anchor) &&
-          card.querySelector(dateSpan) &&
-          !card.dataset.dateProcessedFor
-      ) as HTMLElement[]
-
-      if (cardsArray.length) {
+      if (cardsToProcess.length) {
         try {
           isProcessing = true
-          await processVideosDates()
+          await processVideosDates("initial", cardsToProcess)
         } finally {
           isProcessing = false
         }
