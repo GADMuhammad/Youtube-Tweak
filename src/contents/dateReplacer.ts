@@ -160,10 +160,6 @@ let debounceTimer: any = null
 let isProcessing = false
 let activeObserver: MutationObserver | null = null
 
-// Accumulates cards across mutation batches so a debounce reset never drops
-// cards discovered by an earlier batch.
-const pendingCards = new Set<HTMLElement>()
-
 export function triggerDateProcessor() {
   processVideosDates()
 
