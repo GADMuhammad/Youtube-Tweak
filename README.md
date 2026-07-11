@@ -23,6 +23,8 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 ### 🔵 Planned
 
 - **Smart Grouping:** Group videos on the Subscriptions page by publication date, with each day's uploads displayed in a separate section.
+- **Custom Video Tagging:** Add custom color-coded tags to videos to categorize and organize content according to your preference, with dedicated quick-access filters to save users' time and streamline navigation.
+- **Settings Import/Export:** Backup, export, and import user configurations seamlessly across different browser profiles to prevent data loss and preserve your customized experience.
 
 ## 🛠️ Tech Stack
 
