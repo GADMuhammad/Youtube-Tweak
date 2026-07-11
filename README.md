@@ -11,7 +11,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 ### 🟢 Available Now
 
 - **Feed Filtering:** Filter the Subscriptions page to show either Videos or Shorts.
-- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing (No more infinite scroll, take back your time.).
+- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing (No more infinite scroll. take back your time).
 - **Absolute Timestamps:** Display the exact publication date instead of relative timestamps (e.g., "2 days ago").
 - **Customization:** Choose your preferred date format.
 
