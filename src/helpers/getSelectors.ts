@@ -41,7 +41,7 @@ export function getPageSelectors() {
 
   if (pathname === "/results") {
     return {
-      container: "ytd-search", // the loading element container
+      container: "ytd-search",
       card: "ytd-video-renderer",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
