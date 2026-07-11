@@ -65,6 +65,7 @@ export function getPageSelectors() {
     }
   }
 
+  // local playlists
   if (
     pathname === "/playlist" &&
     document.querySelector("ytd-playlist-video-list-renderer")
@@ -78,6 +79,7 @@ export function getPageSelectors() {
     }
   }
 
+  // remote playlists
   if (
     pathname === "/playlist" &&
     document.querySelector("yt-section-list-renderer")
