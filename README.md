@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/DenverCoder1/readme-typing-svg"><img src="https://readme-typing-svg.herokuapp.com/?lines=New+Extension+is+here.;Making+Your+Youtube+Simplier.;Stay+Tuned+for+more.&font=Fira+Code&center=true&width=440&height=45&color=f75c7e&vCenter=true&size=22"></a>
-</p> 
+</p>
 
 # YouTube Tweak 🚀
 
@@ -11,7 +11,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 ### 🟢 Available Now
 
 - **Feed Filtering:** Filter the Subscriptions page to show either Videos or Shorts.
-- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing.
+- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing (No more infinite scroll, take back your time.).
 - **Absolute Timestamps:** Display the exact publication date instead of relative timestamps (e.g., "2 days ago").
 - **Customization:** Choose your preferred date format.
 
