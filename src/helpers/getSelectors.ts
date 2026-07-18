@@ -41,7 +41,7 @@ export function getPageSelectors() {
 
   if (pathname === "/results") {
     return {
-      container: "ytd-search", // the loading element
+      container: "ytd-search",
       card: "ytd-video-renderer",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
@@ -65,6 +65,7 @@ export function getPageSelectors() {
     }
   }
 
+  // local playlists
   if (
     pathname === "/playlist" &&
     document.querySelector("ytd-playlist-video-list-renderer")
@@ -78,6 +79,7 @@ export function getPageSelectors() {
     }
   }
 
+  // remote playlists
   if (
     pathname === "/playlist" &&
     document.querySelector("yt-section-list-renderer")
@@ -139,12 +141,14 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
     if (pathname === "/results")
       return queryVisible("ytd-search ytd-section-list-renderer")
 
+    // local playlists
     if (
       pathname === "/playlist" &&
       document.querySelector("ytd-playlist-video-list-renderer")
     )
       return queryVisible("ytd-playlist-video-list-renderer")
 
+    // remote playlists
     if (
       pathname === "/playlist" &&
       document.querySelector("yt-section-list-renderer")

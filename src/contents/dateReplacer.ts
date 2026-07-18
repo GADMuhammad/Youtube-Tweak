@@ -54,28 +54,6 @@ async function fetchVideoExactISO(videoId: string): Promise<string> {
   }
 }
 
-// 🔎 Collect only the cards introduced by these mutations (added nodes + their descendants)
-function getCardsFromMutations(
-  mutations: MutationRecord[],
-  cardSelector: string
-): HTMLElement[] {
-  // using (set) instaed of regular array to prevent reputations.
-  const cards = new Set<HTMLElement>()
-
-  mutations.forEach((mutation) => {
-    for (const node of mutation.addedNodes) {
-      if (!(node instanceof HTMLElement)) continue
-      if (node.matches(cardSelector)) cards.add(node)
-
-      node
-        .querySelectorAll<HTMLElement>(cardSelector)
-        .forEach((card) => cards.add(card))
-    }
-  })
-
-  return Array.from(cards)
-}
-
 // Concurrency Lanes to get absolute dates faster:
 async function processWithConcurrency<T>(
   items: T[],
@@ -159,10 +137,6 @@ export async function processVideosDates(
 let debounceTimer: any = null
 let isProcessing = false
 let activeObserver: MutationObserver | null = null
-
-// Accumulates cards across mutation batches so a debounce reset never drops
-// cards discovered by an earlier batch.
-const pendingCards = new Set<HTMLElement>()
 
 export function triggerDateProcessor() {
   processVideosDates()

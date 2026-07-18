@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/DenverCoder1/readme-typing-svg"><img src="https://readme-typing-svg.herokuapp.com/?lines=New+Extension+is+here.;Making+Your+Youtube+Simplier.;Stay+Tuned+for+more.&font=Fira+Code&center=true&width=440&height=45&color=f75c7e&vCenter=true&size=22"></a>
-</p> 
+</p>
 
 # YouTube Tweak 🚀
 
@@ -11,7 +11,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 ### 🟢 Available Now
 
 - **Feed Filtering:** Filter the Subscriptions page to show either Videos or Shorts.
-- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing.
+- **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing (No more infinite scroll. Take back your time).
 - **Absolute Timestamps:** Display the exact publication date instead of relative timestamps (e.g., "2 days ago").
 - **Customization:** Choose your preferred date format.
 
@@ -23,6 +23,8 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 ### 🔵 Planned
 
 - **Smart Grouping:** Group videos on the Subscriptions page by publication date, with each day's uploads displayed in a separate section.
+- **Custom Video Tagging:** Add custom color-coded tags to videos to categorize and organize content according to your preference, with dedicated quick-access filters to save users' time and streamline navigation.
+- **Settings Import/Export:** Backup, export, and import user configurations seamlessly across different browser profiles to prevent data loss and preserve your customized experience.
 
 ## 🛠️ Tech Stack
 
@@ -39,7 +41,7 @@ If you want to run or test this project locally from the source code:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/youtube-tweak.git
+   git clone https://github.com/GADMuhammad/youtube-tweak.git
    cd youtube-tweak
    ```
 

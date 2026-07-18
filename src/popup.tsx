@@ -6,7 +6,7 @@ import { SupportSection } from "~components/popup/SupportSection"
 import { TabBar } from "~components/popup/TabBar"
 import { popupText } from "~helpers/translationObject"
 
-import "~styles/_popup.scss"
+import "~/style.scss"
 
 // Stand-in until the popup can read the actual YouTube tab's language —
 // that requires querying the active tab, which is the next step (wiring
