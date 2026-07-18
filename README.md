@@ -41,7 +41,7 @@ If you want to run or test this project locally from the source code:
 1. Clone this repository to your local machine:
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/youtube-tweak.git
+   git clone https://github.com/GADMuhammad/youtube-tweak.git
    cd youtube-tweak
    ```
 
