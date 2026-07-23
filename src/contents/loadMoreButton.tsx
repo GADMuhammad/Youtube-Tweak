@@ -17,6 +17,12 @@ export const getStyle = (): HTMLStyleElement => {
 export const getInlineAnchor = getLoadMoreButtonPlace
 
 const loadMoreButton = () => {
+  if (
+    window.location.pathname === "/playlist" &&
+    document.querySelector("yt-section-list-renderer")
+  )
+    return
+
   const { isLoading, situation, loadingText, buttonText, handleLoadMore } =
     useInfiniteScrollBlocker()
 
