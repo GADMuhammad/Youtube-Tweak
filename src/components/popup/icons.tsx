@@ -6,6 +6,14 @@ export function LinkedInIcon() {
   )
 }
 
+export function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+      <path d="M18.3 2.5h3.2l-7 8 8.2 11h-6.4l-5-6.6-5.8 6.6H2.3l7.5-8.6-7.9-10.4h6.6l4.5 6.1 5.3-6.1zm-1.1 17.2h1.8L7.9 4.2H6l11.2 15.5z" />
+    </svg>
+  )
+}
+
 export function TelegramIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">

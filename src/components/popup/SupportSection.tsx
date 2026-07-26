@@ -8,7 +8,8 @@ import {
   LinkedInIcon,
   MailIcon,
   TelegramIcon,
-  WalletIcon
+  WalletIcon,
+  XIcon
 } from "./icons"
 import { Panel } from "./Panel"
 
@@ -32,10 +33,15 @@ const CONTACT_LINKS = [
     icon: <TelegramIcon />
   },
   {
-    label: "Email",
-    href: "mailto:gad.software.engineer@gmail.com",
-    icon: <MailIcon />
+    label: "X (Twitter)",
+    href: "https://x.com/mohgad_",
+    icon: <XIcon />
   }
+  // {
+  //   label: "Email",
+  //   href: "mailto:muhammadgadwork@gmail.com",
+  //   icon: <MailIcon />
+  // }
 ]
 
 const DONATION_LINKS = [
