@@ -30,6 +30,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 
 - Absolute date replacement wasn't applying on a channel's own search results page (`/@handle/search`).
 - Infinite scroll wasn't blocked on a channel's Playlists tab (`/@handle/playlists`); the Load More button now appears there too, with its own "Load More Playlists" / "No more playlists to display" copy (EN & AR).
+- Infinite scroll wasn't blocked on a channel's Posts tab (`/@handle/posts`); the Load More button now appears there too, with its own "Load More Posts" / "No more posts to display" copy (EN & AR).
 
 ## 🛠️ Tech Stack
 
