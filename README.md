@@ -26,6 +26,11 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 - **Custom Video Tagging:** Add custom color-coded tags to videos to categorize and organize content according to your preference, with dedicated quick-access filters to save users' time and streamline navigation.
 - **Settings Import/Export:** Backup, export, and import user configurations seamlessly across different browser profiles to prevent data loss and preserve your customized experience.
 
+### 🐛 Recent Fixes
+
+- Absolute date replacement wasn't applying on a channel's own search results page (`/@handle/search`).
+- Infinite scroll wasn't blocked on a channel's Playlists tab (`/@handle/playlists`); the Load More button now appears there too, with its own "Load More Playlists" / "No more playlists to display" copy (EN & AR).
+
 ## 🛠️ Tech Stack
 
 - **Framework:** [Plasmo](https://www.plasmo.com/) (The Browser Extension Framework)
