@@ -55,6 +55,20 @@ export function getPageSelectors() {
     }
   }
 
+  // Channel "Playlists" tab: unlike the other channel tabs, this renders
+  // playlist cards inside an old-style ytd-grid-renderer (nested in
+  // ytd-item-section-renderer), not ytd-rich-grid-renderer — so it needs its
+  // own case, or its continuation item is never found/blocked.
+  if (/\/@[^/]+\/playlists\/?$/.test(pathname)) {
+    return {
+      container: "ytd-grid-renderer",
+      card: "yt-lockup-view-model",
+      anchor: "a[href*='/playlist']",
+      dateSpan:
+        "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
+    }
+  }
+
   if (
     pathname.match(/\/@[^\/]+\/?$/) ||
     pathname.endsWith("/featured") ||
@@ -167,6 +181,10 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
 
     if (pathname === "/watch")
       return queryVisible("ytd-watch-next-secondary-results-renderer")
+
+    // channel playlists tab
+    if (/\/@[^/]+\/playlists\/?$/.test(pathname))
+      return queryVisible("ytd-grid-renderer")
 
     return queryVisible("ytd-rich-grid-renderer")
   }
