@@ -49,6 +49,12 @@ export function isChannelPlaylistsTab(pathname: string): boolean {
   return /\/@[^/]+\/playlists\/?$/.test(pathname)
 }
 
+// Matches a channel's "Posts" (community) tab, e.g. "/@handle/posts" —
+// exported so the load-more button copy can say "posts" instead of "videos".
+export function isChannelPostsTab(pathname: string): boolean {
+  return /\/@[^/]+\/posts\/?$/.test(pathname)
+}
+
 export function getPageSelectors() {
   const pathname = window.location.pathname
 
@@ -70,6 +76,20 @@ export function getPageSelectors() {
       container: "ytd-grid-renderer",
       card: "yt-lockup-view-model",
       anchor: "a[href*='/playlist']",
+      dateSpan:
+        "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
+    }
+  }
+
+  // Channel "Posts" (community) tab: cards are ytd-backstage-post-thread-
+  // renderer inside ytd-backstage-items, not the video-grid structure used
+  // by the other channel tabs — needs its own case for the same reason as
+  // the Playlists tab above.
+  if (isChannelPostsTab(pathname)) {
+    return {
+      container: "ytd-backstage-items",
+      card: "ytd-backstage-post-thread-renderer",
+      anchor: "a#author-text",
       dateSpan:
         "div.ytContentMetadataViewModelMetadataRow span[role='text'][aria-label]"
     }
@@ -190,6 +210,9 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
 
     // channel playlists tab
     if (isChannelPlaylistsTab(pathname)) return queryVisible("ytd-grid-renderer")
+
+    // channel posts tab
+    if (isChannelPostsTab(pathname)) return queryVisible("ytd-backstage-items")
 
     return queryVisible("ytd-rich-grid-renderer")
   }

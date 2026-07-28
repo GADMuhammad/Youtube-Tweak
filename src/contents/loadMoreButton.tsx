@@ -4,9 +4,14 @@ import type { PlasmoCSConfig } from "plasmo"
 import { LoadMoreButton } from "~components/LoadMoreButton"
 import {
   getLoadMoreButtonPlace,
-  isChannelPlaylistsTab
+  isChannelPlaylistsTab,
+  isChannelPostsTab
 } from "~helpers/getSelectors"
-import { noMorePlaylistsText, noMoreText } from "~helpers/translationObject"
+import {
+  noMorePlaylistsText,
+  noMorePostsText,
+  noMoreText
+} from "~helpers/translationObject"
 import { useInfiniteScrollBlocker } from "~hooks/useInfiniteScrollBlocker"
 
 export const config: PlasmoCSConfig = { matches: ["https://*.youtube.com/*"] }
@@ -36,9 +41,12 @@ const loadMoreButton = () => {
     const currentLang = document.documentElement.lang?.startsWith("ar")
       ? "ar"
       : "en"
-    const text = isChannelPlaylistsTab(window.location.pathname)
+    const pathname = window.location.pathname
+    const text = isChannelPlaylistsTab(pathname)
       ? noMorePlaylistsText
-      : noMoreText
+      : isChannelPostsTab(pathname)
+        ? noMorePostsText
+        : noMoreText
 
     return (
       <div className="custom-btn-container">

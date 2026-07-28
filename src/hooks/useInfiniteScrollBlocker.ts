@@ -3,9 +3,14 @@ import {
   getActiveContainer,
   getContinuationItem,
   getPageSelectors,
-  isChannelPlaylistsTab
+  isChannelPlaylistsTab,
+  isChannelPostsTab
 } from "~helpers/getSelectors"
-import { loadingButton, loadingPlaylistsButton } from "~helpers/translationObject"
+import {
+  loadingButton,
+  loadingPlaylistsButton,
+  loadingPostsButton
+} from "~helpers/translationObject"
 
 import { useLoadMoreBlocker } from "./useLoadMoreBlocker"
 
@@ -31,9 +36,12 @@ export const useInfiniteScrollBlocker = () => {
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
-  const textSet = isChannelPlaylistsTab(window.location.pathname)
+  const pathname = window.location.pathname
+  const textSet = isChannelPlaylistsTab(pathname)
     ? loadingPlaylistsButton
-    : loadingButton
+    : isChannelPostsTab(pathname)
+      ? loadingPostsButton
+      : loadingButton
   const { loadingText, loadMoreText: buttonText } = textSet[currentLang]
 
   const { isLoading, situation, handleLoadMore } = useLoadMoreBlocker({

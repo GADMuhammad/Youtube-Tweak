@@ -20,6 +20,17 @@ export const loadingPlaylistsButton = {
   }
 }
 
+export const loadingPostsButton = {
+  en: {
+    loadingText: "Loading New Posts...",
+    loadMoreText: "Load More Posts"
+  },
+  ar: {
+    loadingText: "جاري تحميل منشورات جديدة...",
+    loadMoreText: "تحميل المزيد من المنشورات"
+  }
+}
+
 export const loadingCommentsButton = {
   en: {
     loadingText: "Loading New Comments...",
@@ -52,6 +63,11 @@ export const noMoreText = {
 export const noMorePlaylistsText = {
   en: "No more playlists to display",
   ar: "لا توجد قوائم تشغيل أخرى"
+}
+
+export const noMorePostsText = {
+  en: "No more posts to display",
+  ar: "لا توجد منشورات أخرى"
 }
 
 export const noMoreCommentsText = {
