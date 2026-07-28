@@ -49,6 +49,11 @@ export const noMoreText = {
   ar: "لا توجد فيديوهات أخرى"
 }
 
+export const noMorePlaylistsText = {
+  en: "No more playlists to display",
+  ar: "لا توجد قوائم تشغيل أخرى"
+}
+
 export const noMoreCommentsText = {
   en: "No more comments to display",
   ar: "لا توجد تعليقات أخرى"
