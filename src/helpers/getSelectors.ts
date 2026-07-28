@@ -36,12 +36,19 @@ function queryInActivePage<T extends HTMLElement>(selector: string): T | null {
   return null
 }
 
+// Matches a channel's own search results, e.g. "/@handle/search" — these
+// render with the same ytd-video-renderer list structure as the global
+// "/results" search page, just without the <ytd-search> wrapper.
+function isChannelSearch(pathname: string): boolean {
+  return /\/@[^/]+\/search\/?$/.test(pathname)
+}
+
 export function getPageSelectors() {
   const pathname = window.location.pathname
 
-  if (pathname === "/results") {
+  if (pathname === "/results" || isChannelSearch(pathname)) {
     return {
-      container: "ytd-search",
+      container: pathname === "/results" ? "ytd-search" : "ytd-section-list-renderer",
       card: "ytd-video-renderer",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
@@ -140,6 +147,9 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
 
     if (pathname === "/results")
       return queryVisible("ytd-search ytd-section-list-renderer")
+
+    if (isChannelSearch(pathname))
+      return queryVisible("ytd-section-list-renderer")
 
     // local playlists
     if (
