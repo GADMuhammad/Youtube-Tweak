@@ -9,6 +9,17 @@ export const loadingButton = {
   }
 }
 
+export const loadingPlaylistsButton = {
+  en: {
+    loadingText: "Loading New Playlists...",
+    loadMoreText: "Load More Playlists"
+  },
+  ar: {
+    loadingText: "جاري تحميل قوائم تشغيل جديدة...",
+    loadMoreText: "تحميل المزيد من قوائم التشغيل"
+  }
+}
+
 export const loadingCommentsButton = {
   en: {
     loadingText: "Loading New Comments...",

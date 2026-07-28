@@ -43,6 +43,12 @@ function isChannelSearch(pathname: string): boolean {
   return /\/@[^/]+\/search\/?$/.test(pathname)
 }
 
+// Matches a channel's "Playlists" tab, e.g. "/@handle/playlists" — exported
+// so the load-more button copy can say "playlists" instead of "videos" there.
+export function isChannelPlaylistsTab(pathname: string): boolean {
+  return /\/@[^/]+\/playlists\/?$/.test(pathname)
+}
+
 export function getPageSelectors() {
   const pathname = window.location.pathname
 
@@ -59,7 +65,7 @@ export function getPageSelectors() {
   // playlist cards inside an old-style ytd-grid-renderer (nested in
   // ytd-item-section-renderer), not ytd-rich-grid-renderer — so it needs its
   // own case, or its continuation item is never found/blocked.
-  if (/\/@[^/]+\/playlists\/?$/.test(pathname)) {
+  if (isChannelPlaylistsTab(pathname)) {
     return {
       container: "ytd-grid-renderer",
       card: "yt-lockup-view-model",
@@ -183,8 +189,7 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
       return queryVisible("ytd-watch-next-secondary-results-renderer")
 
     // channel playlists tab
-    if (/\/@[^/]+\/playlists\/?$/.test(pathname))
-      return queryVisible("ytd-grid-renderer")
+    if (isChannelPlaylistsTab(pathname)) return queryVisible("ytd-grid-renderer")
 
     return queryVisible("ytd-rich-grid-renderer")
   }

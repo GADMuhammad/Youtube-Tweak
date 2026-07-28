@@ -2,9 +2,10 @@ import { triggerDateProcessor } from "~contents/dateReplacer"
 import {
   getActiveContainer,
   getContinuationItem,
-  getPageSelectors
+  getPageSelectors,
+  isChannelPlaylistsTab
 } from "~helpers/getSelectors"
-import { loadingButton } from "~helpers/translationObject"
+import { loadingButton, loadingPlaylistsButton } from "~helpers/translationObject"
 
 import { useLoadMoreBlocker } from "./useLoadMoreBlocker"
 
@@ -30,7 +31,10 @@ export const useInfiniteScrollBlocker = () => {
   const currentLang = document.documentElement.lang?.startsWith("ar")
     ? "ar"
     : "en"
-  const { loadingText, loadMoreText: buttonText } = loadingButton[currentLang]
+  const textSet = isChannelPlaylistsTab(window.location.pathname)
+    ? loadingPlaylistsButton
+    : loadingButton
+  const { loadingText, loadMoreText: buttonText } = textSet[currentLang]
 
   const { isLoading, situation, handleLoadMore } = useLoadMoreBlocker({
     getContinuationItem,
