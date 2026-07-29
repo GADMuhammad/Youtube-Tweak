@@ -15,7 +15,7 @@ const lang = isArabic ? "ar" : "en"
 const isMac = navigator.platform.toLowerCase().includes("mac")
 const shortcutPrefix = isMac ? "⌘" : "Ctrl "
 
-const DEBOUNCE_MS = 130
+const DEBOUNCE_MS = 100
 const MAX_SUGGESTIONS = 9
 
 function openInNewTab(url: string) {
@@ -142,7 +142,7 @@ export function QuickSearchSection() {
           onKeyDown={handleInputKeyDown}
           placeholder={text.searchPlaceholder}
         />
-        {value.length > 0 && (
+        {!!value.length && (
           <button
             type="button"
             className="popup-quicksearch__clear"
@@ -157,7 +157,7 @@ export function QuickSearchSection() {
         )}
       </div>
 
-      {visibleSuggestions.length > 0 && (
+      {visibleSuggestions.length ? (
         <div className="popup-quicksearch__list">
           {visibleSuggestions.map((suggestion, i) => (
             <div
@@ -177,6 +177,11 @@ export function QuickSearchSection() {
               </span>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="popup-quicksearch__empty">
+          <SearchIcon size={32} />
+          <span>{text.emptyState}</span>
         </div>
       )}
     </div>
