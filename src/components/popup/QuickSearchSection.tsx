@@ -16,7 +16,7 @@ const lang = isArabic ? "ar" : "en"
 const isMac = navigator.platform.toLowerCase().includes("mac")
 const shortcutPrefix = isMac ? "⌘" : "Ctrl "
 
-const DEBOUNCE_MS = 90
+const DEBOUNCE_MS = 70
 const MAX_SUGGESTIONS = 9
 const MAX_PREFILL_LENGTH = 100
 
@@ -196,14 +196,7 @@ export function QuickSearchSection() {
         )}
       </div>
 
-      {!trimmedValue && (
-        <div className="popup-quicksearch__empty">
-          <SearchIcon size={32} />
-          <span>{text.emptyState}</span>
-        </div>
-      )}
-
-      {visibleSuggestions.length && (
+      {visibleSuggestions.length ? (
         <div className="popup-quicksearch__list">
           {visibleSuggestions.map((suggestion, i) => (
             <div
@@ -223,6 +216,11 @@ export function QuickSearchSection() {
               </span>
             </div>
           ))}
+        </div>
+      ) : (
+        <div className="popup-quicksearch__empty">
+          <SearchIcon size={32} />
+          <span>{text.emptyState}</span>
         </div>
       )}
     </div>
