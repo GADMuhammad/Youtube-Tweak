@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { getActiveTabSelection } from "~helpers/getSelectedText"
 import { quickSearchSectionText } from "~helpers/translationObject"
 import {
   fetchYoutubeSuggestions,
@@ -17,6 +18,7 @@ const shortcutPrefix = isMac ? "⌘" : "Ctrl "
 
 const DEBOUNCE_MS = 90
 const MAX_SUGGESTIONS = 9
+const MAX_PREFILL_LENGTH = 100
 
 function openInNewTab(url: string) {
   chrome.tabs.create({ url })
@@ -29,7 +31,32 @@ export function QuickSearchSection() {
   const rowRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
-    inputRef.current?.focus()
+    let cancelled = false
+
+    async function prefillFromSelection() {
+      let selected = ""
+      try {
+        selected = await getActiveTabSelection()
+      } catch {
+        // Restricted page (chrome://, Web Store, PDF viewer, etc.) — ignore.
+      }
+
+      if (cancelled) return
+
+      if (selected) {
+        setValue(selected.slice(0, MAX_PREFILL_LENGTH))
+        requestAnimationFrame(() => {
+          // inputRef.current?.focus()
+          inputRef.current?.select()
+        })
+      } else inputRef.current?.focus()
+    }
+
+    prefillFromSelection()
+
+    return () => {
+      cancelled = true
+    }
   }, [])
 
   useEffect(() => {
@@ -169,7 +196,14 @@ export function QuickSearchSection() {
         )}
       </div>
 
-      {visibleSuggestions.length ? (
+      {!trimmedValue && (
+        <div className="popup-quicksearch__empty">
+          <SearchIcon size={32} />
+          <span>{text.emptyState}</span>
+        </div>
+      )}
+
+      {visibleSuggestions.length && (
         <div className="popup-quicksearch__list">
           {visibleSuggestions.map((suggestion, i) => (
             <div
@@ -189,11 +223,6 @@ export function QuickSearchSection() {
               </span>
             </div>
           ))}
-        </div>
-      ) : (
-        <div className="popup-quicksearch__empty">
-          <SearchIcon size={32} />
-          <span>{text.emptyState}</span>
         </div>
       )}
     </div>
