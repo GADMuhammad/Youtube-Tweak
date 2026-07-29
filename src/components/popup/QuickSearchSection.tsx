@@ -126,7 +126,7 @@ export function QuickSearchSection() {
           ref={inputRef}
           className="popup-quicksearch__input"
           type="text"
-          dir="auto"
+          dir={value ? "auto" : isArabic ? "rtl" : "ltr"}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleInputKeyDown}
