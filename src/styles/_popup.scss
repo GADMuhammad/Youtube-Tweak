@@ -319,6 +319,25 @@ body {
   }
 }
 
+.popup-quicksearch__clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 999px;
+  background-color: rgba(0, 0, 0, 0.08);
+  color: var(--popup-text-muted);
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.14);
+  }
+}
+
 .popup-quicksearch__list {
   display: flex;
   flex-direction: column;

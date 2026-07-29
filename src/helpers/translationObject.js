@@ -96,10 +96,12 @@ export const popupText = {
 
 export const quickSearchSectionText = {
   en: {
-    searchPlaceholder: "Search YouTube…"
+    searchPlaceholder: "Search YouTube…",
+    clear: "Clear search"
   },
   ar: {
-    searchPlaceholder: "ابحث في يوتيوب…"
+    searchPlaceholder: "ابحث في يوتيوب…",
+    clear: "مسح البحث"
   }
 }
 

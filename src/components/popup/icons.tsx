@@ -6,6 +6,21 @@ export function SearchIcon() {
   )
 }
 
+export function ClearIcon() {
+  return (
+    <svg
+      viewBox="0 0 256 256"
+      width="14"
+      height="14"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="20"
+      strokeLinecap="round">
+      <path d="M200 56 56 200M200 200 56 56" />
+    </svg>
+  )
+}
+
 export function LinkedInIcon() {
   return (
     <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">

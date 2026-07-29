@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react"
 import { quickSearchSectionText } from "~helpers/translationObject"
 import { fetchYoutubeSuggestions, youtubeSearchUrl } from "~helpers/youtubeSuggest"
 
-import { SearchIcon } from "./icons"
+import { ClearIcon, SearchIcon } from "./icons"
 
 const isArabic = chrome.i18n.getUILanguage().startsWith("ar")
 const text = quickSearchSectionText[isArabic ? "ar" : "en"]
@@ -131,6 +131,18 @@ export function QuickSearchSection() {
           onKeyDown={handleInputKeyDown}
           placeholder={text.searchPlaceholder}
         />
+        {value.length > 0 && (
+          <button
+            type="button"
+            className="popup-quicksearch__clear"
+            aria-label={text.clear}
+            onClick={() => {
+              setValue("")
+              inputRef.current?.focus()
+            }}>
+            <ClearIcon />
+          </button>
+        )}
       </div>
 
       {visibleSuggestions.length > 0 && (
