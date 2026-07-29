@@ -77,6 +77,7 @@ export const noMoreCommentsText = {
 
 export const popupText = {
   en: {
+    quickSearch: "Quick Search",
     date: "Date",
     scroll: "Infinite Scroll",
     support: "Support & Contact",
@@ -84,11 +85,21 @@ export const popupText = {
     comingSoon: "Coming Soon"
   },
   ar: {
+    quickSearch: "البحث السريع",
     date: "التاريخ",
     scroll: "التمرير اللانهائي",
     support: "التواصل والدعم",
     back: "رجوع",
     comingSoon: "قريباً"
+  }
+}
+
+export const quickSearchSectionText = {
+  en: {
+    searchPlaceholder: "Search YouTube…"
+  },
+  ar: {
+    searchPlaceholder: "ابحث في يوتيوب…"
   }
 }
 

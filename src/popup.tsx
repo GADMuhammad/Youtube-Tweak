@@ -2,6 +2,7 @@ import { useState } from "react"
 
 import { DateSection } from "~components/popup/DateSection"
 import { InfiniteScrollSection } from "~components/popup/InfiniteScrollSection"
+import { QuickSearchSection } from "~components/popup/QuickSearchSection"
 import { SupportSection } from "~components/popup/SupportSection"
 import { TabBar } from "~components/popup/TabBar"
 import { popupText } from "~helpers/translationObject"
@@ -14,10 +15,10 @@ import "~/style.scss"
 const isArabic = chrome.i18n.getUILanguage().startsWith("ar")
 const text = popupText[isArabic ? "ar" : "en"]
 
-type Sections = "date" | "scroll" | "support"
+type Sections = "quickSearch" | "date" | "scroll" | "support"
 
 function Popup() {
-  const [active, setActive] = useState<Sections>("date")
+  const [active, setActive] = useState<Sections>("quickSearch")
 
   return (
     <div className="popup-root" dir={isArabic ? "rtl" : "ltr"}>
@@ -25,6 +26,7 @@ function Popup() {
         active={active}
         onChange={setActive}
         tabs={[
+          { id: "quickSearch", label: text.quickSearch },
           { id: "date", label: text.date },
           {
             id: "scroll",
@@ -35,6 +37,7 @@ function Popup() {
           { id: "support", label: text.support }
         ]}
       />
+      {active === "quickSearch" && <QuickSearchSection />}
       {active === "date" && <DateSection />}
       {active === "scroll" && <InfiniteScrollSection />}
       {active === "support" && <SupportSection />}
