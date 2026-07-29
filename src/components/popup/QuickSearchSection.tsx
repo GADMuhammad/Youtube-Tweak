@@ -15,7 +15,7 @@ const lang = isArabic ? "ar" : "en"
 const isMac = navigator.platform.toLowerCase().includes("mac")
 const shortcutPrefix = isMac ? "⌘" : "Ctrl "
 
-const DEBOUNCE_MS = 100
+const DEBOUNCE_MS = 90
 const MAX_SUGGESTIONS = 9
 
 function openInNewTab(url: string) {
@@ -91,6 +91,12 @@ export function QuickSearchSection() {
       return
     }
 
+    if (e.key === "Escape" && value) {
+      e.preventDefault()
+      setValue("")
+      return
+    }
+
     if (e.key === "ArrowDown" && rowRefs.current[0]) {
       e.preventDefault()
       rowRefs.current[0]?.focus()
@@ -123,6 +129,12 @@ export function QuickSearchSection() {
       e.preventDefault()
       if (index === 0) inputRef.current?.focus()
       else rowRefs.current[index - 1]?.focus()
+    }
+
+    if (e.key === "Escape") {
+      e.preventDefault()
+      inputRef.current?.focus()
+      setValue("")
     }
 
     if (e.key === "Backspace") inputRef.current?.focus()
