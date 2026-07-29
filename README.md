@@ -10,6 +10,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 
 ### 🟢 Available Now
 
+- **Quick Search:** Search YouTube straight from the popup without opening the site first. Type to get live autocomplete suggestions, then open a result with a click, `Enter`, or `⌘`/`Ctrl` + `1`-`9`. Fully keyboard-navigable (arrow keys, `Escape` to clear) and RTL-aware, with each suggestion's text direction following its own language.
 - **Feed Filtering:** Filter the Subscriptions page to show either Videos or Shorts.
 - **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing (No more infinite scroll. Take back your time).
 - **Absolute Timestamps:** Display the exact publication date instead of relative timestamps (e.g., "2 days ago").
