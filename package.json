@@ -27,7 +27,8 @@
   },
   "manifest": {
     "host_permissions": [
-      "https://*.youtube.com/*"
+      "https://*.youtube.com/*",
+      "https://suggestqueries.google.com/*"
     ]
   }
 }
