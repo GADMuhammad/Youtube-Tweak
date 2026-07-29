@@ -26,7 +26,7 @@
     "typescript": "5.3.3"
   },
   "manifest": {
-    "permissions": ["activeTab", "scripting"],
+    "permissions": ["activeTab", "scripting", "contextMenus"],
     "host_permissions": [
       "https://*.youtube.com/*",
       "https://suggestqueries.google.com/*"
