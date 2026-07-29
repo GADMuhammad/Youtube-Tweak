@@ -16,6 +16,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
   - Accessibility: `↓`/`↑` move between the input and suggestions, `Enter` (or `Space` on a row) opens it, `Escape` clears the query, and `Backspace` from a focused row jumps back to the input.
   - Selection-aware search: Opening the popup auto-fills the search box with any text you had selected on the page, pre-selected so you can immediately replace or search it.
   - Right-click any selected text on a page and choose "Search on YouTube" to jump straight to the results in a new tab.
+  - Smart tab reuse: opening a result reuses the current tab if it's an empty new tab, or opens a new tab alongside your existing one if you're already browsing a site, so you never lose your place.
 - **Feed Filtering:** Filter the Subscriptions page to show either Videos or Shorts.
 - **Intentional Browsing:** Replace infinite scrolling with a Load More button to minimize distractions and encourage intentional browsing (No more infinite scroll. Take back your time).
 - **Absolute Timestamps:** Display the exact publication date instead of relative timestamps (e.g., "2 days ago").

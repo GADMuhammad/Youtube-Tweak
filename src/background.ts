@@ -1,3 +1,4 @@
+import { openUrl } from "~helpers/openUrl"
 import { youtubeSearchUrl } from "~helpers/youtubeSuggest"
 
 const SEARCH_MENU_ID = "youtube-tweak-search-selection"
@@ -17,5 +18,5 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.contextMenus.onClicked.addListener((info) => {
   if (info.menuItemId !== SEARCH_MENU_ID || !info.selectionText) return
-  chrome.tabs.create({ url: youtubeSearchUrl(info.selectionText) })
+  openUrl(youtubeSearchUrl(info.selectionText))
 })

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 
 import { getActiveTabSelection } from "~helpers/getSelectedText"
+import { openUrl } from "~helpers/openUrl"
 import { quickSearchSectionText } from "~helpers/translationObject"
 import {
   fetchYoutubeSuggestions,
@@ -19,10 +20,6 @@ const shortcutPrefix = isMac ? "⌘" : "Ctrl "
 const DEBOUNCE_MS = 70
 const MAX_SUGGESTIONS = 9
 const MAX_PREFILL_LENGTH = 100
-
-function openInNewTab(url: string) {
-  chrome.tabs.create({ url })
-}
 
 export function QuickSearchSection() {
   const [value, setValue] = useState("")
@@ -105,7 +102,7 @@ export function QuickSearchSection() {
       if (!suggestion) return
 
       e.preventDefault()
-      openInNewTab(youtubeSearchUrl(suggestion))
+      openUrl(youtubeSearchUrl(suggestion))
     }
 
     window.addEventListener("keydown", onKeyDown)
@@ -114,7 +111,7 @@ export function QuickSearchSection() {
 
   function handleInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
-      openInNewTab(youtubeSearchUrl(value))
+      openUrl(youtubeSearchUrl(value))
       return
     }
 
@@ -141,7 +138,7 @@ export function QuickSearchSection() {
   ) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault()
-      openInNewTab(youtubeSearchUrl(visibleSuggestions[index]))
+      openUrl(youtubeSearchUrl(visibleSuggestions[index]))
       return
     }
 
@@ -205,7 +202,7 @@ export function QuickSearchSection() {
               className="popup-quicksearch__row"
               role="button"
               tabIndex={0}
-              onClick={() => openInNewTab(youtubeSearchUrl(suggestion))}
+              onClick={() => openUrl(youtubeSearchUrl(suggestion))}
               onKeyDown={(e) => handleRowKeyDown(e, i)}>
               <span className="popup-quicksearch__row-text" dir="auto">
                 {suggestion}
