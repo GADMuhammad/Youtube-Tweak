@@ -107,7 +107,14 @@ export function QuickSearchSection() {
             <div
               key={suggestion}
               className="popup-quicksearch__row"
-              onClick={() => openInNewTab(youtubeSearchUrl(suggestion))}>
+              role="button"
+              tabIndex={0}
+              onClick={() => openInNewTab(youtubeSearchUrl(suggestion))}
+              onKeyDown={(e) => {
+                if (e.key !== "Enter" && e.key !== " ") return
+                e.preventDefault()
+                openInNewTab(youtubeSearchUrl(suggestion))
+              }}>
               <span className="popup-quicksearch__row-text">{suggestion}</span>
               <span className="popup-quicksearch__chip" dir="ltr">
                 {shortcutPrefix}
