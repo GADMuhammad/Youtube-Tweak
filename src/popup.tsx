@@ -25,6 +25,7 @@ function Popup() {
       <TabBar<Sections>
         active={active}
         onChange={setActive}
+        className="popup-tabbar--wrap"
         tabs={[
           { id: "quickSearch", label: text.quickSearch },
           { id: "date", label: text.date },
