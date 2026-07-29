@@ -126,6 +126,7 @@ export function QuickSearchSection() {
           ref={inputRef}
           className="popup-quicksearch__input"
           type="text"
+          dir="auto"
           value={value}
           onChange={(e) => setValue(e.target.value)}
           onKeyDown={handleInputKeyDown}
@@ -156,7 +157,9 @@ export function QuickSearchSection() {
               tabIndex={0}
               onClick={() => openInNewTab(youtubeSearchUrl(suggestion))}
               onKeyDown={(e) => handleRowKeyDown(e, i)}>
-              <span className="popup-quicksearch__row-text">{suggestion}</span>
+              <span className="popup-quicksearch__row-text" dir="auto">
+                {suggestion}
+              </span>
               <span className="popup-quicksearch__chip" dir="ltr">
                 {shortcutPrefix}
                 {i + 1}

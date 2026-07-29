@@ -373,6 +373,7 @@ body {
 }
 
 .popup-quicksearch__row-text {
+  flex: 1;
   min-width: 0;
   font-size: 14px;
   color: var(--popup-text);
