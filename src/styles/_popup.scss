@@ -294,7 +294,7 @@ body {
   background-color: var(--popup-panel-bg);
   border: 1px solid var(--popup-panel-border);
   border-radius: 999px;
-  padding: 12px 20px;
+  padding: 8px 20px;
   color: var(--popup-text-muted);
   transition: box-shadow 0.15s ease;
 
@@ -313,6 +313,22 @@ body {
   font: inherit;
   font-size: 15px;
   color: var(--popup-text);
+
+  &::-webkit-input-placeholder {
+    color: var(--popup-text-muted);
+  }
+
+  &::-moz-placeholder {
+    color: var(--popup-text-muted);
+  }
+
+  &:-ms-input-placeholder {
+    color: var(--popup-text-muted);
+  }
+
+  &::-ms-input-placeholder {
+    color: var(--popup-text-muted);
+  }
 
   &::placeholder {
     color: var(--popup-text-muted);
@@ -352,7 +368,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 11px 20px;
+  padding: 8px 20px;
   cursor: pointer;
   border-bottom: 1px solid var(--popup-panel-border);
   transition: background-color 0.15s ease;

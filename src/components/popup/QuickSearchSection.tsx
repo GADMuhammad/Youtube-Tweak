@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 
 import { quickSearchSectionText } from "~helpers/translationObject"
-import { fetchYoutubeSuggestions, youtubeSearchUrl } from "~helpers/youtubeSuggest"
+import {
+  fetchYoutubeSuggestions,
+  youtubeSearchUrl
+} from "~helpers/youtubeSuggest"
 
 import { ClearIcon, SearchIcon } from "./icons"
 
@@ -87,35 +90,42 @@ export function QuickSearchSection() {
       openInNewTab(youtubeSearchUrl(value))
       return
     }
+
     if (e.key === "ArrowDown" && rowRefs.current[0]) {
       e.preventDefault()
       rowRefs.current[0]?.focus()
     }
+
+    if (e.key === "ArrowUp" && rowRefs.current[visibleSuggestions.length - 1]) {
+      e.preventDefault()
+      rowRefs.current[visibleSuggestions.length - 1]?.focus()
+    }
   }
 
-  function handleRowKeyDown(e: React.KeyboardEvent<HTMLDivElement>, index: number) {
+  function handleRowKeyDown(
+    e: React.KeyboardEvent<HTMLDivElement>,
+    index: number
+  ) {
     if (e.key === "Enter" || e.key === " ") {
       e.preventDefault()
       openInNewTab(youtubeSearchUrl(visibleSuggestions[index]))
       return
     }
+
     if (e.key === "ArrowDown") {
       e.preventDefault()
-      if (index === visibleSuggestions.length - 1) {
-        inputRef.current?.focus()
-      } else {
-        rowRefs.current[index + 1]?.focus()
-      }
+      if (index === visibleSuggestions.length - 1) inputRef.current?.focus()
+      else rowRefs.current[index + 1]?.focus()
       return
     }
+
     if (e.key === "ArrowUp") {
       e.preventDefault()
-      if (index === 0) {
-        inputRef.current?.focus()
-      } else {
-        rowRefs.current[index - 1]?.focus()
-      }
+      if (index === 0) inputRef.current?.focus()
+      else rowRefs.current[index - 1]?.focus()
     }
+
+    if (e.key === "Backspace") inputRef.current?.focus()
   }
 
   return (
@@ -137,6 +147,7 @@ export function QuickSearchSection() {
             type="button"
             className="popup-quicksearch__clear"
             aria-label={text.clear}
+            tabIndex={-1}
             onClick={() => {
               setValue("")
               inputRef.current?.focus()
