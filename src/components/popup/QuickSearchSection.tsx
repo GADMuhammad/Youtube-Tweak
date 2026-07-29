@@ -101,7 +101,11 @@ export function QuickSearchSection() {
     }
     if (e.key === "ArrowDown") {
       e.preventDefault()
-      rowRefs.current[index + 1]?.focus()
+      if (index === visibleSuggestions.length - 1) {
+        inputRef.current?.focus()
+      } else {
+        rowRefs.current[index + 1]?.focus()
+      }
       return
     }
     if (e.key === "ArrowUp") {
