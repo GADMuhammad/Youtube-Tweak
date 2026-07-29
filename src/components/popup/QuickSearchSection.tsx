@@ -23,6 +23,7 @@ export function QuickSearchSection() {
   const [value, setValue] = useState("")
   const [suggestions, setSuggestions] = useState<string[]>([])
   const inputRef = useRef<HTMLInputElement>(null)
+  const rowRefs = useRef<(HTMLDivElement | null)[]>([])
 
   useEffect(() => {
     inputRef.current?.focus()
@@ -82,8 +83,35 @@ export function QuickSearchSection() {
   }, [visibleSuggestions])
 
   function handleInputKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
-    if (e.key !== "Enter") return
-    openInNewTab(youtubeSearchUrl(value))
+    if (e.key === "Enter") {
+      openInNewTab(youtubeSearchUrl(value))
+      return
+    }
+    if (e.key === "ArrowDown" && rowRefs.current[0]) {
+      e.preventDefault()
+      rowRefs.current[0]?.focus()
+    }
+  }
+
+  function handleRowKeyDown(e: React.KeyboardEvent<HTMLDivElement>, index: number) {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault()
+      openInNewTab(youtubeSearchUrl(visibleSuggestions[index]))
+      return
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault()
+      rowRefs.current[index + 1]?.focus()
+      return
+    }
+    if (e.key === "ArrowUp") {
+      e.preventDefault()
+      if (index === 0) {
+        inputRef.current?.focus()
+      } else {
+        rowRefs.current[index - 1]?.focus()
+      }
+    }
   }
 
   return (
@@ -106,15 +134,12 @@ export function QuickSearchSection() {
           {visibleSuggestions.map((suggestion, i) => (
             <div
               key={suggestion}
+              ref={(el) => (rowRefs.current[i] = el)}
               className="popup-quicksearch__row"
               role="button"
               tabIndex={0}
               onClick={() => openInNewTab(youtubeSearchUrl(suggestion))}
-              onKeyDown={(e) => {
-                if (e.key !== "Enter" && e.key !== " ") return
-                e.preventDefault()
-                openInNewTab(youtubeSearchUrl(suggestion))
-              }}>
+              onKeyDown={(e) => handleRowKeyDown(e, i)}>
               <span className="popup-quicksearch__row-text">{suggestion}</span>
               <span className="popup-quicksearch__chip" dir="ltr">
                 {shortcutPrefix}
