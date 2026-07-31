@@ -46,6 +46,10 @@ const CONTACT_LINKS = [
 
 const DONATION_LINKS = [
   {
+    label: "PayPal",
+    href: "https://www.paypal.com/ncp/payment/XL4BLH6V4WXBJ"
+  },
+  {
     label: "Vodafone Cash",
     href: "http://vf.eg/vfcash?id=mt&qrId=yV2w6L",
     icon: <WalletIcon />
