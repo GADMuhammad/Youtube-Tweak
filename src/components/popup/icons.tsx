@@ -88,6 +88,18 @@ export function WalletIcon() {
   )
 }
 
+export function PayPalIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+      <path d="M8.6 21.2h-3a.5.5 0 0 1-.5-.58L7.9 3.5a.7.7 0 0 1 .7-.6h6.6c3.1 0 5.2 1.7 4.8 4.9-.4 3.7-3 5.6-6.4 5.6H11l-1 5.9a.7.7 0 0 1-.7.6h-.7z" />
+      <path
+        d="M18.5 8.6c-.4 3.7-3 5.6-6.4 5.6h-2.2l-1.1 6.6a.5.5 0 0 0 .5.58h2.7a.7.7 0 0 0 .7-.6l.6-3.5h1.9c3.4 0 6-1.9 6.4-5.6.3-2.4-.5-4-2.1-4.7.13.53.13 1.1 0 1.62z"
+        opacity=".55"
+      />
+    </svg>
+  )
+}
+
 export function InstaPayIcon() {
   return (
     <svg
