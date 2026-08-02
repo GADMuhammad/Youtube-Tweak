@@ -60,7 +60,8 @@ export function getPageSelectors() {
 
   if (pathname === "/results" || isChannelSearch(pathname)) {
     return {
-      container: pathname === "/results" ? "ytd-search" : "ytd-section-list-renderer",
+      container:
+        pathname === "/results" ? "ytd-search" : "ytd-section-list-renderer",
       card: "ytd-video-renderer",
       anchor: "a#video-title",
       dateSpan: "#metadata-line span.inline-metadata-item"
@@ -166,6 +167,11 @@ export function getContinuationItem(): HTMLElement | null {
 // "show more replies" continuation, so we must skip any candidate nested
 // inside a comment thread's replies renderer — otherwise we'd hide/reveal a
 // reply-expander instead of the "load more comment threads" continuation.
+
+export const commentsSection = document.querySelector(
+  "ytd-comments#comments.style-scope.ytd-watch-flexy"
+) as HTMLElement
+
 export function getCommentsContinuationItem(): HTMLElement | null {
   const candidates = document.querySelectorAll<HTMLElement>(
     "ytd-comments#comments ytd-continuation-item-renderer"
@@ -209,7 +215,8 @@ export const getLoadMoreButtonPlace: PlasmoGetInlineAnchor =
       return queryVisible("ytd-watch-next-secondary-results-renderer")
 
     // channel playlists tab
-    if (isChannelPlaylistsTab(pathname)) return queryVisible("ytd-grid-renderer")
+    if (isChannelPlaylistsTab(pathname))
+      return queryVisible("ytd-grid-renderer")
 
     // channel posts tab
     if (isChannelPostsTab(pathname)) return queryVisible("ytd-backstage-items")

@@ -45,8 +45,13 @@ export const useLoadMoreBlocker = ({
     // above: on SPA navigation YouTube can reuse the same continuation node
     // (still carrying the display:none we set for the *previous* page), so
     // gating "Normal" on this would leave situation stuck from before.
+    // !important because the comments continuation item is also targeted by
+    // a static CSS rule (see hideCommentsLoader.ts) that hides it before
+    // this code ever runs — a plain inline style here doesn't need to win
+    // against that rule, but setting it with the same priority keeps this
+    // one source of truth regardless of which one actually applied it.
     if (continuationItem && continuationItem.style.display !== "none") {
-      continuationItem.style.display = "none"
+      continuationItem.style.setProperty("display", "none", "important")
     }
   }
 
@@ -94,7 +99,10 @@ export const useLoadMoreBlocker = ({
     onReveal?.()
     stopBlocking()
 
-    continuationItem.style.display = "block"
+    // !important to override the static CSS hide rule for comments
+    // (hideCommentsLoader.ts) — a non-important inline value can't win
+    // against an !important stylesheet rule.
+    continuationItem.style.setProperty("display", "block", "important")
 
     loadingObserverRef.current = new MutationObserver((_, observerInstance) => {
       const stopLoading = () => {
