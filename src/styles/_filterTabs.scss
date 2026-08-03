@@ -1,3 +1,14 @@
+// plasmo-csui defaults to `display: inline` as an unstyled custom element.
+// It's now mounted as a flex item inside YouTube's #title-container
+// (alongside the "All subscriptions" button), so it needs to behave like one
+// itself instead of leaving its layout to the UA default. Scoped to this
+// component's shadow-host id (set via getShadowHostId in filterTabs.tsx) so
+// it doesn't affect the other content scripts sharing this stylesheet.
+:host(#yt-tweak-filter-tabs-host) {
+  display: inline-flex !important;
+  align-items: center;
+}
+
 .custom-filter-chips {
   display: inline-flex !important;
   gap: 12px;

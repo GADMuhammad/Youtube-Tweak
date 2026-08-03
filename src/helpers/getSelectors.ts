@@ -229,10 +229,24 @@ export const getCommentsPlace: PlasmoGetInlineAnchor = async (): PromiseType =>
   queryVisible("ytd-comments#comments")
 
 // where we will put filter buttons
-export const getFilterPlace: PlasmoGetInlineAnchor = async (): PromiseType => {
+//
+// #title-container is the flex row (align-items: center) that also holds a
+// flex-grow spacer and the "All subscriptions" button; its parent
+// .grid-subheader is a plain block container. Anchoring on #title-container
+// itself would make Plasmo insert plasmo-csui *after* it (the default
+// "afterend" insertPosition for a bare Element), landing it in the block
+// parent as its own full-width row below "All subscriptions" instead of
+// alongside it. Anchoring on the (hidden) "Latest" <h2> with insertPosition
+// "afterend" instead drops plasmo-csui inside #title-container, before the
+// spacer, so it becomes a flex item that sits inline with — and is
+// vertically centered against — "All subscriptions".
+export const getFilterPlace: PlasmoGetInlineAnchor = async () => {
   if (!window.location.pathname.startsWith("/feed/subscriptions")) return null
 
-  return queryVisible(
+  const titleContainer = queryVisible<HTMLElement>(
     "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
   )
+  const title = titleContainer?.firstElementChild as HTMLElement
+
+  return title ? { element: title, insertPosition: "afterend" } : null
 }

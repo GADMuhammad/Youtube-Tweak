@@ -24,10 +24,9 @@ export const getStyle = (): HTMLStyleElement => {
 // The container above videos:
 export const getInlineAnchor = getFilterPlace
 
-// Append the button at the top of the targeted container:
-export const getMountPoint = (anchor: HTMLElement) => {
-  return anchor.firstElementChild as HTMLElement
-}
+// Scopes the :host reset in style.scss to just this CSUI's shadow host,
+// instead of every plasmo-csui on the page.
+export const getShadowHostId = () => "yt-tweak-filter-tabs-host"
 
 const getTabFromUrl = () =>
   window.location.href.includes("/shorts") ? "shorts" : "videos"
