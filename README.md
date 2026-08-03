@@ -38,8 +38,9 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 - Absolute date replacement wasn't applying on a channel's own search results page (`/@handle/search`).
 - Infinite scroll wasn't blocked on a channel's Playlists tab (`/@handle/playlists`); the Load More button now appears there too, with its own "Load More Playlists" / "No more playlists to display" copy (EN & AR).
 - Infinite scroll wasn't blocked on a channel's Posts tab (`/@handle/posts`); the Load More button now appears there too, with its own "Load More Posts" / "No more posts to display" copy (EN & AR).
-- Fixed inconsistent comment loading on video pages: the first batch of comments would sometimes auto-load before the Load More button could block it, due to a timing race with YouTube's own loader. Comments now stay reliably blocked until you click the button.
+- Fixed inconsistents comment loading on video pages: the first batch of comments would sometimes auto-load before the Load More button could block it, due to a timing race with YouTube's own loader. Comments now stay reliably blocked until you click the button.
 - Fixed the comments button label getting stuck on "Load More Comments" after navigating to a new video via the sidebar (SPA navigation); it now correctly resets to "Load Comments" for each new video.
+- Fixed Shorts sometimes auto-loading an extra batch as soon as a feed page opened (the Shorts subscriptions feed), caused by the same load-more race previously fixed for comments; the early CSS-based block is now applied to every feed, not just comments.
 
 ## 🛠️ Tech Stack
 
