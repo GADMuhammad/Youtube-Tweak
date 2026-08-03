@@ -27,6 +27,38 @@ style.textContent = `
 
 document.documentElement.appendChild(style)
 
+// The Subscriptions feed's "Latest" shelf heading (replaced by our own
+// filter buttons) and its inline Shorts row (see useYoutubeThemeAndDom.ts)
+// were previously hidden from a React effect, which only runs after first
+// paint — causing a visible flash of both before they got hidden. Hiding
+// them here instead means the rule exists before YouTube ever lays them
+// out. Scoped to the Subscriptions feed only (checked on every SPA
+// navigation, since document_start only runs once per real page load):
+// these selectors also match unrelated shelf headings elsewhere on YouTube
+// (home page, search, channel pages).
+const feedOnlyStyle = document.createElement("style")
+document.documentElement.appendChild(feedOnlyStyle)
+
+const updateFeedOnlyStyle = () => {
+  const isSubscriptionsFeed = location.pathname.startsWith(
+    "/feed/subscriptions"
+  )
+  feedOnlyStyle.textContent = isSubscriptionsFeed
+    ? `
+      h2.style-scope.ytd-shelf-renderer {
+        display: none !important;
+      }
+      ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer,
+      ytd-rich-section-renderer:has(#rich-shelf-header-container) {
+        display: none !important;
+      }
+    `
+    : ""
+}
+
+updateFeedOnlyStyle()
+window.addEventListener("yt-navigate-finish", updateFeedOnlyStyle)
+
 export const config: PlasmoCSConfig = {
   matches: ["https://*.youtube.com/*"],
   run_at: "document_start"

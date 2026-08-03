@@ -5,24 +5,7 @@ export default function useYoutubeThemeAndDom() {
     () => window.matchMedia("(prefers-color-scheme: dark)").matches
   )
 
-  const hideSomeElements = () => {
-    // Hide 'latest' H2 to replace it with filter buttons:
-    const latestTextH2 = document.querySelector<HTMLElement>(
-      "h2.style-scope.ytd-shelf-renderer"
-    )
-    if (latestTextH2) latestTextH2.style.display = "none"
-
-    const shortsSection = document.querySelector(
-      "ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer, ytd-rich-section-renderer:has(#rich-shelf-header-container)"
-    ) as HTMLElement
-
-    if (shortsSection) {
-      shortsSection.style.setProperty("display", "none", "important")
-    }
-  }
-
   useEffect(() => {
-    hideSomeElements()
     // targeting the outside host element
     const allPlasmoCsuis = document.querySelectorAll("plasmo-csui")
 
