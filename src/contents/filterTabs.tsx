@@ -31,6 +31,42 @@ export const getShadowHostId = () => "yt-tweak-filter-tabs-host"
 const getTabFromUrl = () =>
   window.location.href.includes("/shorts") ? "shorts" : "videos"
 
+// YouTube's own SPA router intercepts clicks on light-DOM <a> elements via a
+// document-level listener. Our anchors live inside plasmo-csui's shadow DOM,
+// so that listener sees the shadow host as the click target (event
+// retargeting), never recognizes it as a navigable link, and lets the click
+// fall through to native anchor navigation — a hard reload. Synthesizing a
+// click on a throwaway <a> appended to the light DOM sidesteps that:
+// YouTube's listener treats it exactly like clicking any other in-page link
+// and performs its client-side transition instead.
+const navigateSpa = (url: string) => {
+  const link = document.createElement("a")
+  link.href = url
+  link.style.display = "none"
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+}
+
+// Modifier/middle clicks are left alone so opening in a new tab, copying the
+// link, etc. keep working via the anchor's native href.
+const handleClick = (
+  event: React.MouseEvent<HTMLAnchorElement>,
+  url: string
+) => {
+  if (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return
+
+  event.preventDefault()
+  navigateSpa(url)
+}
+
 const FilterTabs = () => {
   const [currentTab, setCurrentTab] = useState(getTabFromUrl)
 
@@ -67,6 +103,7 @@ const FilterTabs = () => {
         <a
           key={label}
           href={url}
+          onClick={(event) => handleClick(event, url)}
           className={`yt-chip-btn ${currentTab === id ? "yt-chip-active" : ""}`}>
           {label.charAt(0).toUpperCase() + label.slice(1)}
         </a>
