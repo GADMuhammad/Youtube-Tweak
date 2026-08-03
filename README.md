@@ -41,6 +41,9 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 - Fixed inconsistents comment loading on video pages: the first batch of comments would sometimes auto-load before the Load More button could block it, due to a timing race with YouTube's own loader. Comments now stay reliably blocked until you click the button.
 - Fixed the comments button label getting stuck on "Load More Comments" after navigating to a new video via the sidebar (SPA navigation); it now correctly resets to "Load Comments" for each new video.
 - Fixed Shorts sometimes auto-loading an extra batch as soon as a feed page opened (the Shorts subscriptions feed), caused by the same load-more race previously fixed for comments; the early CSS-based block is now applied to every feed, not just comments.
+- Fixed the Videos/Shorts filter buttons rendering misaligned with the "All subscriptions" button on the Subscriptions page; they now sit inline in the same row instead of breaking onto their own full-width line below it.
+- Fixed the Videos/Shorts filter buttons being completely missing on the Subscriptions Shorts sub-page (`/feed/subscriptions/shorts`), which has no subheader to anchor to; they now replace that page's own "Shorts" heading, with the active button correctly reflecting the current route.
+- Fixed clicking the Videos/Shorts filter buttons forcing a full page reload instead of YouTube's normal client-side transition; clicking now reuses YouTube's own existing navigation links where available, falling back to a regular navigation otherwise.
 
 ## 🛠️ Tech Stack
 

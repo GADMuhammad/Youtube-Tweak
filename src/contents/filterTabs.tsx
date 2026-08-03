@@ -33,7 +33,7 @@ const getTabFromUrl = () =>
 
 // YouTube's SPA router only reacts to clicks on its own already-mounted
 // elements — verified empirically: a synthetic click() dispatched straight on
-// YouTube's real sidebar anchor performs a genuine client-side transition
+// one of YouTube's real anchors performs a genuine client-side transition
 // (page context survives, no reload). Every attempt to fake that ourselves —
 // a homemade <a> (even carrying YouTube's own "yt-simple-endpoint" class),
 // history.pushState + a synthetic popstate, or dispatching YouTube's
@@ -45,15 +45,15 @@ const getTabFromUrl = () =>
 // navigate, not a command channel other code can drive.
 //
 // /feed/subscriptions always has a real anchor in the sidebar (present in
-// the DOM even when the sidebar is visually collapsed), so we can reuse it.
-// /feed/subscriptions/shorts has no standing anchor anywhere in the page —
-// the only real link to it lives inside the Shorts shelf, which only
-// renders when the account actually has shelf content — so there's no
-// reliable SPA path for it; the anchor's native href is left to navigate.
+// the DOM even when the sidebar is visually collapsed). /feed/subscriptions/
+// shorts has a real anchor too — the "View all" link on the Shorts shelf
+// (confirmed a plain `<a href="/feed/subscriptions/shorts">`, not a
+// JS-only button as its styling suggests) — but only once that shelf has
+// lazy-rendered (it's several rows down, virtualized like the rest of the
+// grid) and only for accounts with shelf content at all. When no matching
+// anchor exists yet, this falls back to the anchor's native href.
 const clickNativeAnchor = (path: string): boolean => {
-  const link = document.querySelector<HTMLAnchorElement>(
-    `ytd-guide-entry-renderer a[href="${path}"], ytd-mini-guide-entry-renderer a[href="${path}"]`
-  )
+  const link = document.querySelector<HTMLAnchorElement>(`a[href="${path}"]`)
   link?.click()
   return !!link
 }
