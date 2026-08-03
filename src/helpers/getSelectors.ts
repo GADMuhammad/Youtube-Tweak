@@ -240,12 +240,23 @@ export const getCommentsPlace: PlasmoGetInlineAnchor = async (): PromiseType =>
 // "afterend" instead drops plasmo-csui inside #title-container, before the
 // spacer, so it becomes a flex item that sits inline with — and is
 // vertically centered against — "All subscriptions".
+//
+// The Shorts sub-page (/feed/subscriptions/shorts) has no shelf-renderer at
+// all — it renders a standalone ytd-rich-grid-renderer whose own
+// #title-container just wraps a single #title div reading "Shorts", with no
+// sibling button to align against. Same insert-after-the-hidden-heading
+// pattern applies there, just against that page's own title element.
 export const getFilterPlace: PlasmoGetInlineAnchor = async () => {
-  if (!window.location.pathname.startsWith("/feed/subscriptions")) return null
+  const pathname = window.location.pathname
+  if (!pathname.startsWith("/feed/subscriptions")) return null
 
-  const titleContainer = queryVisible<HTMLElement>(
-    "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
-  )
+  const titleContainer = pathname.startsWith("/feed/subscriptions/shorts")
+    ? queryVisible<HTMLElement>(
+        "ytd-rich-grid-renderer div#title-container.style-scope.ytd-rich-grid-renderer"
+      )
+    : queryVisible<HTMLElement>(
+        "div.grid-subheader.style-scope.ytd-shelf-renderer div#title-container.style-scope.ytd-shelf-renderer"
+      )
   const title = titleContainer?.firstElementChild as HTMLElement
 
   return title ? { element: title, insertPosition: "afterend" } : null

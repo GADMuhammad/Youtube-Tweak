@@ -43,6 +43,9 @@ const updateFeedOnlyStyle = () => {
   const isSubscriptionsFeed = location.pathname.startsWith(
     "/feed/subscriptions"
   )
+  const isSubscriptionsShorts = location.pathname.startsWith(
+    "/feed/subscriptions/shorts"
+  )
   feedOnlyStyle.textContent = isSubscriptionsFeed
     ? `
       h2.style-scope.ytd-shelf-renderer {
@@ -51,6 +54,18 @@ const updateFeedOnlyStyle = () => {
       ytd-rich-section-renderer[is-shorts].style-scope.ytd-rich-grid-renderer,
       ytd-rich-section-renderer:has(#rich-shelf-header-container) {
         display: none !important;
+      }
+      ${
+        isSubscriptionsShorts
+          ? `
+      /* The Shorts sub-page has no shelf-renderer/"Latest" heading — its
+         standalone rich-grid-renderer renders its own "Shorts" title div
+         instead, replaced by the same filter buttons. */
+      ytd-rich-grid-renderer div#title.style-scope.ytd-rich-grid-renderer {
+        display: none !important;
+      }
+      `
+          : ""
       }
     `
     : ""
