@@ -31,6 +31,52 @@ export const getShadowHostId = () => "yt-tweak-filter-tabs-host"
 const getTabFromUrl = () =>
   window.location.href.includes("/shorts") ? "shorts" : "videos"
 
+// YouTube's SPA router only reacts to clicks on its own already-mounted
+// elements — verified empirically: a synthetic click() dispatched straight on
+// YouTube's real sidebar anchor performs a genuine client-side transition
+// (page context survives, no reload). Every attempt to fake that ourselves —
+// a homemade <a> (even carrying YouTube's own "yt-simple-endpoint" class),
+// history.pushState + a synthetic popstate, or dispatching YouTube's
+// internal `yt-navigate` event by hand with a fully correct endpoint object
+// (browseId "FEsubscriptions_shorts", pulled straight from the page's own
+// embedded data, plus a real trusted click event attached) — either
+// no-opped silently or fell back to a hard reload. `yt-navigate` turns out
+// to be a notification the router *emits* once it's already decided to
+// navigate, not a command channel other code can drive.
+//
+// /feed/subscriptions always has a real anchor in the sidebar (present in
+// the DOM even when the sidebar is visually collapsed), so we can reuse it.
+// /feed/subscriptions/shorts has no standing anchor anywhere in the page —
+// the only real link to it lives inside the Shorts shelf, which only
+// renders when the account actually has shelf content — so there's no
+// reliable SPA path for it; the anchor's native href is left to navigate.
+const clickNativeAnchor = (path: string): boolean => {
+  const link = document.querySelector<HTMLAnchorElement>(
+    `ytd-guide-entry-renderer a[href="${path}"], ytd-mini-guide-entry-renderer a[href="${path}"]`
+  )
+  link?.click()
+  return !!link
+}
+
+// Modifier/middle clicks are left alone so opening in a new tab, copying the
+// link, etc. keep working via the anchor's native href.
+const handleClick = (
+  event: React.MouseEvent<HTMLAnchorElement>,
+  url: string
+) => {
+  if (
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return
+
+  const path = new URL(url).pathname
+  if (clickNativeAnchor(path)) event.preventDefault()
+}
+
 const FilterTabs = () => {
   const [currentTab, setCurrentTab] = useState(getTabFromUrl)
 
@@ -67,6 +113,7 @@ const FilterTabs = () => {
         <a
           key={label}
           href={url}
+          onClick={(event) => handleClick(event, url)}
           className={`yt-chip-btn ${currentTab === id ? "yt-chip-active" : ""}`}>
           {label.charAt(0).toUpperCase() + label.slice(1)}
         </a>
