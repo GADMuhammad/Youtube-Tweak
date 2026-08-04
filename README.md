@@ -44,6 +44,7 @@ A lightweight Chrome extension designed to declutter the YouTube user interface,
 - Fixed the Videos/Shorts filter buttons rendering misaligned with the "All subscriptions" button on the Subscriptions page; they now sit inline in the same row instead of breaking onto their own full-width line below it.
 - Fixed the Videos/Shorts filter buttons being completely missing on the Subscriptions Shorts sub-page (`/feed/subscriptions/shorts`), which has no subheader to anchor to; they now replace that page's own "Shorts" heading, with the active button correctly reflecting the current route.
 - Fixed clicking the Videos/Shorts filter buttons forcing a full page reload instead of YouTube's normal client-side transition; clicking now reuses YouTube's own existing navigation links where available, falling back to a regular navigation otherwise.
+- Fixed the comments area getting stuck showing "No more comments to display" after navigating to a new video via the sidebar (SPA navigation), even when the new video had comments; the button now correctly reappears instead of carrying over the previous video's state.
 
 ## 🛠️ Tech Stack
 

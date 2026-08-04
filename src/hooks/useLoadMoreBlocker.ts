@@ -75,7 +75,27 @@ export const useLoadMoreBlocker = ({
   useEffect(() => {
     startBlocking()
 
+    // YouTube can reuse the same container across SPA navigations instead of
+    // remounting it (see useCommentsInfiniteScrollBlocker.ts), so `situation`
+    // would otherwise stay latched to the outgoing page's value — e.g. still
+    // "NoMore" on a new video that actually has comments. Reset to "Normal"
+    // rather than re-running updateSituation() here: the incoming page's DOM
+    // (new item count, new continuation item) usually hasn't landed yet at
+    // this exact event, so evaluating immediately just re-derives the old
+    // page's stale answer. The still-active block observer below picks up
+    // the real state once the new page's content actually mutates the DOM.
+    const handleNavigate = () => {
+      setIsLoading(false)
+      if (loadingObserverRef.current) {
+        loadingObserverRef.current.disconnect()
+        loadingObserverRef.current = null
+      }
+      setSituation("Normal")
+    }
+    window.addEventListener("yt-navigate-finish", handleNavigate)
+
     return () => {
+      window.removeEventListener("yt-navigate-finish", handleNavigate)
       stopBlocking()
       if (loadingObserverRef.current) {
         loadingObserverRef.current.disconnect()
