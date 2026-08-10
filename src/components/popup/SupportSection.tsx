@@ -35,7 +35,7 @@ const CONTACT_LINKS = [
   },
   {
     label: "X (Twitter)",
-    href: "https://x.com/mohgad_",
+    href: "https://x.com/gad_software",
     icon: <XIcon />
   }
   // {
