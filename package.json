@@ -1,7 +1,7 @@
 {
   "name": "youtube-tweak",
   "displayName": "YouTube Tweak - Control YouTube and make it calmer",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "A smart extension to organize youtube for replacing relative date, infinite scroll and more.",
   "author": "Muhammad Gad",
   "scripts": {
