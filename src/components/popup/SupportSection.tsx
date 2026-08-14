@@ -19,14 +19,19 @@ const text = supportSectionText[isArabic ? "ar" : "en"]
 
 const CONTACT_LINKS = [
   {
+    label: "GitHub",
+    href: "https://github.com/GADMuhammad",
+    icon: <GitHubIcon />
+  },
+  {
     label: "LinkedIn",
     href: "https://www.linkedin.com/in/mohgad/",
     icon: <LinkedInIcon />
   },
   {
-    label: "GitHub",
-    href: "https://github.com/GADMuhammad",
-    icon: <GitHubIcon />
+    label: "Email",
+    href: "mailto:gad.software.engineer@gmail.com",
+    icon: <MailIcon />
   },
   {
     label: "Telegram",
@@ -34,15 +39,15 @@ const CONTACT_LINKS = [
     icon: <TelegramIcon />
   },
   {
-    label: "X (Twitter)",
+    label: "X (English)",
     href: "https://x.com/gad_software",
     icon: <XIcon />
+  },
+  {
+    label: "X (Arabic)",
+    href: "https://x.com/mohgad_",
+    icon: <XIcon />
   }
-  // {
-  //   label: "Email",
-  //   href: "mailto:muhammadgadwork@gmail.com",
-  //   icon: <MailIcon />
-  // }
 ]
 
 const DONATION_LINKS = [
